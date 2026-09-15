@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('entregas_borradores_tesis_ubs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('borrador_id')->constrained('borradores_tesis_ubs');
+            $table->string('url_archivo')->nullable();
+            $table->string('extension_archivo')->nullable();
+            $table->text('comentario')->nullable();
+            $table->integer('numero');
+            $table->boolean('entrega')->default(true);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('entregas_borradores_tesis_ubs');
+    }
+};

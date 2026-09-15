@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
+
+class ExamenSuficiencia extends Model implements Auditable
+{
+    use HasFactory, \OwenIt\Auditing\Auditable;
+
+    protected $table = "examenes_suficiencias";// <-- El nombre personalizado
+
+    public function Solicitud(){
+        return $this->belongsTo(Solicitud::class);
+    }
+
+    public function Alumno(){
+        return $this->belongsTo(Alumno::class);
+    }
+
+    public function Carrera(){
+        return $this->belongsTo(Carrera::class);
+    }
+
+    public function Materia(){
+        return $this->belongsTo(Materia::class);
+    }
+
+    public function Docente(){
+        return $this->belongsTo(Docente::class);
+    }
+
+    public function Semestre(){
+        return $this->belongsTo(Semestre::class);
+    }
+
+    public function Modalidad(){
+        return $this->belongsTo(Modalidad::class);
+    }
+
+    public function CargadoPor(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function ActualizadoPor(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function Acta(){
+        return $this->hasOne(ExamenSuficienciaActaEvaluacion::class);
+    }
+}
