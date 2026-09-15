@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserSeeder extends Seeder
 {
@@ -13,18 +14,23 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('usuarios')->insert([
+        $user = User::create([
             'name' => 'Administrador',
             'email' => env('SEED_ADMIN_EMAIL', 'admin@example.test'),
             'password' => Hash::make(env('SEED_ADMIN_PASSWORD', 'password')),
             'role_id' => 1,
             'avatar' => 'masculino.jpg',
             'portada' => 'no_portada.jpg',
-            'state' => 'AC'
+            'state' => 'AC',
         ]);
 
+        // role_id enlaza a la tabla `roles` propia del sistema, pero los checks de
+        // permisos (Auth::user()->can(...)) usan las tablas pivote de Spatie, que
+        // requieren asignar el rol explícitamente vía HasRoles.
+        $user->assignRole('SUPERADMIN');
+
         DB::table('configuraciones')->insert([
-            'user_id' => 1,
+            'user_id' => $user->id,
             'lang' => 'sp',
             'data_layout' => 'vertical',
             'data_sidebar' => 'dark',
