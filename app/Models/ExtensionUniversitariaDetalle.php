@@ -19,4 +19,12 @@ class ExtensionUniversitariaDetalle extends Model implements Auditable
     public function Alumno(){
         return $this->belongsTo(Alumno::class);
     }
+
+    public function Carrera(){
+        return $this->belongsTo(Carrera::class);
+    }
+
+    public function Semestre(){
+        return $this->belongsTo(Semestre::class);
+    }
 }

@@ -493,6 +493,8 @@ Auth::routes();
             Route::delete('extensiones_universitarias/eliminar/{id}', 'ExtensionUniversitariaController@destroy')->name('extensiones_universitarias.destroy');
             Route::get('extensiones_universitarias/ver_reporte', 'ExtensionUniversitariaController@show_reporte')->name('extensiones_universitarias.show_reporte');
             Route::get('extensiones_universitarias/generar_reporte', 'ExtensionUniversitariaController@generate_reporte')->name('extensiones_universitarias.generate_reporte');
+            Route::get('extensiones_universitarias/ver_reporte_carrera_semestre', 'ExtensionUniversitariaController@show_reporte_carrera_semestre')->name('extensiones_universitarias.show_reporte_carrera_semestre');
+            Route::get('extensiones_universitarias/generar_reporte_carrera_semestre', 'ExtensionUniversitariaController@generate_reporte_carrera_semestre')->name('extensiones_universitarias.generate_reporte_carrera_semestre');
         //Solicitudes de Alumnos
             Route::get('solicitudes', 'SolicitudController@index')->name('solicitudes.index');
             Route::get('solicitudes/ver/{id}', 'SolicitudController@show')->name('solicitudes.show');

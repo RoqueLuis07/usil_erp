@@ -58,6 +58,57 @@
     </div>
 </div>
 
+<div class="modal modal-lg fade flip" id="showReporteCarreraSemestreModal" tabindex="-1" aria-labelledby="showReporteCarreraSemestreModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title" id="showReporteCarreraSemestreModal">Reporte de Extensión Universitaria por Carrera y Semestre</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{route('extensiones_universitarias.show_reporte_carrera_semestre')}}" method="get" id="showReporteCarreraSemestre-form">
+                    @csrf
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label" for="carrera_reporte_cs">Carrera</label>
+                            <select class="selectpicker form-control" id="carrera_reporte_cs" name="carrera" data-live-search="true">
+                                <option value="" selected>Todas</option>
+                                @foreach ($carreras as $carrera)
+                                    <option value="{{ $carrera->id }}">{{ $carrera->nombre_fantasia }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label" for="semestre_reporte_cs">Semestre</label>
+                            <select class="selectpicker form-control" id="semestre_reporte_cs" name="semestre" data-live-search="true">
+                                <option value="" selected>Todos</option>
+                                @foreach ($semestres as $semestre)
+                                    <option value="{{ $semestre->id }}">{{ $semestre->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 mb-3">
+                            <label class="form-label" for="tipo_extension_reporte_cs">Tipo de Actividad</label>
+                            <select class="selectpicker form-control" id="tipo_extension_reporte_cs" name="tipo_extension" data-live-search="true">
+                                <option value="" selected>Todos</option>
+                                @foreach ($tipos_extensiones as $tipo)
+                                    <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="cancel-btn">Cerrar</button>
+                <button type="button" class="btn btn-warning" id="show-reporte-carrera-semestre-btn">Visualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @foreach ($extensiones as $extension)
     <!-- approveModal -->
         @can('aprobar_extensiones_universitarias')

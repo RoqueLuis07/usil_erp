@@ -547,6 +547,7 @@ class PermissionSeeder extends Seeder
             'generar_certificados_cursos_ubs',
             'generar_certificados_maestrias_ubs',
             'generar_reportes_extensiones_universitarias',
+            'generar_reportes_extensiones_universitarias_carrera_semestre',
             'imprimir_contratos_inscripciones_ubs',
             'imprimir_contratos_matriculaciones',
             'imprimir_horarios_inscripciones_matriculaciones',

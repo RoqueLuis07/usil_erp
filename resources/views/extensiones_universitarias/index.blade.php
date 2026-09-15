@@ -36,6 +36,9 @@
                         <div class="col-lg-6 d-flex">
                             <div class="col-lg-9 text-end">
                                 <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#showReporteModal">Visualizar Reporte</button>
+                                @can('generar_reportes_extensiones_universitarias_carrera_semestre')
+                                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#showReporteCarreraSemestreModal">Reporte por Carrera y Semestre</button>
+                                @endcan
                             </div>
                             <div class="col-lg-3">
                                 <div class="d-flex justify-content-end">

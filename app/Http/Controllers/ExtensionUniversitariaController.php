@@ -18,6 +18,9 @@ use App\Models\Docente;
 use App\Models\Alumno;
 use App\Models\AlumnoExtension;
 use App\Models\Empresa;
+use App\Models\Carrera;
+use App\Models\Semestre;
+use App\Models\Matriculacion;
 
 class ExtensionUniversitariaController extends Controller
 {
@@ -29,6 +32,35 @@ class ExtensionUniversitariaController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    /**
+     * Resuelve la carrera/semestre del alumno para el snapshot en
+     * extensiones_universitarias_detalles, usando la matriculación vigente
+     * a la fecha de referencia (fecha_inicio de la actividad) y, si no
+     * existe ninguna que coincida, la matriculación más reciente del alumno.
+     * Un alumno puede tener varias matriculaciones en el tiempo, y ni la
+     * actividad de extensión ni el alumno guardan carrera/semestre directo.
+     */
+    private function resolverCarreraSemestreAlumno($alumnoId, $fechaReferencia)
+    {
+        $matriculacion = Matriculacion::where('alumno_id', $alumnoId)
+            ->whereHas('Semestre', function ($query) use ($fechaReferencia) {
+                $query->where('fecha_inicio', '<=', $fechaReferencia)
+                    ->where('fecha_fin', '>=', $fechaReferencia);
+            })
+            ->first();
+
+        if (!$matriculacion) {
+            $matriculacion = Matriculacion::where('alumno_id', $alumnoId)
+                ->orderByDesc('fecha')
+                ->first();
+        }
+
+        return [
+            'carrera_id' => $matriculacion->carrera_id ?? null,
+            'semestre_id' => $matriculacion->semestre_id ?? null,
+        ];
     }
 
     /**
@@ -59,7 +91,9 @@ class ExtensionUniversitariaController extends Controller
             }
             $periodos = $periodos->unique()->sort()->values();
             $tipos_extensiones = TipoExtensionUniversitaria::where('estado', 'AC')->orderBy('nombre', 'asc')->get();
-            return view('extensiones_universitarias/index')->with(compact('extensiones', 'alumnos', 'periodos', 'tipos_extensiones'));
+            $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            $semestres = Semestre::where('estado', 'AC')->orderBy('fecha_inicio', 'desc')->get();
+            return view('extensiones_universitarias/index')->with(compact('extensiones', 'alumnos', 'periodos', 'tipos_extensiones', 'carreras', 'semestres'));
         } catch (\Exception $e) {
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
         }
@@ -148,9 +182,13 @@ class ExtensionUniversitariaController extends Controller
             $extension->save();
 
             foreach ($request->detalles as $detalle) {
+                $carrera_semestre = $this->resolverCarreraSemestreAlumno($detalle['alumno'], $extension->fecha_inicio);
+
                 $extension_detalle = new ExtensionUniversitariaDetalle();
                 $extension_detalle->extension_universitaria_id = $extension->id;
                 $extension_detalle->alumno_id = $detalle['alumno'];
+                $extension_detalle->carrera_id = $carrera_semestre['carrera_id'];
+                $extension_detalle->semestre_id = $carrera_semestre['semestre_id'];
                 $extension_detalle->save();
 
                 // $alumno_extension_existe = AlumnoExtension::where('alumno_id', $extension_detalle->alumno_id)->exists();
@@ -225,9 +263,13 @@ class ExtensionUniversitariaController extends Controller
             $extension_detalles = ExtensionUniversitariaDetalle::where('extension_universitaria_id', $id)->delete();
 
             foreach ($request->detalles as $detalle) {
+                $carrera_semestre = $this->resolverCarreraSemestreAlumno($detalle['alumno'], $extension->fecha_inicio);
+
                 $extension_detalle = new ExtensionUniversitariaDetalle();
                 $extension_detalle->extension_universitaria_id = $extension->id;
                 $extension_detalle->alumno_id = $detalle['alumno'];
+                $extension_detalle->carrera_id = $carrera_semestre['carrera_id'];
+                $extension_detalle->semestre_id = $carrera_semestre['semestre_id'];
                 $extension_detalle->save();
             }
 
@@ -713,6 +755,117 @@ class ExtensionUniversitariaController extends Controller
             $pdf->setPaper('A4', 'landscape');
 
             return $pdf->stream('rpt_extensiones_universitaria_' . Carbon::now()->format('dmY_His') . '.pdf');
+        } catch (\Exception $e) {
+            return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
+        }
+    }
+
+    /**
+     * Arma la consulta agregada (actividades, alumnos y horas por carrera y
+     * semestre) reutilizada tanto por la vista del reporte como por el PDF.
+     * Solo considera actividades finalizadas (FI) con carrera/semestre
+     * resueltos (ver resolverCarreraSemestreAlumno).
+     */
+    private function queryReporteCarreraSemestre(Request $request)
+    {
+        $query = ExtensionUniversitariaDetalle::query()
+            ->join('extensiones_universitarias', 'extensiones_universitarias.id', '=', 'extensiones_universitarias_detalles.extension_universitaria_id')
+            ->where('extensiones_universitarias.estado', 'FI')
+            ->whereNotNull('extensiones_universitarias_detalles.carrera_id')
+            ->whereNotNull('extensiones_universitarias_detalles.semestre_id');
+
+        if ($request->carrera) {
+            $query->where('extensiones_universitarias_detalles.carrera_id', $request->carrera);
+        }
+
+        if ($request->semestre) {
+            $query->where('extensiones_universitarias_detalles.semestre_id', $request->semestre);
+        }
+
+        if ($request->tipo_extension) {
+            $query->where('extensiones_universitarias.tipo_extension_id', $request->tipo_extension);
+        }
+
+        return $query
+            ->select(
+                'extensiones_universitarias_detalles.carrera_id',
+                'extensiones_universitarias_detalles.semestre_id',
+                DB::raw('COUNT(DISTINCT extensiones_universitarias.id) as cantidad_actividades'),
+                DB::raw('COUNT(DISTINCT extensiones_universitarias_detalles.alumno_id) as cantidad_alumnos'),
+                DB::raw('SUM(extensiones_universitarias_detalles.cantidad_horas) as horas_totales')
+            )
+            ->groupBy('extensiones_universitarias_detalles.carrera_id', 'extensiones_universitarias_detalles.semestre_id')
+            ->with(['Carrera', 'Semestre'])
+            ->orderByDesc('extensiones_universitarias_detalles.semestre_id')
+            ->get();
+    }
+
+    public function show_reporte_carrera_semestre(Request $request)
+    {
+        $this->authorize('generar_reportes_extensiones_universitarias_carrera_semestre');
+
+        try {
+            $carrera = '';
+            $semestre = '';
+            $tipo_extension = '';
+            $usuario = Auth::user()->name;
+            $fecha = Carbon::now()->translatedFormat('l d/m/Y');
+            $hora = Carbon::now()->format('H:i:s');
+
+            if ($request->carrera) {
+                $carrera = Carrera::findOrFail($request->carrera);
+            }
+
+            if ($request->semestre) {
+                $semestre = Semestre::findOrFail($request->semestre);
+            }
+
+            if ($request->tipo_extension) {
+                $tipo_extension = TipoExtensionUniversitaria::findOrFail($request->tipo_extension);
+            }
+
+            $reporte = $this->queryReporteCarreraSemestre($request);
+
+            if ($reporte->count() == 0) {
+                return back()->with('error-message', 'El reporte no puede ser visualizado. No existen actividades finalizadas con la combinación de filtros seleccionada (o los alumnos involucrados no tienen carrera/semestre registrados).');
+            }
+
+            return view('extensiones_universitarias/show_reporte_carrera_semestre')->with(compact('reporte', 'carrera', 'semestre', 'tipo_extension', 'usuario', 'fecha', 'hora'));
+        } catch (\Exception $e) {
+            return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
+        }
+    }
+
+    public function generate_reporte_carrera_semestre(Request $request)
+    {
+        $this->authorize('generar_reportes_extensiones_universitarias_carrera_semestre');
+
+        try {
+            $carrera = '';
+            $semestre = '';
+            $tipo_extension = '';
+
+            $empresa = Empresa::first();
+            $fecha_hoy = Carbon::now();
+
+            if ($request->carrera) {
+                $carrera = Carrera::findOrFail($request->carrera);
+            }
+
+            if ($request->semestre) {
+                $semestre = Semestre::findOrFail($request->semestre);
+            }
+
+            if ($request->tipo_extension) {
+                $tipo_extension = TipoExtensionUniversitaria::findOrFail($request->tipo_extension);
+            }
+
+            $reporte = $this->queryReporteCarreraSemestre($request);
+
+            $pdf = Pdf::loadView('extensiones_universitarias/pdf_carrera_semestre', compact('empresa', 'fecha_hoy', 'reporte', 'carrera', 'semestre', 'tipo_extension'));
+            $pdf->setPaper('A4', 'landscape');
+
+            return $pdf->stream('rpt_extensiones_universitarias_carrera_semestre_' . Carbon::now()->format('dmY_His') . '.pdf');
         } catch (\Exception $e) {
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
         }
