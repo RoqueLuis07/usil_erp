@@ -9,14 +9,18 @@ chmod -R 775 storage bootstrap/cache
 php artisan storage:link || true
 
 # Migraciones: seguras de correr en cada arranque, Laravel omite las ya aplicadas.
+# --isolated usa un lock atómico (vía Redis, CACHE_DRIVER=redis) para que, si
+# Railway (u otra plataforma) llega a tener dos contenedores corriendo a la vez
+# durante un rolling deploy, solo uno migre por vez en lugar de chocar entre sí
+# con errores de "table already exists".
+#
 # RESET_DB_ON_BOOT=true fuerza una migración limpia (borra todo) — usarlo solo
-# para recuperar una base en estado inconsistente (ej. tablas creadas sin quedar
-# registradas en `migrations`, típicamente por un deploy duplicado corriendo en
-# paralelo), nunca dejarlo activo de forma permanente.
+# para recuperar una base en estado inconsistente, nunca dejarlo activo de
+# forma permanente.
 if [ "$RESET_DB_ON_BOOT" = "true" ]; then
     php artisan migrate:fresh --force
 else
-    php artisan migrate --force
+    php artisan migrate --force --isolated
 fi
 
 # Sembrar roles/permisos/usuario admin solo la primera vez (tabla usuarios vacía).
