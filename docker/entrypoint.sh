@@ -8,8 +8,16 @@ chmod -R 775 storage bootstrap/cache
 # Enlace público de storage (idempotente: no falla si ya existe)
 php artisan storage:link || true
 
-# Migraciones: seguras de correr en cada arranque, Laravel omite las ya aplicadas
-php artisan migrate --force
+# Migraciones: seguras de correr en cada arranque, Laravel omite las ya aplicadas.
+# RESET_DB_ON_BOOT=true fuerza una migración limpia (borra todo) — usarlo solo
+# para recuperar una base en estado inconsistente (ej. tablas creadas sin quedar
+# registradas en `migrations`, típicamente por un deploy duplicado corriendo en
+# paralelo), nunca dejarlo activo de forma permanente.
+if [ "$RESET_DB_ON_BOOT" = "true" ]; then
+    php artisan migrate:fresh --force
+else
+    php artisan migrate --force
+fi
 
 # Sembrar roles/permisos/usuario admin solo la primera vez (tabla usuarios vacía).
 # En reinicios posteriores ya hay datos y correr los seeders de nuevo rompería
