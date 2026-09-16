@@ -764,7 +764,7 @@ class PantallaDocenteController extends Controller
         $this->authorize('ver_extensiones_docentes_pantalla');
 
         try {
-            $docente = Docente::where('usuario_id', $id)->first();
+            $docente = Docente::where('usuario_id', $id)->firstOrFail();
             $extensiones = ExtensionUniversitaria::where('docente_id', $docente->id)->get();
 
             return view('pantallas_docentes/extensiones/index')->with(compact('docente', 'extensiones'));

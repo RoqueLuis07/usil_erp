@@ -738,10 +738,11 @@ class PantallaAlumnoController extends Controller
         $this->authorize('ver_extensiones_alumnos_pantalla');
 
         try {
-            $alumno = Alumno::where('usuario_id', Auth::id())->first();
+            $alumno = Alumno::where('usuario_id', Auth::id())->firstOrFail();
             $extensiones = ExtensionUniversitariaDetalle::where('alumno_id', $alumno->id)->get();
-            $horas_requeridas = RequerimientoExtensionUniversitaria::first()->horas_requeridas;
-            $actividades_requeridas = RequerimientoExtensionUniversitaria::first()->actividades_requeridas;
+            $requerimiento = RequerimientoExtensionUniversitaria::first();
+            $horas_requeridas = $requerimiento->horas_requeridas ?? 0;
+            $actividades_requeridas = $requerimiento->actividades_requeridas ?? 0;
             $tipos_actividades = TipoExtensionUniversitaria::where('estado', 'AC')->get();
 
             $cantidad_realizada_1 = 0;
