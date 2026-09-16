@@ -65,7 +65,7 @@ class MatriculacionController extends Controller
                 $filtro_periodo = $semestre->id;
             }
 
-            $filtro_periodo = $request->has('filtro_periodo') ? $request->filtro_periodo : $semestre->id;
+            $filtro_periodo = $request->has('filtro_periodo') ? $request->filtro_periodo : $semestre->id ?? null;
             $filtro_fecha = $request->filtro_fecha;
             $filtro_alumno = $request->filtro_alumno;
             $filtro_ingreso = $request->filtro_ingreso;
