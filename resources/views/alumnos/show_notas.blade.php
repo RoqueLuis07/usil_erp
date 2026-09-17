@@ -1,5 +1,5 @@
 @can('ver_notas_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Notas @endsection
     @section('content')
         @component('components.breadcrumb')
