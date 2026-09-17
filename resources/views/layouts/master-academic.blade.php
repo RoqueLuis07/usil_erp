@@ -109,7 +109,7 @@
                     <a href="{{route('pantallas_alumnos.noticias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_alumnos.noticias') ? 'active' : '' }}">
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
                         Noticias y Avisos
-                        <span class="ac-num">03</span>
+                        <span class="ac-num">04</span>
                     </a>
                 @endcan
 
