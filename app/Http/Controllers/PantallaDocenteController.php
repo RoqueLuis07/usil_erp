@@ -781,7 +781,8 @@ class PantallaDocenteController extends Controller
             $docente = Docente::where('usuario_id', $id)->first();
             $tipos_extensiones = TipoExtensionUniversitaria::where('estado', 'AC')->get();
             $alumnos = Alumno::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
-            return view('pantallas_docentes/extensiones/create')->with(compact('docente', 'tipos_extensiones', 'alumnos'));
+            $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            return view('pantallas_docentes/extensiones/create')->with(compact('docente', 'tipos_extensiones', 'alumnos', 'carreras'));
         } catch (\Exception $e) {
             return redirect()->route('pantallas_docentes.extensiones.index', Auth::id())->with('error-message', $e->getMessage());
         }
