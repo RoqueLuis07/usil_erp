@@ -1,5 +1,5 @@
 @can('ver_extensiones_alumnos_pantalla')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -16,13 +16,23 @@
         <div class="row d-flex flex-wrap justify-content-center">
             <div class="col-lg-8">
                 <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title mb-0">Extensión Universitaria</h4>
+                    <div class="card-header d-flex flex-wrap align-items-center">
+                        <div class="col-lg-6">
+                            <h4 class="card-title mb-0">Extensión Universitaria</h4>
+                        </div>
+                        @can('ver_catalogo_extensiones_alumnos_pantalla')
+                            <div class="col-lg-6 text-end">
+                                <a type="button" class="btn btn-success" href="{{route('pantallas_alumnos.catalogo_extensiones_universitarias', Auth::id())}}"><i class="ri-search-line align-bottom me-1"></i>Explorar Catálogo</a>
+                            </div>
+                        @endcan
                     </div>
                     <div class="card-body">
                         <ul class="nav nav-pills arrow-navtabs nav-info nav-justified bg-light gap-2 mb-4" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active" data-bs-toggle="tab" href="#todos" role="tab" aria-selected="true">Actividades</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" data-bs-toggle="tab" href="#postulaciones" role="tab" aria-selected="false">Mis Postulaciones</a>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link" data-bs-toggle="tab" href="#tipos" role="tab" aria-selected="false">Resumen por Tipo de Actividad</a>
@@ -113,6 +123,52 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="postulaciones" role="tabpanel">
+                                <div class="table-responsive table-card mt-3 mb-1">
+                                    <table class="table align-middle table-nowrap">
+                                        <thead class="table-light text-center">
+                                            <tr>
+                                                <th>Proyecto</th>
+                                                <th>Responsable</th>
+                                                <th>Fecha de Postulación</th>
+                                                <th>Estado</th>
+                                                <th>Motivo de Rechazo</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            @forelse ($postulaciones as $postulacion)
+                                                <tr>
+                                                    <td>{{$postulacion->extensionUniversitaria->nombre}}</td>
+                                                    <td>{{$postulacion->extensionUniversitaria->docente->primer_nombre}} {{$postulacion->extensionUniversitaria->docente->primer_apellido}}</td>
+                                                    <td>{{$postulacion->fecha_postulacion ? \Carbon\Carbon::parse($postulacion->fecha_postulacion)->format('d/m/Y H:i') : '-'}}</td>
+                                                    <td>
+                                                        <span class="badge @if ($postulacion->estado == 'AC') bg-success-subtle text-success @elseif ($postulacion->estado == 'RE') bg-danger-subtle text-danger @else bg-warning-subtle text-warning @endif">
+                                                            @if ($postulacion->estado == 'AC') Aceptada @elseif ($postulacion->estado == 'RE') Rechazada @else Pendiente @endif
+                                                        </span>
+                                                    </td>
+                                                    <td>{{$postulacion->motivo_rechazo ?? '-'}}</td>
+                                                    <td>
+                                                        @if ($postulacion->estado == 'PE')
+                                                            <form action="{{route('pantallas_alumnos.cancelar_postulacion_extension_universitaria', [Auth::id(), $postulacion->id])}}" method="post">
+                                                                @csrf
+                                                                @method('delete')
+                                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Cancelar esta postulación?')">Cancelar</button>
+                                                            </form>
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6">Todavía no te postulaste a ningún proyecto.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                             <div class="tab-pane" id="tipos" role="tabpanel">

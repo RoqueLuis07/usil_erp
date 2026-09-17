@@ -1,5 +1,5 @@
 @can('ver_extensiones_docentes_pantalla')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Mis Extensiones @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">

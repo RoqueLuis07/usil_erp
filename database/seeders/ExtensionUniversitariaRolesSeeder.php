@@ -13,12 +13,13 @@ use App\Models\RequerimientoExtensionUniversitaria;
 use App\Models\TipoExtensionUniversitaria;
 
 /**
- * Primer recorte de roles con permisos acotados (en vez del único
- * SUPERADMIN que trae el sistema original), enfocado en el módulo de
- * Extensión Universitaria: Alumno, Docente y Encargado de Extensión.
- *
- * Los nombres de permiso usados acá ya existen en PermissionSeeder — no
- * se inventa ninguno nuevo, solo se agrupan en roles más chicos.
+ * Roles con permisos acotados (en vez del único SUPERADMIN que trae el
+ * sistema original), enfocado en el módulo de Extensión Universitaria:
+ * Alumno, Encargado Docente (dueño/responsable del proyecto) y
+ * Administrador de Extensión (coordinación central). El cuarto rol del
+ * modelo objetivo, Docente Tutor de Apoyo, se suma recién en la fase que
+ * construya asistencia por jornada — hoy no tiene ninguna pantalla propia
+ * que lo justifique.
  */
 class ExtensionUniversitariaRolesSeeder extends Seeder
 {
@@ -56,35 +57,44 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
         $alumnoRole->syncPermissions([
             'ver_dashboard_alumnos_pantalla',
             'ver_extensiones_alumnos_pantalla',
+            'ver_catalogo_extensiones_alumnos_pantalla',
+            'postular_extensiones_alumnos_pantalla',
             'ver_noticias_avisos_alumnos_pantalla',
         ]);
 
+        // Encargado Docente: el docente que diseña y es responsable de un
+        // proyecto de extensión propio (carga el proyecto, gestiona sus
+        // postulaciones e informes). No confundir con el futuro rol de
+        // Docente Tutor de Apoyo, que solo acompaña un proyecto ajeno.
         $docenteRole = Role::firstOrCreate(
-            ['name' => 'DOCENTE', 'guard_name' => 'web'],
+            ['name' => 'ENCARGADO_DOCENTE', 'guard_name' => 'web'],
             ['state' => 'AC']
         );
         $docenteRole->syncPermissions([
             'ver_dashboard_docentes_pantalla',
             'ver_extensiones_docentes_pantalla',
             'crear_extensiones_docentes_pantalla',
+            'crear_extensiones_universitarias',
+            'gestionar_postulaciones_extensiones_universitarias',
             'cargar_informes_extensiones_docentes_pantalla',
             'cambiar_informes_extensiones_docentes_pantalla',
             'cambiar_proyectos_extensiones_docentes_pantalla',
             'ver_noticias_avisos_docentes_pantalla',
         ]);
 
-        // Encargado de Extensión: gestiona el ciclo de vida completo de
-        // las actividades de extensión, y puede cargar los datos base de
-        // alumnos/docentes y darles de alta su usuario con el rol que
-        // corresponda. No incluye eliminar_* (bajas duras) ni ver_roles/
-        // editar_roles (redefinir qué puede hacer cada rol queda
-        // reservado a SUPERADMIN) para no habilitar escalamiento de
-        // privilegios desde este rol.
+        // Administrador de Extensión: coordinación central — gestiona el
+        // ciclo de vida completo de las actividades de extensión, y puede
+        // cargar los datos base de alumnos/docentes y darles de alta su
+        // usuario con el rol que corresponda. No incluye eliminar_* (bajas
+        // duras) ni ver_roles/editar_roles (redefinir qué puede hacer cada
+        // rol queda reservado a SUPERADMIN) para no habilitar escalamiento
+        // de privilegios desde este rol.
         $encargadoRole = Role::firstOrCreate(
-            ['name' => 'ENCARGADO_EXTENSION', 'guard_name' => 'web'],
+            ['name' => 'ADMINISTRADOR_EXTENSION', 'guard_name' => 'web'],
             ['state' => 'AC']
         );
         $encargadoRole->syncPermissions([
+            'gestionar_postulaciones_extensiones_universitarias',
             // Extensión universitaria: ciclo completo
             'ver_extensiones_universitarias',
             'crear_extensiones_universitarias',
@@ -141,7 +151,7 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
         $encargado = User::firstOrCreate(
             ['email' => 'encargado.extension@example.test'],
             [
-                'name' => 'Encargado de Extensión',
+                'name' => 'Administrador de Extensión',
                 'password' => Hash::make('password'),
                 'role_id' => $encargadoRole->id,
                 'avatar' => 'masculino.jpg',
@@ -155,7 +165,7 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
         $docenteUser = User::firstOrCreate(
             ['email' => 'docente.extension@example.test'],
             [
-                'name' => 'Docente de Prueba',
+                'name' => 'Encargado Docente de Prueba',
                 'password' => Hash::make('password'),
                 'role_id' => $docenteRole->id,
                 'avatar' => 'masculino.jpg',

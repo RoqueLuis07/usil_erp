@@ -37,7 +37,7 @@ class CajaController extends Controller
 
         $usuarios = User::whereDoesntHave('usuariosCajas')
                         ->whereDoesntHave('roles', function ($query) {
-                            $query->whereIn('name', ['ALUMNO', 'DOCENTE']);
+                            $query->whereIn('name', ['ALUMNO', 'DOCENTE', 'ENCARGADO_DOCENTE']);
                         })
                         ->get();
         $cuentas_contables = CuentaContable::where('imputable', true)->where('estado', 'AC')->get();
@@ -127,7 +127,7 @@ class CajaController extends Controller
         try {
             $caja = Caja::with('usuario', 'cuentaIngreso', 'cuentaEgreso')->findOrFail($id);
             $usuarios = User::whereDoesntHave('roles', function ($query) {
-                            $query->whereIn('name', ['ALUMNO', 'DOCENTE']);
+                            $query->whereIn('name', ['ALUMNO', 'DOCENTE', 'ENCARGADO_DOCENTE']);
                         })
                         ->get();
             $cuentas_contables = CuentaContable::where('imputable', true)->where('estado', 'AC')->get();

@@ -1,5 +1,5 @@
 @can('crear_extensiones_docentes_pantalla')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Nueva Extensión @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">

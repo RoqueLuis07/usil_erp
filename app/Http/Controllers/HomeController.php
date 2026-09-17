@@ -37,7 +37,7 @@ class HomeController extends Controller
     {
         if (Auth::user()->hasRole('ALUMNO')) { //cambiar el rol por ALUMNO al terminar los roles y permisos
             return redirect()->route('pantallas_alumnos.index', Auth::id());
-        } elseif (Auth::user()->hasRole('DOCENTE')) { //cambiar el rol por DOCENTE al terminar los roles y permisos
+        } elseif (Auth::user()->hasAnyRole(['DOCENTE', 'ENCARGADO_DOCENTE'])) { //cambiar el rol por DOCENTE al terminar los roles y permisos
             return redirect()->route('pantallas_docentes.index', Auth::id());
         } else {
             return view('index');

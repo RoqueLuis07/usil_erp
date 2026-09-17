@@ -27,7 +27,7 @@
             <div id="two-column-menu">
             </div>
             <ul class="navbar-nav" id="navbar-nav">
-                @unless(Auth::user()->hasAnyRole(['ALUMNO', 'DOCENTE']))
+                @unless(Auth::user()->hasAnyRole(['ALUMNO', 'DOCENTE', 'ENCARGADO_DOCENTE']))
                     <li class="menu-title"><span data-key="t-menu">Menú Principal</span></li>
                     @if (Auth::user()->can('crear_ventas_cajero') || Auth::user()->can('ver_arqueos_cajero') || Auth::user()->can('crear_arqueos_cajas_cajero'))
                         <li class="nav-item">
@@ -173,9 +173,32 @@
                                         </li>
                                     @endif
                                     @can('ver_extensiones_universitarias')
-                                        <li class="nav-item">
-                                            <a href="{{route('extensiones_universitarias.index')}}" class="nav-link {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-extensiones-universitarias">Extensiones Univ.</a>
-                                        </li>
+                                        @if (Auth::user()->can('ver_tipos_extensiones_universitarias') || Auth::user()->can('ver_requerimientos_extensiones_universitarias'))
+                                            <li class="nav-item">
+                                                <a class="nav-link menu-link collapsed" href="#sidebarExtensionesUniversitarias" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarExtensionesUniversitarias" data-key="t-extensiones-universitarias">Extensiones Univ.</a>
+                                                <div class="menu-dropdown collapse {{ request()->routeIs('extensiones_universitarias.*', 'tipos_extensiones_universitarias.*', 'requerimientos_extensiones_universitarias.*') ? 'show' : '' }}" id="sidebarExtensionesUniversitarias">
+                                                    <ul class="nav nav-sm flex-column">
+                                                        <li class="nav-item">
+                                                            <a href="{{route('extensiones_universitarias.index')}}" class="nav-link {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-extensiones-universitarias-actividades">Actividades</a>
+                                                        </li>
+                                                        @can('ver_tipos_extensiones_universitarias')
+                                                            <li class="nav-item">
+                                                                <a href="{{route('tipos_extensiones_universitarias.index')}}" class="nav-link {{ request()->routeIs('tipos_extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-tipos-extensiones-universitarias">Tipos de Actividad</a>
+                                                            </li>
+                                                        @endcan
+                                                        @can('ver_requerimientos_extensiones_universitarias')
+                                                            <li class="nav-item">
+                                                                <a href="{{route('requerimientos_extensiones_universitarias.show')}}" class="nav-link {{ request()->routeIs('requerimientos_extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-requerimientos-extensiones-universitarias">Requerimientos</a>
+                                                            </li>
+                                                        @endcan
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        @else
+                                            <li class="nav-item">
+                                                <a href="{{route('extensiones_universitarias.index')}}" class="nav-link {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-extensiones-universitarias">Extensiones Univ.</a>
+                                            </li>
+                                        @endif
                                     @endcan
                                     @can('ver_solicitudes')
                                         <li class="nav-item">
@@ -793,7 +816,7 @@
                         </li>
                     @endcan
                 @endhasanyrole
-                @hasanyrole(['DOCENTE', 'SUPERADMIN'])
+                @hasanyrole(['DOCENTE', 'ENCARGADO_DOCENTE', 'SUPERADMIN'])
                     <li class="menu-title"><span data-key="t-menu-alumnos">Menú Docentes</span></li>
                     @can('ver_dashboard_docentes_pantalla')
                         <li class="nav-item">

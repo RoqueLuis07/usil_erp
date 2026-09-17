@@ -249,7 +249,7 @@ class BorradorTesisUbsController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            if (Auth::user()->hasRole('DOCENTE')) {
+            if (Auth::user()->hasAnyRole(['DOCENTE', 'ENCARGADO_DOCENTE'])) {
                 return redirect()->route('pantallas_docentes.index', Auth::id())->with('error-message', $e->getMessage());
             } else {
                 return redirect()->route('tesis_ubs.show_entregas_borrador', $id)->with('error-message', $e->getMessage());
