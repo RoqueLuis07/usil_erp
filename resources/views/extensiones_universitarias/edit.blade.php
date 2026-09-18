@@ -1,5 +1,5 @@
 @can('editar_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -117,53 +117,41 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="cupo_maximo">Cupo Máximo</label>
+                                    <input type="text" class="form-control text-center @error('cupo_maximo') is-invalid @enderror" id="cupo_maximo" name="cupo_maximo" value="{{old('cupo_maximo', $extension->cupo_maximo)}}" placeholder="Sin límite">
+                                    @error('cupo_maximo')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="carreras_habilitadas">Carreras Habilitadas para Postularse</label>
+                                    <select class="selectpicker form-control" id="carreras_habilitadas" name="carreras_habilitadas[]" multiple data-live-search="true" title="Todas las carreras">
+                                        @foreach ($carreras as $carrera)
+                                            <option value="{{$carrera->id}}" @if ($extension->carreras->contains('id', $carrera->id)) selected @endif>{{$carrera->nombre_fantasia}}</option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-muted" style="font-size: 12px">Sin seleccionar ninguna, el proyecto queda abierto a postulación de alumnos de cualquier carrera.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12 mb-3">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title mb-0">Alumnos Participantes</h4>
+                                    <h4 class="card-title mb-0">Alumnos ({{$extension->extensionUniversitariaDetalles->count()}})</h4>
                                 </div>
                                 <div class="card-body">
-                                    @foreach ($extension->extensionUniversitariaDetalles as $key => $detalle)
-                                        <div class="mb-2 fila" id="fila-{{$key}}">
-                                            <div class="row d-flex flex-wrap justify-content-center">
-                                                <div class="col-lg-4 col-sm-12 mb-2 text-center" id="div-alumno-{{$key}}">
-                                                    @if ($key == 0) <label class="form-label label-alumno">Alumno <span class="text-danger">(*)</span></label> @endif
-                                                    <select class="selectpicker form-control alumno-{{$key}} alumno @error('detalles.'. $key . '.alumno') is-invalid @enderror" id="alumno-{{$key}}" name="detalles[{{$key}}][alumno]" data-live-search="true" data-id="{{$key}}">
-                                                        <option value="" selected disabled>Seleccionar...</option>
-                                                        @foreach ($alumnos as $alumno)
-                                                            <option value="{{$alumno->id}}" @if (old('detalles.{{$key}}.alumno') == strval($alumno->id) || $detalle->alumno_id == strval($alumno->id)) selected @endif data-subtext="{{$alumno->numero_documento}}">{{$alumno->primer_nombre}} {{$alumno->primer_apellido}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('detalles.'. $key . '.alumno')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 col-sm-2 text-center">
-                                                    @if ($key == 0) <label class="form-label label-acciones">Acciones</label> @endif
-                                                    <div class="align-middle" id="acciones-{{$key}}">
-                                                        @if ($key == 0 && !$loop->last)
-                                                            <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button> {{-- primero y no ultimo --}}
-                                                        @elseif ($key > 0 && !$loop->last)
-                                                            <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button>  {{-- no primero y no ultimo --}}
-                                                        @elseif ($key > 0 && $loop->last)
-                                                            <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button> {{-- no primero y ultimo --}}
-                                                            <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-{{$key}}" data-id="{{$key}}"><i class="ri-add-fill"></i></button>
-                                                        @elseif ($key == 0 && $loop->last)
-                                                            <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-{{$key}}" data-id="{{$key}}"><i class="ri-add-fill"></i></button> {{-- primero y ultimo --}}
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                    <div id="alumno-fila">
-
-                                    </div>
+                                    <p class="text-muted" style="font-size: 13px">El listado de alumnos ya no se edita desde acá: se gestiona por postulación (el alumno se postula desde su portal, y se aprueba/rechaza desde <a href="{{route('extensiones_universitarias.show', $extension->id)}}">el detalle del proyecto</a>).</p>
+                                    @forelse ($extension->extensionUniversitariaDetalles as $detalle)
+                                        <span class="badge @if ($detalle->estado == 'AC') bg-success-subtle text-success @elseif ($detalle->estado == 'RE') bg-danger-subtle text-danger @else bg-warning-subtle text-warning @endif me-1 mb-1">{{$detalle->alumno->primer_nombre}} {{$detalle->alumno->primer_apellido}}</span>
+                                    @empty
+                                        <span class="text-muted">Todavía no hay alumnos postulados a este proyecto.</span>
+                                    @endforelse
                                 </div>
                             </div>
                         </div>
@@ -185,6 +173,5 @@
         <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
         <script src="{{ URL::asset('build/libs/cleave.js/cleave.min.js') }}"></script>
         @include('extensiones_universitarias.scripts.edit-scripts')
-        @include('extensiones_universitarias.scripts.edit-detalles-scripts')
     @endsection
 @endcan

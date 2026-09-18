@@ -1,5 +1,5 @@
 @can('ver_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Alumno @endsection
     @section('content')
         @component('components.breadcrumb')

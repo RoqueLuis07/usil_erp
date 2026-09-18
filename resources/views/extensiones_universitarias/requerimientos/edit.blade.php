@@ -1,5 +1,5 @@
 @can('editar_requerimientos_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Requerimientos de Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -23,6 +23,12 @@
                         <!-- end card header -->
                         <div class="card-body">
                             <p class="text-muted">Por favor, complete los <code>campos marcados</code> para poder agregar un registro con éxito</p>
+                            <div class="row">
+                                <div class="col-lg-4 mb-3">
+                                    <label class="form-label">Carrera</label>
+                                    <input type="text" class="form-control" value="{{ $requerimiento->carrera->nombre_fantasia ?? 'General (todas las carreras sin requerimiento propio)' }}" readonly>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="actividades_requeridas">Actividades Requeridas <span class="text-danger">(*)</span></label>

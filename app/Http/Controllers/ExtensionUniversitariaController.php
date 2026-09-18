@@ -21,9 +21,12 @@ use App\Models\Empresa;
 use App\Models\Carrera;
 use App\Models\Semestre;
 use App\Models\Matriculacion;
+use App\Traits\ResuelveCarreraSemestreAlumno;
 
 class ExtensionUniversitariaController extends Controller
 {
+    use ResuelveCarreraSemestreAlumno;
+
     /**
      * Create a new controller instance.
      *
@@ -32,35 +35,6 @@ class ExtensionUniversitariaController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-    }
-
-    /**
-     * Resuelve la carrera/semestre del alumno para el snapshot en
-     * extensiones_universitarias_detalles, usando la matriculación vigente
-     * a la fecha de referencia (fecha_inicio de la actividad) y, si no
-     * existe ninguna que coincida, la matriculación más reciente del alumno.
-     * Un alumno puede tener varias matriculaciones en el tiempo, y ni la
-     * actividad de extensión ni el alumno guardan carrera/semestre directo.
-     */
-    private function resolverCarreraSemestreAlumno($alumnoId, $fechaReferencia)
-    {
-        $matriculacion = Matriculacion::where('alumno_id', $alumnoId)
-            ->whereHas('Semestre', function ($query) use ($fechaReferencia) {
-                $query->where('fecha_inicio', '<=', $fechaReferencia)
-                    ->where('fecha_fin', '>=', $fechaReferencia);
-            })
-            ->first();
-
-        if (!$matriculacion) {
-            $matriculacion = Matriculacion::where('alumno_id', $alumnoId)
-                ->orderByDesc('fecha')
-                ->first();
-        }
-
-        return [
-            'carrera_id' => $matriculacion->carrera_id ?? null,
-            'semestre_id' => $matriculacion->semestre_id ?? null,
-        ];
     }
 
     /**
@@ -104,7 +78,7 @@ class ExtensionUniversitariaController extends Controller
         $this->authorize('ver_extensiones_universitarias');
 
         try {
-            $extension = ExtensionUniversitaria::with('extensionUniversitariaDetalles')->findOrFail($id);
+            $extension = ExtensionUniversitaria::with(['extensionUniversitariaDetalles.alumno', 'carreras'])->findOrFail($id);
             return view('extensiones_universitarias/show')->with(compact('extension'));
         } catch (\Exception $e) {
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
@@ -119,7 +93,8 @@ class ExtensionUniversitariaController extends Controller
             $tipos_extensiones = TipoExtensionUniversitaria::where('estado', 'AC')->orderBy('nombre', 'asc')->get();
             $docentes = Docente::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
             $alumnos = Alumno::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
-            return view('extensiones_universitarias/create')->with(compact('tipos_extensiones', 'docentes', 'alumnos'));
+            $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            return view('extensiones_universitarias/create')->with(compact('tipos_extensiones', 'docentes', 'alumnos', 'carreras'));
         } catch (\Exception $e) {
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
         }
@@ -130,7 +105,7 @@ class ExtensionUniversitariaController extends Controller
         $this->authorize('crear_extensiones_universitarias');
 
         //preguntamos si el usuario tiene el rol de docente para el validador
-        if (Auth::user()->hasRole('DOCENTE')) {
+        if (Auth::user()->hasAnyRole(['DOCENTE', 'ENCARGADO_DOCENTE'])) {
             $required = 'nullable';
         } else {
             $required = 'required';
@@ -141,6 +116,9 @@ class ExtensionUniversitariaController extends Controller
             'tipo_extension' => ['required', 'numeric'],
             'docente' => [$required, 'numeric'],
             'cantidad_horas_proyecto' => ['required', 'numeric', 'min:1'],
+            'cupo_maximo' => ['nullable', 'numeric', 'min:1'],
+            'carreras_habilitadas' => ['nullable', 'array'],
+            'carreras_habilitadas.*' => ['numeric'],
             'proyecto' => ['required', 'file', 'extensions:pdf'],
 			'fecha_inicio' => ['required', 'date'],
 			'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
@@ -166,6 +144,7 @@ class ExtensionUniversitariaController extends Controller
 			$extension->fecha_inicio = $request->fecha_inicio;
 			$extension->fecha_fin = $request->fecha_fin;
             $extension->tiene_certificado = $request->tiene_certificado;
+            $extension->cupo_maximo = $request->cupo_maximo ?: null;
 
             //cargar archivo
             $archivo = $request->proyecto;
@@ -181,6 +160,10 @@ class ExtensionUniversitariaController extends Controller
             $extension->cargado_por_id = Auth::id();
             $extension->save();
 
+            if ($request->carreras_habilitadas) {
+                $extension->carreras()->sync($request->carreras_habilitadas);
+            }
+
             foreach ($request->detalles as $detalle) {
                 $carrera_semestre = $this->resolverCarreraSemestreAlumno($detalle['alumno'], $extension->fecha_inicio);
 
@@ -189,6 +172,11 @@ class ExtensionUniversitariaController extends Controller
                 $extension_detalle->alumno_id = $detalle['alumno'];
                 $extension_detalle->carrera_id = $carrera_semestre['carrera_id'];
                 $extension_detalle->semestre_id = $carrera_semestre['semestre_id'];
+                // Asignado directamente por el docente/admin al cargar el proyecto,
+                // no pasa por el flujo de postulación del alumno.
+                $extension_detalle->estado = 'AC';
+                $extension_detalle->revisado_por_id = Auth::id();
+                $extension_detalle->fecha_revision = now();
                 $extension_detalle->save();
 
                 // $alumno_extension_existe = AlumnoExtension::where('alumno_id', $extension_detalle->alumno_id)->exists();
@@ -218,11 +206,11 @@ class ExtensionUniversitariaController extends Controller
         $this->authorize('editar_extensiones_universitarias');
 
         try {
-            $extension = ExtensionUniversitaria::with('extensionUniversitariaDetalles')->findOrFail($id);
+            $extension = ExtensionUniversitaria::with(['extensionUniversitariaDetalles', 'carreras'])->findOrFail($id);
             $tipos_extensiones = TipoExtensionUniversitaria::where('estado', 'AC')->get();
             $docentes = Docente::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
-            $alumnos = Alumno::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
-            return view('extensiones_universitarias/edit')->with(compact('extension', 'tipos_extensiones', 'docentes', 'alumnos'));
+            $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            return view('extensiones_universitarias/edit')->with(compact('extension', 'tipos_extensiones', 'docentes', 'carreras'));
         } catch (\Exception $e) {
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
         }
@@ -237,12 +225,12 @@ class ExtensionUniversitariaController extends Controller
             'tipo_extension' => ['required', 'numeric'],
             'docente' => ['required', 'numeric'],
             'cantidad_horas_proyecto' => ['required', 'numeric', 'min:1'],
+            'cupo_maximo' => ['nullable', 'numeric', 'min:1'],
+            'carreras_habilitadas' => ['nullable', 'array'],
+            'carreras_habilitadas.*' => ['numeric'],
 			'fecha_inicio' => ['required', 'date'],
 			'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
             'tiene_certificado' => 'required',
-            'detalles' => ['required', 'array'],
-
-            'detalles.*.alumno' => ['required', 'numeric'],
         ]);
 
         DB::beginTransaction();
@@ -252,6 +240,7 @@ class ExtensionUniversitariaController extends Controller
             $extension->nombre = removeAccents(Str::upper($request->nombre_proyecto));
             $extension->tipo_extension_id = $request->tipo_extension;
             $extension->cantidad_horas = $request->cantidad_horas_proyecto;
+            $extension->cupo_maximo = $request->cupo_maximo ?: null;
             $extension->docente_id = $request->docente;
 			$extension->fecha_inicio = $request->fecha_inicio;
 			$extension->fecha_fin = $request->fecha_fin;
@@ -259,19 +248,11 @@ class ExtensionUniversitariaController extends Controller
             $extension->actualizado_por_id = Auth::id();
             $extension->save();
 
-            //obtener el detalle de la extension y eliminar lo que habia para poder crear de vuelta
-            $extension_detalles = ExtensionUniversitariaDetalle::where('extension_universitaria_id', $id)->delete();
-
-            foreach ($request->detalles as $detalle) {
-                $carrera_semestre = $this->resolverCarreraSemestreAlumno($detalle['alumno'], $extension->fecha_inicio);
-
-                $extension_detalle = new ExtensionUniversitariaDetalle();
-                $extension_detalle->extension_universitaria_id = $extension->id;
-                $extension_detalle->alumno_id = $detalle['alumno'];
-                $extension_detalle->carrera_id = $carrera_semestre['carrera_id'];
-                $extension_detalle->semestre_id = $carrera_semestre['semestre_id'];
-                $extension_detalle->save();
-            }
+            // El listado de alumnos ya NO se edita acá: se maneja por el flujo
+            // de postulación (el alumno se postula, el encargado docente o el
+            // administrador aprueba/rechaza) para no pisar postulaciones u
+            // horas ya cargadas cada vez que se edita un dato del proyecto.
+            $extension->carreras()->sync($request->carreras_habilitadas ?? []);
 
             DB::commit();
 
@@ -430,6 +411,86 @@ class ExtensionUniversitariaController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
+        }
+    }
+
+    /**
+     * Verifica que el usuario logueado pueda gestionar postulaciones del
+     * proyecto dado: ADMINISTRADOR_EXTENSION/SUPERADMIN pueden cualquiera,
+     * un ENCARGADO_DOCENTE solo las de sus propios proyectos.
+     */
+    private function puedeGestionarPostulacionesDe(ExtensionUniversitaria $extension): bool
+    {
+        if (Auth::user()->hasAnyRole(['ADMINISTRADOR_EXTENSION', 'SUPERADMIN'])) {
+            return true;
+        }
+
+        $docente = Docente::where('usuario_id', Auth::id())->first();
+        return $docente && $extension->docente_id === $docente->id;
+    }
+
+    public function aprobar_postulacion($id)
+    {
+        $this->authorize('gestionar_postulaciones_extensiones_universitarias');
+
+        DB::beginTransaction();
+
+        try {
+            $detalle = ExtensionUniversitariaDetalle::with('extensionUniversitaria')->findOrFail($id);
+
+            if (!$this->puedeGestionarPostulacionesDe($detalle->extensionUniversitaria)) {
+                abort(403);
+            }
+
+            if ($detalle->extensionUniversitaria->cupo_maximo) {
+                $aceptados = ExtensionUniversitariaDetalle::where('extension_universitaria_id', $detalle->extension_universitaria_id)
+                    ->where('estado', 'AC')
+                    ->count();
+                if ($aceptados >= $detalle->extensionUniversitaria->cupo_maximo) {
+                    throw new \Exception('No quedan cupos disponibles en este proyecto.');
+                }
+            }
+
+            $detalle->estado = 'AC';
+            $detalle->revisado_por_id = Auth::id();
+            $detalle->fecha_revision = now();
+            $detalle->motivo_rechazo = null;
+            $detalle->save();
+
+            DB::commit();
+
+            return redirect()->back()->with('success-message', 'La postulación fue aceptada exitosamente.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error-message', $e->getMessage());
+        }
+    }
+
+    public function rechazar_postulacion(Request $request, $id)
+    {
+        $this->authorize('gestionar_postulaciones_extensiones_universitarias');
+
+        DB::beginTransaction();
+
+        try {
+            $detalle = ExtensionUniversitariaDetalle::with('extensionUniversitaria')->findOrFail($id);
+
+            if (!$this->puedeGestionarPostulacionesDe($detalle->extensionUniversitaria)) {
+                abort(403);
+            }
+
+            $detalle->estado = 'RE';
+            $detalle->revisado_por_id = Auth::id();
+            $detalle->fecha_revision = now();
+            $detalle->motivo_rechazo = $request->motivo_rechazo;
+            $detalle->save();
+
+            DB::commit();
+
+            return redirect()->back()->with('success-message', 'La postulación fue rechazada.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error-message', $e->getMessage());
         }
     }
 

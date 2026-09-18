@@ -1,5 +1,5 @@
 @if (Auth::user()->can('ver_certificado_estudios_alumnos') || Auth::user()->can('ver_certificado_estudios_siu_alumnos'))
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Certificado de Estudios @endsection
     @section('content')
         @component('components.breadcrumb')
