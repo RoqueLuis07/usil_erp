@@ -314,7 +314,7 @@ class AlumnoController extends Controller
             'direccion' => 'required',
             'departamento' => ['required', 'numeric'],
             'ciudad' => ['required', 'numeric'],
-            'barrio' => ['required', 'numeric'],
+            'barrio' => ['nullable', 'numeric'],
             'usuario' => ['nullable', 'numeric'],
 
             'carrera' => ['nullable', 'numeric'],
@@ -372,7 +372,7 @@ class AlumnoController extends Controller
             $alumno->direccion = removeAccents(Str::upper($request->direccion));
             $alumno->departamento_id = $request->departamento;
             $alumno->ciudad_id = $request->ciudad;
-            $alumno->barrio_id = $request->barrio;
+            $alumno->barrio_id = $request->barrio ?: null;
 
             $alumno->carrera_id = $request->carrera ?: null;
             $alumno->anho_ingreso = $request->anho_ingreso ?: null;
@@ -585,7 +585,7 @@ class AlumnoController extends Controller
             'direccion' => 'required',
             'departamento' => ['required', 'numeric'],
             'ciudad' => ['required', 'numeric'],
-            'barrio' => ['required', 'numeric'],
+            'barrio' => ['nullable', 'numeric'],
             'usuario' => ['nullable', 'numeric'],
             'ubs' => 'required',
 
@@ -644,7 +644,7 @@ class AlumnoController extends Controller
             $alumno->direccion = removeAccents(Str::upper($request->direccion));
             $alumno->departamento_id = $request->departamento;
             $alumno->ciudad_id = $request->ciudad;
-            $alumno->barrio_id = $request->barrio;
+            $alumno->barrio_id = $request->barrio ?: null;
             if ($request->usuario) {
                 $alumno->usuario_id = $request->usuario;
             }

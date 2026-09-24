@@ -239,7 +239,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="barrio">Barrio <span class="text-danger">(*)</span></label>
+                                    <label class="form-label" for="barrio">Barrio</label>
                                     <input type="hidden" id="barrio_input" value="{{$docente->barrio_id}}">
                                     <select class="selectpicker form-control @error('barrio') is-invalid @enderror" id="barrio" name="barrio" data-live-search="true" disabled>
                                         <option value="" selected disabled>Seleccionar...</option>

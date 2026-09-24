@@ -162,6 +162,11 @@
                             <span class="ac-num">03</span>
                         </a>
                     @endcan
+                    @if (Auth::user()->can('crear_alumnos') || Auth::user()->can('crear_docentes'))
+                        <a href="{{route('importaciones.index')}}" class="ac-nav-item {{ request()->routeIs('importaciones.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
+                            Carga masiva (CSV)
+                        </a>
+                    @endif
                 @endif
                 @can('ver_extensiones_universitarias')
                     <div class="ac-nav-group">Extensión Universitaria</div>

@@ -221,7 +221,7 @@ class DocenteController extends Controller
             'direccion' => 'required',
             'departamento' => ['required', 'numeric'],
             'ciudad' => ['required', 'numeric'],
-            'barrio' => ['required', 'numeric'],
+            'barrio' => ['nullable', 'numeric'],
             'usuario' => ['nullable', 'numeric'],
             'tutor_tesis' => 'required',
             'nivel_academico' => ['required', 'numeric'],
@@ -249,7 +249,7 @@ class DocenteController extends Controller
             $docente->direccion = removeAccents(Str::upper($request->direccion));
             $docente->departamento_id = $request->departamento;
             $docente->ciudad_id = $request->ciudad;
-            $docente->barrio_id = $request->barrio;
+            $docente->barrio_id = $request->barrio ?: null;
             $docente->nivel_academico_id = $request->nivel_academico;
             $docente->capacitacion_didactica = $request->capacitacion_didactica;
             $docente->area_conocimiento_id = $request->area_conocimiento;
@@ -353,7 +353,7 @@ class DocenteController extends Controller
             'direccion' => 'required',
             'departamento' => ['required', 'numeric'],
             'ciudad' => ['required', 'numeric'],
-            'barrio' => ['required', 'numeric'],
+            'barrio' => ['nullable', 'numeric'],
             'usuario' => ['required', 'numeric'],
             'nivel_academico' => ['required', 'numeric'],
             'capacitacion_didactica' => 'required',
@@ -385,7 +385,7 @@ class DocenteController extends Controller
             $docente->direccion = removeAccents(Str::upper($request->direccion));
             $docente->departamento_id = $request->departamento;
             $docente->ciudad_id = $request->ciudad;
-            $docente->barrio_id = $request->barrio;
+            $docente->barrio_id = $request->barrio ?: null;
             $docente->nivel_academico_id = $request->nivel_academico;
             $docente->capacitacion_didactica = $request->capacitacion_didactica;
             $docente->area_conocimiento_id = $request->area_conocimiento;
