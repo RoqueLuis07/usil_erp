@@ -116,6 +116,59 @@
                     <div class="row">
                         <div class="col-lg-12 mb-3">
                             <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Carreras, facultad y semestre</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-lg-6">
+                                            <label class="form-label">Carreras en las que enseña</label>
+                                            <div>
+                                                @forelse ($docente->Carreras as $carrera_docente)
+                                                    <span class="badge bg-info-subtle text-info me-1 mb-1">{{$carrera_docente->nombre_fantasia}}</span>
+                                                @empty
+                                                    <span class="text-muted">Sin carreras cargadas.</span>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label class="form-label">Facultad</label>
+                                            <div>
+                                                @forelse ($docente->facultades() as $facultad_docente)
+                                                    <span class="badge bg-secondary-subtle text-secondary me-1 mb-1">{{$facultad_docente->nombre}}</span>
+                                                @empty
+                                                    <span class="text-muted">-</span>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label class="form-label">Materias asignadas por período</label>
+                                    <div class="table-responsive">
+                                        <table class="table align-middle table-nowrap mb-0">
+                                            <thead class="table-light">
+                                                <tr><th>Período (semestre)</th><th>Carrera</th><th>Facultad</th><th>Materia</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($asignaciones as $asignacion)
+                                                    <tr>
+                                                        <td>{{$asignacion->periodo}}</td>
+                                                        <td>{{$asignacion->carrera}}</td>
+                                                        <td>{{$asignacion->facultad}}</td>
+                                                        <td>{{$asignacion->materia}}</td>
+                                                    </tr>
+                                                @empty
+                                                    <tr><td colspan="4" class="text-center text-muted">No tiene materias asignadas en ningún período.</td></tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 mb-3">
+                            <div class="card">
                                 <div class="card-body">
                                     <ul class="nav nav-pills arrow-navtabs nav-info nav-justified bg-light gap-2 mb-4" role="tablist">
                                         <li class="nav-item" role="presentation">

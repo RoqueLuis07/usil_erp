@@ -172,7 +172,7 @@
                                                 <select class="selectpicker form-control alumno-0 alumno @error('detalles.0.alumno') is-invalid @enderror" id="alumno-0" name="detalles[0][alumno]" data-live-search="true" data-id="0">
                                                     <option value="" selected disabled>Seleccionar...</option>
                                                     @foreach ($alumnos as $alumno)
-                                                        <option value="{{$alumno->id}}" @if (old('detalles.0.alumno') == strval($alumno->id)) selected @endif data-subtext="{{$alumno->numero_documento}}">{{$alumno->primer_nombre}} {{$alumno->primer_apellido}}</option>
+                                                        <option value="{{$alumno->id}}" @if (old('detalles.0.alumno') == strval($alumno->id)) selected @endif @if (!$alumno->tieneDatosParaExtension()) disabled @endif data-subtext="{{$alumno->numero_documento}}@if (!$alumno->tieneDatosParaExtension()) · datos incompletos @endif">{{$alumno->primer_nombre}} {{$alumno->primer_apellido}}</option>
                                                     @endforeach
                                                 </select>
                                                 @error('detalles.0.alumno')

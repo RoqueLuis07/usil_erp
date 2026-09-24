@@ -66,6 +66,24 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-4 mb-3">
+                                    <label class="form-label">Carrera</label>
+                                    <input type="text" class="form-control" value="{{ optional($alumno->Carrera)->nombre_fantasia ?? 'Sin carrera cargada' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label">Facultad</label>
+                                    <input type="text" class="form-control" value="{{ optional(optional($alumno->Carrera)->Facultad)->nombre }}" readonly>
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label">Ingreso</label>
+                                    <input type="text" class="form-control text-center" value="{{ $alumno->ingreso_texto }}" readonly>
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label">Semestre actual</label>
+                                    <input type="text" class="form-control text-center fw-bold" value="{{ $alumno->semestre_actual ? $alumno->semestre_actual . '.º semestre' : '' }}" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 mb-3">
                                     <label class="form-label" for="usuario">Usuario Asignado</label>
                                     <input class="form-control" type="text" id="usuario" @if ($alumno->usuario_id) value="{{$alumno->usuario->name}} - {{$alumno->usuario->rol->name}}" @endif readonly>
                                 </div>

@@ -128,6 +128,22 @@ class ExtensionUniversitariaController extends Controller
             'detalles.*.alumno' => ['required', 'numeric'],
         ]);
 
+        // Los alumnos tienen que tener carrera y año de ingreso cargados: de
+        // ahí salen la facultad y el semestre que usan los reportes.
+        $alumnos_incompletos = Alumno::whereIn('id', collect($request->detalles)->pluck('alumno')->filter())
+            ->get()
+            ->reject(function ($alumno) {
+                return $alumno->tieneDatosParaExtension();
+            });
+        if ($alumnos_incompletos->isNotEmpty()) {
+            $nombres = $alumnos_incompletos->map(function ($alumno) {
+                return $alumno->primer_nombre . ' ' . $alumno->primer_apellido;
+            })->implode(', ');
+            return back()->withInput()->withErrors([
+                'detalles.0.alumno' => 'Faltan cargar la carrera y el año de ingreso de: ' . $nombres . '. Completá esos datos en Alumnos antes de continuar.',
+            ]);
+        }
+
         DB::beginTransaction();
 
         try {

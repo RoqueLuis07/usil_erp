@@ -923,7 +923,7 @@ class PantallaAlumnoController extends Controller
         try {
             $alumno = Alumno::where('usuario_id', Auth::id())->firstOrFail();
             $matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderByDesc('fecha')->first();
-            $carreraAlumnoId = $matriculacion->carrera_id ?? null;
+            $carreraAlumnoId = $alumno->carrera_id ?: ($matriculacion->carrera_id ?? null);
 
             $yaPostuladoIds = ExtensionUniversitariaDetalle::where('alumno_id', $alumno->id)->pluck('extension_universitaria_id');
 
@@ -958,6 +958,10 @@ class PantallaAlumnoController extends Controller
             $alumno = Alumno::where('usuario_id', Auth::id())->firstOrFail();
             $extension = \App\Models\ExtensionUniversitaria::with('carreras')->findOrFail($idExtension);
 
+            if (!$alumno->tieneDatosParaExtension()) {
+                throw new \Exception('Tu perfil todavía no tiene la carrera y el año de ingreso cargados. Pedile al encargado de Extensión que los complete para poder postularte.');
+            }
+
             if (!$extension->estaAbiertaParaPostulacion()) {
                 throw new \Exception('Este proyecto ya no está abierto a postulaciones.');
             }
@@ -973,7 +977,8 @@ class PantallaAlumnoController extends Controller
             }
 
             $matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderByDesc('fecha')->first();
-            if (!$extension->carreras->isEmpty() && (!$matriculacion || !$extension->carreras->contains('id', $matriculacion->carrera_id))) {
+            $carreraPropia = $alumno->carrera_id ?: ($matriculacion->carrera_id ?? null);
+            if (!$extension->carreras->isEmpty() && (!$carreraPropia || !$extension->carreras->contains("id", $carreraPropia))) {
                 throw new \Exception('Este proyecto no está habilitado para tu carrera.');
             }
 

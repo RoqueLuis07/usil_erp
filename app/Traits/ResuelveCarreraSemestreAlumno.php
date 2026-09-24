@@ -29,8 +29,12 @@ trait ResuelveCarreraSemestreAlumno
                 ->first();
         }
 
+        // Sin matriculaciones (alumno cargado masivamente, por ejemplo) se usa
+        // la carrera guardada en el propio alumno.
+        $carreraPropia = $matriculacion ? null : optional(\App\Models\Alumno::find($alumnoId))->carrera_id;
+
         return [
-            'carrera_id' => $matriculacion->carrera_id ?? null,
+            'carrera_id' => $matriculacion->carrera_id ?? $carreraPropia,
             'semestre_id' => $matriculacion->semestre_id ?? null,
         ];
     }
