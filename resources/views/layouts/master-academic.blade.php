@@ -194,6 +194,21 @@
                         </a>
                     @endcan
                 @endcan
+                @if (Auth::user()->can('generar_reportes_extensiones_universitarias') || Auth::user()->can('ver_docentes'))
+                    <div class="ac-nav-group">Reportes</div>
+                    @can('generar_reportes_extensiones_universitarias')
+                        <a href="{{route('reportes_extension.extensiones')}}" class="ac-nav-item {{ request()->routeIs('reportes_extension.extensiones') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="6" width="3" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="14" y="3" width="3" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+                            Reporte de Extensión
+                        </a>
+                    @endcan
+                    @can('ver_docentes')
+                        <a href="{{route('reportes_extension.docentes')}}" class="ac-nav-item {{ request()->routeIs('reportes_extension.docentes') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="6" width="3" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="14" y="3" width="3" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+                            Reporte de Docentes
+                        </a>
+                    @endcan
+                @endif
                 @can('ver_usuarios')
                     <div class="ac-nav-group">Administración</div>
                     <a href="{{route('usuarios.index')}}" class="ac-nav-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">

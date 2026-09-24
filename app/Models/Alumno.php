@@ -50,14 +50,20 @@ class Alumno extends Model implements Auditable
      */
     public function getSemestreActualAttribute(): ?int
     {
-        if (!$this->anho_ingreso) {
+        return $this->semestreEn(now());
+    }
+
+    /** Semestre (nivel) que cursaba en una fecha dada (p. ej. el inicio de una actividad). */
+    public function semestreEn($fecha): ?int
+    {
+        if (!$this->anho_ingreso || !$fecha) {
             return null;
         }
 
-        $hoy = now();
-        $periodoActual = $hoy->month <= 7 ? 1 : 2;
+        $fecha = \Carbon\Carbon::parse($fecha);
+        $periodoActual = $fecha->month <= 7 ? 1 : 2;
         $periodoIngreso = $this->semestre_ingreso ?: 1;
-        $nivel = (($hoy->year - $this->anho_ingreso) * 2) + ($periodoActual - $periodoIngreso) + 1;
+        $nivel = (($fecha->year - $this->anho_ingreso) * 2) + ($periodoActual - $periodoIngreso) + 1;
 
         if ($nivel < 1) {
             return null;

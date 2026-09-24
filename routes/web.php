@@ -750,6 +750,10 @@ Auth::routes();
             Route::get('importaciones', 'ImportacionMasivaController@index')->name('importaciones.index');
             Route::get('importaciones/plantilla/{tipo}', 'ImportacionMasivaController@plantilla')->name('importaciones.plantilla');
             Route::post('importaciones/{tipo}', 'ImportacionMasivaController@procesar')->name('importaciones.procesar');
+
+            //Reportes de gestión (extensiones y docentes)
+            Route::get('reportes_extension/extensiones', 'ReporteExtensionController@extensiones')->name('reportes_extension.extensiones');
+            Route::get('reportes_extension/docentes', 'ReporteExtensionController@docentes')->name('reportes_extension.docentes');
         //Formacion Academicas - Alumnos Formaciones
             Route::get('formaciones_academicas', 'AlumnoFormacionController@index')->name('alumnos_formaciones.index');
             Route::get('formaciones_academicas/all', 'AlumnoFormacionController@index_ajax')->name('alumnos_formaciones.index_ajax');
