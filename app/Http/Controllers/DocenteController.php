@@ -251,7 +251,7 @@ class DocenteController extends Controller
             $docente->ciudad_id = $request->ciudad;
             $docente->barrio_id = $request->barrio ?: null;
             $docente->nivel_academico_id = $request->nivel_academico;
-            $docente->capacitacion_didactica = $request->capacitacion_didactica;
+            $docente->capacitacion_didactica = filter_var($request->capacitacion_didactica, FILTER_VALIDATE_BOOLEAN);
             $docente->area_conocimiento_id = $request->area_conocimiento;
 
             if ($request->usuario != null) {
@@ -288,7 +288,7 @@ class DocenteController extends Controller
                 $docente->usuario_id = $usuario->id;
             }
 
-            $docente->tutor_tesis = $request->tutor_tesis;
+            $docente->tutor_tesis = filter_var($request->tutor_tesis, FILTER_VALIDATE_BOOLEAN);
             $docente->cargado_por_id = Auth::id();
             $docente->save();
 
@@ -387,12 +387,12 @@ class DocenteController extends Controller
             $docente->ciudad_id = $request->ciudad;
             $docente->barrio_id = $request->barrio ?: null;
             $docente->nivel_academico_id = $request->nivel_academico;
-            $docente->capacitacion_didactica = $request->capacitacion_didactica;
+            $docente->capacitacion_didactica = filter_var($request->capacitacion_didactica, FILTER_VALIDATE_BOOLEAN);
             $docente->area_conocimiento_id = $request->area_conocimiento;
             $docente->usuario_id = $request->usuario;
             $docente->actualizado_por_id = Auth::id();
-            $docente->ubs = $request->ubs;
-            $docente->tutor_tesis = $request->tutor_tesis;
+            $docente->ubs = filter_var($request->ubs, FILTER_VALIDATE_BOOLEAN);
+            $docente->tutor_tesis = filter_var($request->tutor_tesis, FILTER_VALIDATE_BOOLEAN);
             $docente->save();
 
             $usuario = User::findOrFail($docente->usuario_id);

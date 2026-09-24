@@ -159,7 +159,7 @@ class ExtensionUniversitariaController extends Controller
             }
 			$extension->fecha_inicio = $request->fecha_inicio;
 			$extension->fecha_fin = $request->fecha_fin;
-            $extension->tiene_certificado = $request->tiene_certificado;
+            $extension->tiene_certificado = filter_var($request->tiene_certificado, FILTER_VALIDATE_BOOLEAN);
             $extension->cupo_maximo = $request->cupo_maximo ?: null;
 
             //cargar archivo
@@ -260,7 +260,7 @@ class ExtensionUniversitariaController extends Controller
             $extension->docente_id = $request->docente;
 			$extension->fecha_inicio = $request->fecha_inicio;
 			$extension->fecha_fin = $request->fecha_fin;
-            $extension->tiene_certificado = $request->tiene_certificado;
+            $extension->tiene_certificado = filter_var($request->tiene_certificado, FILTER_VALIDATE_BOOLEAN);
             $extension->actualizado_por_id = Auth::id();
             $extension->save();
 

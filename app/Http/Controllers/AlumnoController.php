@@ -712,7 +712,7 @@ class AlumnoController extends Controller
             }
 
             $alumno->actualizado_por_id = Auth::id();
-            $alumno->ubs = $request->ubs;
+            $alumno->ubs = filter_var($request->ubs, FILTER_VALIDATE_BOOLEAN);
             $alumno->save();
 
 			if ($cliente && $cliente->numero_documento != $alumno->numero_documento) {
