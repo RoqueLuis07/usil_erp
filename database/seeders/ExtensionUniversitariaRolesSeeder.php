@@ -95,6 +95,7 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
         );
         $encargadoRole->syncPermissions([
             'gestionar_postulaciones_extensiones_universitarias',
+            'gestionar_parametros_extensiones_universitarias',
             // Extensión universitaria: ciclo completo
             'ver_extensiones_universitarias',
             'crear_extensiones_universitarias',

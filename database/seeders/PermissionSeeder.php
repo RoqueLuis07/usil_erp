@@ -539,6 +539,7 @@ class PermissionSeeder extends Seeder
             'generar_acta_tesis',
             'generar_actas_evaluaciones_materias_semestres',
             'gestionar_postulaciones_extensiones_universitarias',
+            'gestionar_parametros_extensiones_universitarias',
             'generar_actas_examenes_suficiencia',
             'generar_actas_maestrias_ubs',
             'generar_actas_tesis',

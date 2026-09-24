@@ -182,13 +182,19 @@
                             <span class="ac-num">06</span>
                         </a>
                     @endcan
+                    @can('gestionar_parametros_extensiones_universitarias')
+                        <a href="{{route('parametros_extension.index')}}" class="ac-nav-item {{ request()->routeIs('parametros_extension.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
+                            Facultades y Carreras
+                            <span class="ac-num">07</span>
+                        </a>
+                    @endcan
                 @endcan
                 @can('ver_usuarios')
                     <div class="ac-nav-group">Administración</div>
                     <a href="{{route('usuarios.index')}}" class="ac-nav-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="2.6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 16c0-3 2.5-4.6 5.5-4.6s5.5 1.6 5.5 4.6" stroke="currentColor" stroke-width="1.2"/></svg>
                         Usuarios
-                        <span class="ac-num">07</span>
+                        <span class="ac-num">08</span>
                     </a>
                 @endcan
             @endif

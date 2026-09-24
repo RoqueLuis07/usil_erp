@@ -736,6 +736,15 @@ Auth::routes();
             Route::get('requerimientos_extensiones_universitarias/editar/{id}', 'RequerimientoExtensionUniversitariaController@edit')->name('requerimientos_extensiones_universitarias.edit');
             Route::post('requerimientos_extensiones_universitarias/actualizar/{id}', 'RequerimientoExtensionUniversitariaController@update')->name('requerimientos_extensiones_universitarias.update');
             Route::delete('requerimientos_extensiones_universitarias/eliminar/{id}', 'RequerimientoExtensionUniversitariaController@destroy')->name('requerimientos_extensiones_universitarias.destroy');
+
+            //Parámetros de Extensión (facultades y carreras simplificadas)
+            Route::get('parametros_extension', 'ParametrosExtensionController@index')->name('parametros_extension.index');
+            Route::post('parametros_extension/facultades', 'ParametrosExtensionController@storeFacultad')->name('parametros_extension.facultades.store');
+            Route::post('parametros_extension/facultades/{id}', 'ParametrosExtensionController@updateFacultad')->name('parametros_extension.facultades.update');
+            Route::post('parametros_extension/facultades/{id}/estado', 'ParametrosExtensionController@toggleFacultad')->name('parametros_extension.facultades.toggle');
+            Route::post('parametros_extension/carreras', 'ParametrosExtensionController@storeCarrera')->name('parametros_extension.carreras.store');
+            Route::post('parametros_extension/carreras/{id}', 'ParametrosExtensionController@updateCarrera')->name('parametros_extension.carreras.update');
+            Route::post('parametros_extension/carreras/{id}/estado', 'ParametrosExtensionController@toggleCarrera')->name('parametros_extension.carreras.toggle');
         //Formacion Academicas - Alumnos Formaciones
             Route::get('formaciones_academicas', 'AlumnoFormacionController@index')->name('alumnos_formaciones.index');
             Route::get('formaciones_academicas/all', 'AlumnoFormacionController@index_ajax')->name('alumnos_formaciones.index_ajax');
