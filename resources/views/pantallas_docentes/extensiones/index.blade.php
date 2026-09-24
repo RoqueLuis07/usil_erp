@@ -24,6 +24,30 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Mi perfil docente</h4></div>
+                    <div class="card-body">
+                        <div class="row mb-3" style="font-size: 13px">
+                            <div class="col-lg-4"><span class="text-muted">Carreras:</span>
+                                @forelse ($docente->Carreras as $carrera_docente)
+                                    <span class="badge bg-info-subtle text-info">{{ $carrera_docente->nombre_fantasia }}</span>
+                                @empty
+                                    <b>sin cargar</b>
+                                @endforelse
+                            </div>
+                            <div class="col-lg-4"><span class="text-muted">Facultad:</span> <b>{{ $docente->facultades()->pluck('nombre')->implode(', ') ?: '-' }}</b></div>
+                            <div class="col-lg-4"><span class="text-muted">Nivel académico:</span> <b>{{ optional($docente->NivelAcademico)->nombre ?? '-' }}</b></div>
+                        </div>
+                        <div class="row text-center g-3">
+                            @php
+                                $tarjetas_resumen = [['Proyectos a mi cargo', $resumen['proyectos']], ['Estudiantes aceptados', $resumen['estudiantes']], ['Postulaciones por revisar', $resumen['pendientes']], ['Horas de extensión', number_format($resumen['horas'], 0, ',', '.')]];
+                            @endphp
+                            @foreach ($tarjetas_resumen as [$etiqueta_resumen, $valor_resumen])
+                                <div class="col-6 col-lg-3"><div class="border py-2"><div class="fs-4 fw-bold">{{ $valor_resumen }}</div><div class="text-muted" style="font-size: 12px">{{ $etiqueta_resumen }}</div></div></div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
                     <div class="card-header d-flex flex-wrap">
                         <div class="col-lg-6">
                             <h4 class="card-title mb-0">Lista de Extensiones Universitarias</h4>

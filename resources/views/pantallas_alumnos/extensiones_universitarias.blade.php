@@ -355,7 +355,20 @@
                 </div><!-- end card -->
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title mb-0">Resumen</h4>
+                        <h4 class="card-title mb-1">Resumen</h4>
+                        <div class="text-muted" style="font-size: 12.5px">
+                            Carrera: <b>{{ optional($alumno->Carrera)->nombre_fantasia ?? 'sin cargar' }}</b>
+                            · Facultad: <b>{{ optional(optional($alumno->Carrera)->Facultad)->nombre ?? '-' }}</b>
+                            · Ingreso: <b>{{ $alumno->ingreso_texto ?? '-' }}</b>
+                            · Semestre actual: <b>{{ $alumno->semestre_actual ? $alumno->semestre_actual . '.º' : '-' }}</b>
+                        </div>
+                        @php
+                            $porcentaje_horas = $horas_requeridas > 0 ? min(100, round($horas_acreditadas / $horas_requeridas * 100)) : 0;
+                        @endphp
+                        <div class="mt-2" style="font-size: 12px">
+                            <div class="d-flex justify-content-between"><span>Avance de horas acreditadas</span><span class="ac-mono">{{ number_format($horas_acreditadas, 0, ',', '.') }} / {{ number_format($horas_requeridas, 0, ',', '.') }} h · {{ $porcentaje_horas }}%</span></div>
+                            <div style="height: 8px; background: #eef2f3;"><div style="height: 8px; width: {{ $porcentaje_horas }}%; background: var(--ac-accent);"></div></div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">

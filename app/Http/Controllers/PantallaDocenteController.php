@@ -765,9 +765,18 @@ class PantallaDocenteController extends Controller
 
         try {
             $docente = Docente::where('usuario_id', $id)->firstOrFail();
-            $extensiones = ExtensionUniversitaria::where('docente_id', $docente->id)->get();
+            $extensiones = ExtensionUniversitaria::with('ExtensionUniversitariaDetalles')->where('docente_id', $docente->id)->get();
+            $docente->load('Carreras.Facultad');
 
-            return view('pantallas_docentes/extensiones/index')->with(compact('docente', 'extensiones'));
+            $detalles = $extensiones->flatMap(fn ($e) => $e->ExtensionUniversitariaDetalles);
+            $resumen = [
+                'proyectos' => $extensiones->count(),
+                'estudiantes' => $detalles->where('estado', 'AC')->count(),
+                'pendientes' => $detalles->where('estado', 'PE')->count(),
+                'horas' => $extensiones->sum('cantidad_horas'),
+            ];
+
+            return view('pantallas_docentes/extensiones/index')->with(compact('docente', 'extensiones', 'resumen'));
         } catch (\Exception $e) {
             return redirect()->route('pantallas_docentes.index', Auth::id())->with('error-message', $e->getMessage());
         }

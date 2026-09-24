@@ -754,8 +754,9 @@ class PantallaAlumnoController extends Controller
             // respaldo.
             $matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderByDesc('fecha')->first();
             $requerimiento = null;
-            if ($matriculacion) {
-                $requerimiento = RequerimientoExtensionUniversitaria::where('carrera_id', $matriculacion->carrera_id)->first();
+            $carreraRequisito = $alumno->carrera_id ?: ($matriculacion->carrera_id ?? null);
+            if ($carreraRequisito) {
+                $requerimiento = RequerimientoExtensionUniversitaria::where('carrera_id', $carreraRequisito)->first();
             }
             if (!$requerimiento) {
                 $requerimiento = RequerimientoExtensionUniversitaria::whereNull('carrera_id')->first();

@@ -10,7 +10,7 @@
         @forelse (array_slice($datos, 0, $limite, true) as $etiqueta => $cantidad)
             <div class="mb-2">
                 <div class="d-flex justify-content-between">
-                    <span>{{ $etiqueta }}@if ($loop->first && $maximo > 0 && ($destacar ?? true)) <span class="badge bg-success-subtle text-success ms-1">MÁS</span>@endif</span>
+                    <span>{{ $etiqueta }}@if ($loop->first && $maximo > 0 && ($destacar ?? true) && !\Illuminate\Support\Str::startsWith($etiqueta, 'Sin')) <span class="badge bg-success-subtle text-success ms-1">MÁS</span>@endif</span>
                     <span class="ac-mono">{{ $cantidad }}{{ $unidad }}</span>
                 </div>
                 <div style="height: 6px; background: #eef2f3;"><div style="height: 6px; width: {{ $maximo ? round($cantidad / $maximo * 100) : 0 }}%; background: var(--ac-accent);"></div></div>
