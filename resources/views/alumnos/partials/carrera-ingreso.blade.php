@@ -17,6 +17,7 @@
                     @if (old('carrera', optional($alumno)->carrera_id) == $carrera_opcion->id) selected @endif>{{$carrera_opcion->nombre_fantasia}}</option>
             @endforeach
         </select>
+        <div class="form-text" style="font-size: 12px">Si se deja vacío, el alumno no podrá postularse ni participar de proyectos de extensión.</div>
         @error('carrera')
             <span class="invalid-feedback" role="alert"><strong>{{$message}}</strong></span>
         @enderror

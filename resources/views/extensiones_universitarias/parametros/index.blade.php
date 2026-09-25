@@ -14,7 +14,7 @@
         @include('extensiones_universitarias.scripts.messages-scripts')
 
         <div class="row">
-            <div class="col-lg-5">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
                         <h4 class="card-title mb-0 flex-grow-1">Facultades</h4>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-7">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
                         <h4 class="card-title mb-0 flex-grow-1">Carreras</h4>

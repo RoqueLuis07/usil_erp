@@ -11,7 +11,7 @@
     <style>
         :root{
             --ac-accent:#0f4c5c; --ac-accent-soft:#dbe7ea; --ac-bg:#f7f9f9; --ac-surface:#ffffff;
-            --ac-text:#1b2427; --ac-text-muted:#8b989c; --ac-border:#e4eaec; --ac-border-strong:#d3dade;
+            --ac-text:#1b2427; --ac-text-muted:#5c6a6e; --ac-border:#e4eaec; --ac-border-strong:#d3dade;
             --ac-ok-bg:#e2efe9; --ac-ok-fg:#1f6b4f; --ac-warn-bg:#f8ecdd; --ac-warn-fg:#8a4d13;
             --ac-info-bg:#e3eef1; --ac-info-fg:#0f4c5c; --ac-danger-bg:#f4e1e1; --ac-danger-fg:#8a2b2b;
             --ac-neutral-bg:#eef2f3; --ac-neutral-fg:#33454a;
@@ -25,6 +25,14 @@
         .btn-success:hover, .btn-primary:hover{background-color:#0c3b47 !important;border-color:#0c3b47 !important;}
         .btn-warning{background-color:#fff !important;border-color:var(--ac-border-strong) !important;color:var(--ac-text) !important;}
         .btn-danger{border-radius:2px !important;}
+        .btn-secondary{background-color:#fff !important;border:1px solid var(--ac-accent) !important;color:var(--ac-accent) !important;}
+        .btn-secondary:hover{background-color:var(--ac-accent-soft) !important;color:var(--ac-accent) !important;}
+        .btn-neutro{background-color:#fff !important;border:1px solid var(--ac-border-strong) !important;color:var(--ac-text) !important;}
+        .btn-neutro:hover{background-color:var(--ac-bg) !important;color:var(--ac-text) !important;}
+        .dropdown-menu-plantillas{background-color:#fff !important;}
+        .dropdown-item-plantillas{color:var(--ac-text) !important;}
+        .dropdown-item-plantillas:hover{background-color:var(--ac-accent-soft) !important;color:var(--ac-accent) !important;}
+        a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible{outline:2px solid var(--ac-accent) !important;outline-offset:2px;}
         .card{border-radius:0 !important;border:1px solid var(--ac-border-strong) !important;box-shadow:none !important;}
         .card-header{background:#eef2f3 !important;border-bottom:1px solid var(--ac-border-strong) !important;}
         .table{border:1px solid var(--ac-border-strong) !important;}
@@ -165,6 +173,7 @@
                     @if (Auth::user()->can('crear_alumnos') || Auth::user()->can('crear_docentes'))
                         <a href="{{route('importaciones.index')}}" class="ac-nav-item {{ request()->routeIs('importaciones.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
                             Carga masiva (CSV)
+                            <span class="ac-num">04</span>
                         </a>
                     @endif
                 @endif
@@ -173,24 +182,24 @@
                     <a href="{{route('extensiones_universitarias.index')}}" class="ac-nav-item {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}">
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 6.3v3.9l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
                         Actividades
-                        <span class="ac-num">04</span>
+                        <span class="ac-num">05</span>
                     </a>
                     @can('ver_tipos_extensiones_universitarias')
                         <a href="{{route('tipos_extensiones_universitarias.index')}}" class="ac-nav-item {{ request()->routeIs('tipos_extensiones_universitarias.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
                             Tipos de Actividad
-                            <span class="ac-num">05</span>
+                            <span class="ac-num">06</span>
                         </a>
                     @endcan
                     @can('ver_requerimientos_extensiones_universitarias')
                         <a href="{{route('requerimientos_extensiones_universitarias.show')}}" class="ac-nav-item {{ request()->routeIs('requerimientos_extensiones_universitarias.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
                             Requerimientos
-                            <span class="ac-num">06</span>
+                            <span class="ac-num">07</span>
                         </a>
                     @endcan
                     @can('gestionar_parametros_extensiones_universitarias')
                         <a href="{{route('parametros_extension.index')}}" class="ac-nav-item {{ request()->routeIs('parametros_extension.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
                             Facultades y Carreras
-                            <span class="ac-num">07</span>
+                            <span class="ac-num">08</span>
                         </a>
                     @endcan
                 @endcan
@@ -200,12 +209,14 @@
                         <a href="{{route('reportes_extension.extensiones')}}" class="ac-nav-item {{ request()->routeIs('reportes_extension.extensiones') ? 'active' : '' }}">
                             <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="6" width="3" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="14" y="3" width="3" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
                             Reporte de Extensión
+                            <span class="ac-num">09</span>
                         </a>
                     @endcan
                     @can('ver_docentes')
                         <a href="{{route('reportes_extension.docentes')}}" class="ac-nav-item {{ request()->routeIs('reportes_extension.docentes') ? 'active' : '' }}">
                             <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="6" width="3" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="14" y="3" width="3" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
                             Reporte de Docentes
+                            <span class="ac-num">10</span>
                         </a>
                     @endcan
                 @endif
@@ -214,7 +225,7 @@
                     <a href="{{route('usuarios.index')}}" class="ac-nav-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="2.6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 16c0-3 2.5-4.6 5.5-4.6s5.5 1.6 5.5 4.6" stroke="currentColor" stroke-width="1.2"/></svg>
                         Usuarios
-                        <span class="ac-num">08</span>
+                        <span class="ac-num">11</span>
                     </a>
                 @endcan
             @endif
@@ -252,6 +263,43 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js" integrity="sha512-TPh2Oxlg1zp+kz3nFA0C5vVC6leG/6mm1z9+mA81MI5eaUVqasPLO8Cuk4gMF4gUfP5etR73rgU/8PNMsSesoQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     @include('layouts.theme-scripts')
+    <script>
+        // Coherencia de botones (auditoría UX): el rojo queda solo para acciones destructivas,
+        // y todo botón de solo icono muestra qué hace al pasar el mouse.
+        document.addEventListener('DOMContentLoaded', function () {
+            var nombresIconos = {
+                'ri-eye-fill': 'Ver', 'ri-edit-fill': 'Editar', 'ri-delete-bin-fill': 'Eliminar',
+                'ri-check-fill': 'Aprobar / aceptar', 'ri-close-fill': 'Rechazar', 'bi-slash-circle': 'Rechazar',
+                'ri-arrow-left-line': 'Desaprobar / anular', 'ri-forbid-line': 'Inactivar', 'ri-check-line': 'Activar',
+                'ri-upload-line': 'Adjuntar', 'ri-download-line': 'Descargar', 'ri-add-line': 'Agregar'
+            };
+            document.querySelectorAll('.btn').forEach(function (boton) {
+                var texto = (boton.textContent || '').trim();
+                if (texto === '') {
+                    if (!boton.getAttribute('title')) {
+                        var icono = boton.querySelector('i');
+                        if (icono) {
+                            Object.keys(nombresIconos).some(function (clase) {
+                                if (icono.classList.contains(clase)) { boton.setAttribute('title', nombresIconos[clase]); return true; }
+                                return false;
+                            });
+                        }
+                    }
+                    if (boton.getAttribute('title') && !boton.getAttribute('aria-label')) {
+                        boton.setAttribute('aria-label', boton.getAttribute('title'));
+                    }
+                } else if (/^(Cancelar|Volver|Cerrar)$/i.test(texto) && boton.classList.contains('btn-danger')) {
+                    boton.classList.remove('btn-danger');
+                    boton.classList.add('btn-neutro');
+                }
+            });
+            if (window.bootstrap && bootstrap.Tooltip) {
+                document.querySelectorAll('.btn[title]').forEach(function (boton) {
+                    new bootstrap.Tooltip(boton, {trigger: 'hover', delay: {show: 250, hide: 0}});
+                });
+            }
+        });
+    </script>
     @yield('script')
 </body>
 
