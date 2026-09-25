@@ -226,7 +226,11 @@
                     <span class="ac-title">@yield('title')</span>
                     <div style="flex:1;"></div>
                     <div class="ac-avatar">{{ Str::upper(Str::substr(Auth::user()->name ?? '?', 0, 2)) }}</div>
-                    <span class="ac-user"><b>{{ Auth::user()->name }}</b> — {{ Auth::user()->roles->first()->name ?? '' }}</span>
+                    @php
+                        $rol_actual = optional(Auth::user()->roles->first())->name;
+                        $nombres_rol = ['ADMINISTRADOR_EXTENSION' => 'Administrador de Extensión', 'ENCARGADO_DOCENTE' => 'Encargado Docente', 'DOCENTE_TUTOR' => 'Docente Tutor', 'ALUMNO' => 'Alumno', 'SUPERADMIN' => 'Superadministrador'];
+                    @endphp
+                    <span class="ac-user"><b>{{ Auth::user()->name }}</b> — {{ $nombres_rol[$rol_actual] ?? $rol_actual }}</span>
                     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('ac-logout-form').submit();" style="font-size:12px;margin-left:4px;">Salir</a>
                     <form id="ac-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
                 </div>

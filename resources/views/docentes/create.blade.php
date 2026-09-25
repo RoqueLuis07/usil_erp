@@ -15,6 +15,16 @@
         <div class="row">
             <form action="{{route('docentes.store')}}" method="post" id="store-form">
                 @csrf
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        <b>No se pudo guardar. Revisá lo siguiente:</b>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $mensaje_error)
+                                <li>{{ $mensaje_error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
@@ -128,7 +138,7 @@
                                     <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
                                     <select class="selectpicker form-control nacionalidad @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
                                         @foreach ($nacionalidades as $nacionalidad)
-                                            <option value="{{$nacionalidad->id}}" @if (old('nacionalidad') == strval($nacionalidad->id)) selected @endif>{{$nacionalidad->nombre}}</option>
+                                            <option value="{{$nacionalidad->id}}" @if (in_array(strval($nacionalidad->id), array_map("strval", (array) old("nacionalidad", [])))) selected @endif>{{$nacionalidad->nombre}}</option>
                                         @endforeach
                                     </select>
                                     @error('nacionalidad')

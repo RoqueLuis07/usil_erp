@@ -14,7 +14,7 @@
         @include('extensiones_universitarias.modals.show-modals')
 
         <div class="row">
-            <form>
+            <div>
                 @csrf
                 <div class="col-lg-12">
                     <div class="card">
@@ -245,7 +245,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     @endsection
     @section('script')

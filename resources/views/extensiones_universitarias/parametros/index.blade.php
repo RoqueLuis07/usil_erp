@@ -7,6 +7,7 @@
     @section('content')
         @component('components.breadcrumb')
             @slot('li_1') Extensiones Universitarias @endslot
+            @slot('href') {{ route('extensiones_universitarias.index') }} @endslot
             @slot('title') Parámetros @endslot
         @endcomponent
 

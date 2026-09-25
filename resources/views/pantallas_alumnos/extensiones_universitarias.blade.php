@@ -143,7 +143,7 @@
                                                 <tr>
                                                     <td>{{$postulacion->extensionUniversitaria->nombre}}</td>
                                                     <td>{{$postulacion->extensionUniversitaria->docente->primer_nombre}} {{$postulacion->extensionUniversitaria->docente->primer_apellido}}</td>
-                                                    <td>{{$postulacion->fecha_postulacion ? \Carbon\Carbon::parse($postulacion->fecha_postulacion)->format('d/m/Y H:i') : '-'}}</td>
+                                                    <td>{{ ($postulacion->fecha_postulacion ?? $postulacion->created_at) ? \Carbon\Carbon::parse($postulacion->fecha_postulacion ?? $postulacion->created_at)->format('d/m/Y H:i') : '-' }}</td>
                                                     <td>
                                                         <span class="badge @if ($postulacion->estado == 'AC') bg-success-subtle text-success @elseif ($postulacion->estado == 'RE') bg-danger-subtle text-danger @else bg-warning-subtle text-warning @endif">
                                                             @if ($postulacion->estado == 'AC') Aceptada @elseif ($postulacion->estado == 'RE') Rechazada @else Pendiente @endif

@@ -111,6 +111,12 @@ class ExtensionUniversitariaController extends Controller
             $required = 'required';
         }
 
+        // Los alumnos ya no son obligatorios al crear el proyecto (pueden
+        // postularse después desde su portal); se descartan filas vacías.
+        $request->merge([
+            'detalles' => collect($request->detalles ?? [])->filter(fn ($d) => !empty($d['alumno'] ?? null))->values()->all(),
+        ]);
+
         $request->validate([
             'nombre_proyecto' => 'required',
             'tipo_extension' => ['required', 'numeric'],
@@ -123,7 +129,7 @@ class ExtensionUniversitariaController extends Controller
 			'fecha_inicio' => ['required', 'date'],
 			'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
             'tiene_certificado' => 'required',
-            'detalles' => ['required', 'array'],
+            'detalles' => ['nullable', 'array'],
 
             'detalles.*.alumno' => ['required', 'numeric'],
         ]);
@@ -180,7 +186,7 @@ class ExtensionUniversitariaController extends Controller
                 $extension->carreras()->sync($request->carreras_habilitadas);
             }
 
-            foreach ($request->detalles as $detalle) {
+            foreach ($request->detalles ?? [] as $detalle) {
                 $carrera_semestre = $this->resolverCarreraSemestreAlumno($detalle['alumno'], $extension->fecha_inicio);
 
                 $extension_detalle = new ExtensionUniversitariaDetalle();

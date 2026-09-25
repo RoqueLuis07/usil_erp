@@ -31,7 +31,7 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="sexo">Sexo</label>
-                                    <input type="text" class="form-control" id="sexo" value="{{$alumno->sexo->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="sexo" value="{{optional($alumno->sexo)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
@@ -267,13 +267,13 @@
                         <div class="col-lg-6 mb-3">
                             <label class="form-label" for="cargado_por">Cargado por:</label>
                             <br>
-                            {{$alumno->cargadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->created_at)->format('d/m/Y H:i:s')}}
+                            {{optional($alumno->cargadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->created_at)->format('d/m/Y H:i:s')}}
                         </div>
                         @if ($alumno->actualizado_por_id)
                             <div class="col-lg-6 mb-3">
                                 <label class="form-label" for="cargado_por">Última actualización hecha por:</label>
                                 <br>
-                                {{$alumno->actualizadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->updated_at)->format('d/m/Y H:i:s')}}
+                                {{optional($alumno->actualizadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->updated_at)->format('d/m/Y H:i:s')}}
                             </div>
                         @endif
                     </div>

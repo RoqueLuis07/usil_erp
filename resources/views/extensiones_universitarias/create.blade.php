@@ -28,6 +28,16 @@
             <form action="{{route('extensiones_universitarias.store')}}" method="post" id="store-form" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="generado_docente" value="NO">
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        <b>No se pudo guardar. Revisá lo siguiente:</b>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $mensaje_error)
+                                <li>{{ $mensaje_error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
@@ -185,7 +195,7 @@
                                     <div class="mb-2 fila" id="fila-0">
                                         <div class="row d-flex flex-wrap justify-content-center">
                                             <div class="col-lg-4 col-sm-12 mb-2 text-center" id="div-alumno-0">
-                                                <label class="form-label label-alumno">Alumno <span class="text-danger">(*)</span></label>
+                                                <label class="form-label label-alumno">Alumno</label>
                                                 <select class="selectpicker form-control alumno-0 alumno @error('detalles.0.alumno') is-invalid @enderror" id="alumno-0" name="detalles[0][alumno]" data-live-search="true" data-id="0">
                                                     <option value="" selected disabled>Seleccionar...</option>
                                                     @foreach ($alumnos as $alumno)

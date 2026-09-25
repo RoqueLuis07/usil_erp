@@ -211,4 +211,21 @@
             }
         });
     });
+
+    // Si el servidor rechazó el formulario, se vuelven a elegir departamento,
+    // ciudad y barrio (los arma este mismo script, así que old() no alcanza).
+    $(function () {
+        var viejoDepartamento = @json(old('departamento'));
+        var viejaCiudad = @json(old('ciudad'));
+        var viejoBarrio = @json(old('barrio'));
+        if (viejoDepartamento) {
+            $('#departamento').val(viejoDepartamento).selectpicker('refresh').trigger('change');
+            if (viejaCiudad) {
+                $('#ciudad').val(viejaCiudad).selectpicker('refresh').trigger('change');
+                if (viejoBarrio) {
+                    $('#barrio').val(viejoBarrio).selectpicker('refresh');
+                }
+            }
+        }
+    });
 </script>

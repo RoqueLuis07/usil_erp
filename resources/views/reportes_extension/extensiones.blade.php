@@ -3,6 +3,7 @@
 @section('content')
     @component('components.breadcrumb')
         @slot('li_1') Reportes @endslot
+        @slot('href') {{ route('reportes_extension.extensiones') }} @endslot
         @slot('title') Reporte de Extensión @endslot
     @endcomponent
 

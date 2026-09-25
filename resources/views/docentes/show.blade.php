@@ -32,7 +32,7 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="sexo">Sexo</label>
-                                    <input type="text" class="form-control" id="sexo" value="{{$docente->sexo->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="sexo" value="{{optional($docente->sexo)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
@@ -72,21 +72,21 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="departamento">Departamento</label>
-                                    <input type="text" class="form-control" id="departamento" value="{{$docente->departamento->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="departamento" value="{{optional($docente->departamento)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="ciudad">Ciudad</label>
-                                    <input type="text" class="form-control" id="ciudad" value="{{$docente->ciudad->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="ciudad" value="{{optional($docente->ciudad)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="barrio">Barrio</label>
-                                    <input type="text" class="form-control" id="barrio" value="{{$docente->barrio->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="barrio" value="{{optional($docente->barrio)->nombre}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="usuario">Usuario Asignado</label>
-                                    <input class="form-control" type="text" id="usuario" value="{{$docente->usuario->name}} - {{$docente->usuario->rol->name}}" readonly>
+                                    <input class="form-control" type="text" id="usuario" value="{{optional($docente->usuario)->name}} - {{optional(optional($docente->usuario)->rol)->name}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3 text-center">
                                     <div>
@@ -181,7 +181,7 @@
                                             <div class="row">
                                                 <div class="col-lg-4 mb-3">
                                                     <label class="form-label" for="nivel_academico">Nivel Académico</label>
-                                                    <input type="text" class="form-control" id="nivel_academico" value="{{$docente->nivelAcademico->nombre}}" readonly>
+                                                    <input type="text" class="form-control" id="nivel_academico" value="{{optional($docente->nivelAcademico)->nombre}}" readonly>
                                                 </div>
                                                 <div class="col-lg-4 mb-3">
                                                     <label class="form-label" for="area_conocimiento">Área de Conocimiento</label>
@@ -205,13 +205,13 @@
                         <div class="col-lg-6 mb-3">
                             <label class="form-label" for="cargado_por">Cargado por:</label>
                             <br>
-                            {{$docente->cargadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($docente->created_at)->format('d/m/Y H:i:s')}}
+                            {{optional($docente->cargadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($docente->created_at)->format('d/m/Y H:i:s')}}
                         </div>
                         @if ($docente->actualizado_por_id)
                             <div class="col-lg-6 mb-3">
                                 <label class="form-label" for="cargado_por">Última actualización hecha por:</label>
                                 <br>
-                                {{$docente->actualizadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($docente->updated_at)->format('d/m/Y H:i:s')}}
+                                {{optional($docente->actualizadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($docente->updated_at)->format('d/m/Y H:i:s')}}
                             </div>
                         @endif
                     </div>

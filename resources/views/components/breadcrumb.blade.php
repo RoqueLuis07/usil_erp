@@ -7,7 +7,7 @@
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     @if(isset($li_1))
-                        <li class="breadcrumb-item"><a href="{{url()->previous()}}">{{ $li_1 }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ trim((string) ($href ?? "")) ?: url()->previous() }}">{{ $li_1 }}</a></li>
                     @endif
                     @if(isset($title) && strpos($title, 'BIENVENIDO') === false)
                         <li class="breadcrumb-item active">{{ $title }}</li>

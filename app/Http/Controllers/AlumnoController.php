@@ -182,7 +182,7 @@ class AlumnoController extends Controller
                 if ($primera_matriculacion) {
 					$alumno->ingreso = $primera_matriculacion->semestre->nombre;
                 } else {
-                    $alumno->ingreso = null;
+                    $alumno->ingreso = $alumno->ingreso_texto;
                 }
 
                 $ultima_matriculacion = Matriculacion::where('alumno_id', $alumno->id)->where('estado', 'AC')->orderBy('id', 'desc')->first();
@@ -190,8 +190,9 @@ class AlumnoController extends Controller
                     $alumno->periodo = $ultima_matriculacion->semestre->nombre;
                     $alumno->programa = $ultima_matriculacion->programa->nombre;
                 } else {
-                    $alumno->periodo = null;
-                    $alumno->programa = null;
+                    // Sin matriculación: se muestran los datos académicos cargados en el propio alumno.
+                    $alumno->periodo = $alumno->semestre_actual ? $alumno->semestre_actual . ".º semestre" : null;
+                    $alumno->programa = optional($alumno->Carrera)->nombre_fantasia;
                 }
             }
 

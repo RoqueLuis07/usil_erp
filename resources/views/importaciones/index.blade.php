@@ -6,6 +6,7 @@
 @section('content')
     @component('components.breadcrumb')
         @slot('li_1') Gestión Académica @endslot
+        @slot('href') {{ route('alumnos.index') }} @endslot
         @slot('title') Carga Masiva de Alumnos y Docentes @endslot
     @endcomponent
 
