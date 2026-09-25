@@ -484,6 +484,8 @@ Auth::routes();
             Route::post('extensiones_universitarias/rechazar/{id}', 'ExtensionUniversitariaController@reject')->name('extensiones_universitarias.reject');
             Route::post('extensiones_universitarias/anular_rechazo/{id}', 'ExtensionUniversitariaController@unreject')->name('extensiones_universitarias.unreject');
             Route::post('extensiones_universitarias/desaprobar/{id}', 'ExtensionUniversitariaController@unapprove')->name('extensiones_universitarias.unapprove');
+            Route::post('extensiones_universitarias/postulaciones/aprobar/{id}', 'ExtensionUniversitariaController@aprobar_postulacion')->name('extensiones_universitarias.aprobar_postulacion');
+            Route::post('extensiones_universitarias/postulaciones/rechazar/{id}', 'ExtensionUniversitariaController@rechazar_postulacion')->name('extensiones_universitarias.rechazar_postulacion');
             Route::post('extensiones_universitarias/finalizar/{id}', 'ExtensionUniversitariaController@finish')->name('extensiones_universitarias.finish');
             Route::get('extensiones_universitarias/cargar_informe/{id}', 'ExtensionUniversitariaController@cargar_informe')->name('extensiones_universitarias.cargar_informe');
             Route::post('extensiones_universitarias/cargar_informe/{id}', 'ExtensionUniversitariaController@cargar_informe');
@@ -733,6 +735,25 @@ Auth::routes();
             Route::post('requerimientos_extensiones_universitarias/agregar', 'RequerimientoExtensionUniversitariaController@store')->name('requerimientos_extensiones_universitarias.store');
             Route::get('requerimientos_extensiones_universitarias/editar/{id}', 'RequerimientoExtensionUniversitariaController@edit')->name('requerimientos_extensiones_universitarias.edit');
             Route::post('requerimientos_extensiones_universitarias/actualizar/{id}', 'RequerimientoExtensionUniversitariaController@update')->name('requerimientos_extensiones_universitarias.update');
+            Route::delete('requerimientos_extensiones_universitarias/eliminar/{id}', 'RequerimientoExtensionUniversitariaController@destroy')->name('requerimientos_extensiones_universitarias.destroy');
+
+            //Parámetros de Extensión (facultades y carreras simplificadas)
+            Route::get('parametros_extension', 'ParametrosExtensionController@index')->name('parametros_extension.index');
+            Route::post('parametros_extension/facultades', 'ParametrosExtensionController@storeFacultad')->name('parametros_extension.facultades.store');
+            Route::post('parametros_extension/facultades/{id}', 'ParametrosExtensionController@updateFacultad')->name('parametros_extension.facultades.update');
+            Route::post('parametros_extension/facultades/{id}/estado', 'ParametrosExtensionController@toggleFacultad')->name('parametros_extension.facultades.toggle');
+            Route::post('parametros_extension/carreras', 'ParametrosExtensionController@storeCarrera')->name('parametros_extension.carreras.store');
+            Route::post('parametros_extension/carreras/{id}', 'ParametrosExtensionController@updateCarrera')->name('parametros_extension.carreras.update');
+            Route::post('parametros_extension/carreras/{id}/estado', 'ParametrosExtensionController@toggleCarrera')->name('parametros_extension.carreras.toggle');
+
+            //Carga masiva de alumnos y docentes (CSV)
+            Route::get('importaciones', 'ImportacionMasivaController@index')->name('importaciones.index');
+            Route::get('importaciones/plantilla/{tipo}', 'ImportacionMasivaController@plantilla')->name('importaciones.plantilla');
+            Route::post('importaciones/{tipo}', 'ImportacionMasivaController@procesar')->name('importaciones.procesar');
+
+            //Reportes de gestión (extensiones y docentes)
+            Route::get('reportes_extension/extensiones', 'ReporteExtensionController@extensiones')->name('reportes_extension.extensiones');
+            Route::get('reportes_extension/docentes', 'ReporteExtensionController@docentes')->name('reportes_extension.docentes');
         //Formacion Academicas - Alumnos Formaciones
             Route::get('formaciones_academicas', 'AlumnoFormacionController@index')->name('alumnos_formaciones.index');
             Route::get('formaciones_academicas/all', 'AlumnoFormacionController@index_ajax')->name('alumnos_formaciones.index_ajax');
@@ -1622,6 +1643,9 @@ Auth::routes();
     Route::post('extension_universitaria/adjuntar_certificado/{id}', 'PantallaAlumnoController@adjuntar_certificado_extensiones_universitarias')->name('pantallas_alumnos.adjuntar_certificado_extensiones_universitarias');
     Route::get('extension_universitaria/eliminar_certificado/{id}', 'PantallaAlumnoController@eliminar_certificado_extensiones_universitarias')->name('pantallas_alumnos.get_eliminar_certificado_extensiones_universitarias');
     Route::delete('extension_universitaria/eliminar_certificado/{id}', 'PantallaAlumnoController@eliminar_certificado_extensiones_universitarias')->name('pantallas_alumnos.eliminar_certificado_extensiones_universitarias');
+    Route::get('extension_universitaria/catalogo/{id}', 'PantallaAlumnoController@catalogo_extensiones_universitarias')->name('pantallas_alumnos.catalogo_extensiones_universitarias');
+    Route::post('extension_universitaria/postular/{id}/{idExtension}', 'PantallaAlumnoController@postular_extension_universitaria')->name('pantallas_alumnos.postular_extension_universitaria');
+    Route::delete('extension_universitaria/cancelar_postulacion/{id}/{idDetalle}', 'PantallaAlumnoController@cancelar_postulacion_extension_universitaria')->name('pantallas_alumnos.cancelar_postulacion_extension_universitaria');
     Route::get('inscripcion_tfg/agregar/{id}', 'PantallaAlumnoController@create_inscripciones_tesis')->name('pantallas_alumnos.create_inscripciones_tesis');
     Route::get('inscripciones_tfg/{id}', 'PantallaAlumnoController@inscripciones_tesis')->name('pantallas_alumnos.inscripciones_tesis');
     Route::get('inscripcion_tfg/ver/{id}', 'PantallaAlumnoController@show_inscripciones_tesis')->name('pantallas_alumnos.show_inscripciones_tesis');

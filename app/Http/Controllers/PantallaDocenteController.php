@@ -764,10 +764,19 @@ class PantallaDocenteController extends Controller
         $this->authorize('ver_extensiones_docentes_pantalla');
 
         try {
-            $docente = Docente::where('usuario_id', $id)->first();
-            $extensiones = ExtensionUniversitaria::where('docente_id', $docente->id)->get();
+            $docente = Docente::where('usuario_id', $id)->firstOrFail();
+            $extensiones = ExtensionUniversitaria::with('ExtensionUniversitariaDetalles')->where('docente_id', $docente->id)->get();
+            $docente->load('Carreras.Facultad');
 
-            return view('pantallas_docentes/extensiones/index')->with(compact('docente', 'extensiones'));
+            $detalles = $extensiones->flatMap(fn ($e) => $e->ExtensionUniversitariaDetalles);
+            $resumen = [
+                'proyectos' => $extensiones->count(),
+                'estudiantes' => $detalles->where('estado', 'AC')->count(),
+                'pendientes' => $detalles->where('estado', 'PE')->count(),
+                'horas' => $extensiones->sum('cantidad_horas'),
+            ];
+
+            return view('pantallas_docentes/extensiones/index')->with(compact('docente', 'extensiones', 'resumen'));
         } catch (\Exception $e) {
             return redirect()->route('pantallas_docentes.index', Auth::id())->with('error-message', $e->getMessage());
         }
@@ -781,7 +790,8 @@ class PantallaDocenteController extends Controller
             $docente = Docente::where('usuario_id', $id)->first();
             $tipos_extensiones = TipoExtensionUniversitaria::where('estado', 'AC')->get();
             $alumnos = Alumno::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
-            return view('pantallas_docentes/extensiones/create')->with(compact('docente', 'tipos_extensiones', 'alumnos'));
+            $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            return view('pantallas_docentes/extensiones/create')->with(compact('docente', 'tipos_extensiones', 'alumnos', 'carreras'));
         } catch (\Exception $e) {
             return redirect()->route('pantallas_docentes.extensiones.index', Auth::id())->with('error-message', $e->getMessage());
         }

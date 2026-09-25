@@ -1,5 +1,5 @@
 @can('generar_reportes_extensiones_universitarias_carrera_semestre')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Reporte de Extensión Universitaria por Carrera y Semestre @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">

@@ -1,5 +1,5 @@
 @can('crear_extensiones_docentes_pantalla')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Nueva Extensión @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -27,6 +27,16 @@
             <form action="{{route('extensiones_universitarias.store')}}" method="post" id="store-form" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="generado_docente" value="SI">
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        <b>No se pudo guardar. Revisá lo siguiente:</b>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $mensaje_error)
+                                <li>{{ $mensaje_error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
@@ -135,6 +145,26 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="cupo_maximo">Cupo Máximo</label>
+                                    <input type="text" class="form-control text-center @error('cupo_maximo') is-invalid @enderror" id="cupo_maximo" name="cupo_maximo" value="{{old('cupo_maximo')}}" placeholder="Sin límite">
+                                    @error('cupo_maximo')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="carreras_habilitadas">Carreras Habilitadas para Postularse</label>
+                                    <select class="selectpicker form-control" id="carreras_habilitadas" name="carreras_habilitadas[]" multiple data-live-search="true" title="Todas las carreras">
+                                        @foreach ($carreras as $carrera)
+                                            <option value="{{$carrera->id}}" @if (collect(old('carreras_habilitadas'))->contains($carrera->id)) selected @endif>{{$carrera->nombre_fantasia}}</option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-muted" style="font-size: 12px">Sin seleccionar ninguna, el proyecto queda abierto a postulación de alumnos de cualquier carrera.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -142,16 +172,17 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h4 class="card-title mb-0">Alumnos Participantes</h4>
+                                    <p class="text-muted mb-0" style="font-size: 13px">Alta directa (sin pasar por postulación). Una vez aprobado el proyecto, también podés dejar que los alumnos se postulen desde su portal.</p>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-2 fila" id="fila-0">
                                         <div class="row d-flex flex-wrap justify-content-center">
                                             <div class="col-lg-4 col-sm-12 mb-2 text-center" id="div-alumno-0">
-                                                <label class="form-label label-alumno">Alumno <span class="text-danger">(*)</span></label>
+                                                <label class="form-label label-alumno">Alumno</label>
                                                 <select class="selectpicker form-control alumno-0 alumno @error('detalles.0.alumno') is-invalid @enderror" id="alumno-0" name="detalles[0][alumno]" data-live-search="true" data-id="0">
                                                     <option value="" selected disabled>Seleccionar...</option>
                                                     @foreach ($alumnos as $alumno)
-                                                        <option value="{{$alumno->id}}" @if (old('detalles.0.alumno') == strval($alumno->id)) selected @endif data-subtext="{{$alumno->numero_documento}}">{{$alumno->primer_nombre}} {{$alumno->primer_apellido}}</option>
+                                                        <option value="{{$alumno->id}}" @if (old('detalles.0.alumno') == strval($alumno->id)) selected @endif @if (!$alumno->tieneDatosParaExtension()) disabled @endif data-subtext="{{$alumno->numero_documento}}@if (!$alumno->tieneDatosParaExtension()) · datos incompletos @endif">{{$alumno->primer_nombre}} {{$alumno->primer_apellido}}</option>
                                                     @endforeach
                                                 </select>
                                                 @error('detalles.0.alumno')

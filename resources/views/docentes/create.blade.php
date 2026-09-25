@@ -1,5 +1,5 @@
 @can('crear_docentes')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Agregar Docente @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -15,6 +15,16 @@
         <div class="row">
             <form action="{{route('docentes.store')}}" method="post" id="store-form">
                 @csrf
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        <b>No se pudo guardar. Revisá lo siguiente:</b>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $mensaje_error)
+                                <li>{{ $mensaje_error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
@@ -128,7 +138,7 @@
                                     <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
                                     <select class="selectpicker form-control nacionalidad @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
                                         @foreach ($nacionalidades as $nacionalidad)
-                                            <option value="{{$nacionalidad->id}}" @if (old('nacionalidad') == strval($nacionalidad->id)) selected @endif>{{$nacionalidad->nombre}}</option>
+                                            <option value="{{$nacionalidad->id}}" @if (in_array(strval($nacionalidad->id), array_map("strval", (array) old("nacionalidad", [])))) selected @endif>{{$nacionalidad->nombre}}</option>
                                         @endforeach
                                     </select>
                                     @error('nacionalidad')
@@ -183,7 +193,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="barrio">Barrio <span class="text-danger">(*)</span></label>
+                                    <label class="form-label" for="barrio">Barrio</label>
                                     <select class="selectpicker form-control @error('barrio') is-invalid @enderror" id="barrio" name="barrio" data-live-search="true" disabled>
                                         <option value="" selected disabled>Seleccionar...</option>
                                     </select>
@@ -232,6 +242,7 @@
                         <div class="col-lg-12 mb-3">
                             <div class="card">
                                 <div class="card-body">
+                                    @include('docentes.partials.carreras')
                                     <ul class="nav nav-pills arrow-navtabs nav-info nav-justified bg-light gap-2 mb-4" role="tablist">
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link active align-middle" data-bs-toggle="tab" href="#tablistFormacion" role="tab" aria-selected="true">

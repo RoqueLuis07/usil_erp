@@ -1,5 +1,5 @@
 @can('ver_extensiones_docentes_pantalla')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Extensión @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -13,7 +13,7 @@
         @include('pantallas_docentes.extensiones.modals.show-modals')
 
         <div class="row">
-            <form>
+            <div>
                 @csrf
                 <div class="col-lg-12">
                     <div class="card">
@@ -156,6 +156,31 @@
                                                     @endphp
                                                     <input type="text" class="form-control text-center" id="cantidad_horas_alumno-{{$key}}" @if ($detalle->cantidad_horas) value="{{number_format($detalle->cantidad_horas, 2, ',', '.')}} {{$texto_alumno}}" @else value="0 {{$texto_alumno}}" @endif readonly>
                                                 </div>
+                                                <div class="col-5 col-lg-2 mb-2 text-center">
+                                                    @if ($key == 0) <label class="form-label">Postulación</label> @endif
+                                                    <div>
+                                                        <span class="badge @if ($detalle->estado == 'AC') bg-success-subtle text-success @elseif ($detalle->estado == 'RE') bg-danger-subtle text-danger @else bg-warning-subtle text-warning @endif">
+                                                            @if ($detalle->estado == 'AC') Aceptada @elseif ($detalle->estado == 'RE') Rechazada @else Pendiente @endif
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                @can('gestionar_postulaciones_extensiones_universitarias')
+                                                    @if ($detalle->estado == 'PE')
+                                                        <div class="col-lg-2 mb-2 text-center">
+                                                            @if ($key == 0) <label class="form-label">Acciones</label> @endif
+                                                            <div>
+                                                                <form action="{{route('extensiones_universitarias.aprobar_postulacion', $detalle->id)}}" method="post" class="d-inline">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Aceptar postulación"><i class="ri-check-fill"></i></button>
+                                                                </form>
+                                                                <form action="{{route('extensiones_universitarias.rechazar_postulacion', $detalle->id)}}" method="post" class="d-inline">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Rechazar postulación"><i class="ri-close-fill"></i></button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endcan
                                             </div>
                                         </div>
                                     @endforeach
@@ -169,7 +194,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     @endsection
     @section('script')

@@ -153,7 +153,29 @@ class DocenteController extends Controller
                 $nombre_docente = $nombre_docente . ' ' . $docente->segundo_apellido;
             }
 
-            return view('docentes/show')->with(compact('docente', 'nombre_docente'));
+            $docente->load('Carreras.Facultad');
+
+            // Períodos/carreras en los que el docente tiene materias asignadas
+            // (la única relación real docente -> semestre -> carrera -> facultad).
+            try {
+                $asignaciones = SemestreMallaMateria::with(['SemestreMalla.Semestre', 'SemestreMalla.Malla', 'Materia'])
+                    ->where('docente_id', $docente->id)
+                    ->where('estado', 'AC')
+                    ->get()
+                    ->map(function ($smm) {
+                        $carrera = \App\Models\Carrera::with('Facultad')->find(optional(optional($smm->SemestreMalla)->Malla)->carrera_id);
+                        return (object) [
+                            'periodo' => optional(optional($smm->SemestreMalla)->Semestre)->nombre,
+                            'carrera' => optional($carrera)->nombre_fantasia,
+                            'facultad' => optional(optional($carrera)->Facultad)->nombre,
+                            'materia' => optional($smm->Materia)->nombre,
+                        ];
+                    });
+            } catch (\Exception $e) {
+                $asignaciones = collect();
+            }
+
+            return view('docentes/show')->with(compact('docente', 'nombre_docente', 'asignaciones'));
         } catch (\Exception $e) {
             return redirect()->route('docentes.index')->with('error-message', $e->getMessage());
         }
@@ -171,8 +193,9 @@ class DocenteController extends Controller
             $barrios = Barrio::get();
             $niveles_academicos = DocenteNivelAcademico::where('estado', 'AC')->get();
             $usuarios = User::where('state', 'AC')->get();
+            $carreras = \App\Models\Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
             $areas_conocimientos = AreaConocimiento::get();
-            return view('docentes/create')->with(compact('sexos', 'nacionalidades', 'departamentos_paraguay', 'ciudades', 'barrios', 'niveles_academicos', 'usuarios', 'areas_conocimientos'));
+            return view('docentes/create')->with(compact('carreras', 'sexos', 'nacionalidades', 'departamentos_paraguay', 'ciudades', 'barrios', 'niveles_academicos', 'usuarios', 'areas_conocimientos'));
         } catch (\Exception $e) {
             return redirect()->route('docentes.index')->with('error-message', $e->getMessage());
         }
@@ -198,12 +221,14 @@ class DocenteController extends Controller
             'direccion' => 'required',
             'departamento' => ['required', 'numeric'],
             'ciudad' => ['required', 'numeric'],
-            'barrio' => ['required', 'numeric'],
+            'barrio' => ['nullable', 'numeric'],
             'usuario' => ['nullable', 'numeric'],
             'tutor_tesis' => 'required',
             'nivel_academico' => ['required', 'numeric'],
             'capacitacion_didactica' => 'required',
             'area_conocimiento' => ['required', 'numeric'],
+            'carreras' => ['nullable', 'array'],
+            'carreras.*' => ['numeric'],
         ]);
 
         DB::beginTransaction();
@@ -224,9 +249,9 @@ class DocenteController extends Controller
             $docente->direccion = removeAccents(Str::upper($request->direccion));
             $docente->departamento_id = $request->departamento;
             $docente->ciudad_id = $request->ciudad;
-            $docente->barrio_id = $request->barrio;
+            $docente->barrio_id = $request->barrio ?: null;
             $docente->nivel_academico_id = $request->nivel_academico;
-            $docente->capacitacion_didactica = $request->capacitacion_didactica;
+            $docente->capacitacion_didactica = filter_var($request->capacitacion_didactica, FILTER_VALIDATE_BOOLEAN);
             $docente->area_conocimiento_id = $request->area_conocimiento;
 
             if ($request->usuario != null) {
@@ -263,11 +288,12 @@ class DocenteController extends Controller
                 $docente->usuario_id = $usuario->id;
             }
 
-            $docente->tutor_tesis = $request->tutor_tesis;
+            $docente->tutor_tesis = filter_var($request->tutor_tesis, FILTER_VALIDATE_BOOLEAN);
             $docente->cargado_por_id = Auth::id();
             $docente->save();
 
             $docente->nacionalidades()->sync($request->nacionalidad);
+            $docente->Carreras()->sync($request->carreras ?? []);
 
 
             //crear directorio para guardar su legajo
@@ -290,7 +316,7 @@ class DocenteController extends Controller
 
         try {
             $docente = Docente::findOrFail($id);
-            $docente->load('nacionalidades');
+            $docente->load(['nacionalidades', 'Carreras']);
             $sexos = Sexo::where('estado', 'AC')->get();
             $nacionalidades = Nacionalidad::get();
             $departamentos_paraguay = DepartamentoParaguay::get();
@@ -299,7 +325,8 @@ class DocenteController extends Controller
             $niveles_academicos = DocenteNivelAcademico::where('estado', 'AC')->get();
             $usuarios = User::where('state', 'AC')->get();
             $areas_conocimientos = AreaConocimiento::get();
-            return view('docentes/edit')->with(compact('docente', 'sexos', 'nacionalidades', 'departamentos_paraguay', 'ciudades', 'barrios', 'niveles_academicos', 'usuarios', 'areas_conocimientos'));
+            $carreras = \App\Models\Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            return view('docentes/edit')->with(compact('carreras', 'docente', 'sexos', 'nacionalidades', 'departamentos_paraguay', 'ciudades', 'barrios', 'niveles_academicos', 'usuarios', 'areas_conocimientos'));
         } catch (\Exception $e) {
             return redirect()->route('docentes.index')->with('error-message', $e->getMessage());
         }
@@ -326,11 +353,13 @@ class DocenteController extends Controller
             'direccion' => 'required',
             'departamento' => ['required', 'numeric'],
             'ciudad' => ['required', 'numeric'],
-            'barrio' => ['required', 'numeric'],
+            'barrio' => ['nullable', 'numeric'],
             'usuario' => ['required', 'numeric'],
             'nivel_academico' => ['required', 'numeric'],
             'capacitacion_didactica' => 'required',
             'area_conocimiento' => ['required', 'numeric'],
+            'carreras' => ['nullable', 'array'],
+            'carreras.*' => ['numeric'],
             'ubs' => 'required',
             'tutor_tesis' => 'required'
         ]);
@@ -350,19 +379,20 @@ class DocenteController extends Controller
             $docente->telefono = $request->telefono;
             $docente->celular = $request->celular;
             $docente->nacionalidades()->sync($request->nacionalidad);
+            $docente->Carreras()->sync($request->carreras ?? []);
             $docente->email_personal = removeAccents(Str::lower($request->email_personal));
             $docente->email_institucional = removeAccents(Str::lower($request->email_institucional));
             $docente->direccion = removeAccents(Str::upper($request->direccion));
             $docente->departamento_id = $request->departamento;
             $docente->ciudad_id = $request->ciudad;
-            $docente->barrio_id = $request->barrio;
+            $docente->barrio_id = $request->barrio ?: null;
             $docente->nivel_academico_id = $request->nivel_academico;
-            $docente->capacitacion_didactica = $request->capacitacion_didactica;
+            $docente->capacitacion_didactica = filter_var($request->capacitacion_didactica, FILTER_VALIDATE_BOOLEAN);
             $docente->area_conocimiento_id = $request->area_conocimiento;
             $docente->usuario_id = $request->usuario;
             $docente->actualizado_por_id = Auth::id();
-            $docente->ubs = $request->ubs;
-            $docente->tutor_tesis = $request->tutor_tesis;
+            $docente->ubs = filter_var($request->ubs, FILTER_VALIDATE_BOOLEAN);
+            $docente->tutor_tesis = filter_var($request->tutor_tesis, FILTER_VALIDATE_BOOLEAN);
             $docente->save();
 
             $usuario = User::findOrFail($docente->usuario_id);

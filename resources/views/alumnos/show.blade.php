@@ -1,5 +1,5 @@
 @can('ver_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Alumno @endsection
     @section('content')
         @component('components.breadcrumb')
@@ -31,7 +31,7 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="sexo">Sexo</label>
-                                    <input type="text" class="form-control" id="sexo" value="{{$alumno->sexo->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="sexo" value="{{optional($alumno->sexo)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
@@ -62,6 +62,24 @@
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="email_institucional">Correo Institucional</label>
                                     <input type="text" class="form-control" id="email_institucional" value="{{$alumno->email_institucional}}" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 mb-3">
+                                    <label class="form-label">Carrera</label>
+                                    <input type="text" class="form-control" value="{{ optional($alumno->Carrera)->nombre_fantasia ?? 'Sin carrera cargada' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label">Facultad</label>
+                                    <input type="text" class="form-control" value="{{ optional(optional($alumno->Carrera)->Facultad)->nombre }}" readonly>
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label">Ingreso</label>
+                                    <input type="text" class="form-control text-center" value="{{ $alumno->ingreso_texto }}" readonly>
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label">Semestre actual</label>
+                                    <input type="text" class="form-control text-center fw-bold" value="{{ $alumno->semestre_actual ? $alumno->semestre_actual . '.º semestre' : '' }}" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -249,13 +267,13 @@
                         <div class="col-lg-6 mb-3">
                             <label class="form-label" for="cargado_por">Cargado por:</label>
                             <br>
-                            {{$alumno->cargadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->created_at)->format('d/m/Y H:i:s')}}
+                            {{optional($alumno->cargadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->created_at)->format('d/m/Y H:i:s')}}
                         </div>
                         @if ($alumno->actualizado_por_id)
                             <div class="col-lg-6 mb-3">
                                 <label class="form-label" for="cargado_por">Última actualización hecha por:</label>
                                 <br>
-                                {{$alumno->actualizadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->updated_at)->format('d/m/Y H:i:s')}}
+                                {{optional($alumno->actualizadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->updated_at)->format('d/m/Y H:i:s')}}
                             </div>
                         @endif
                     </div>

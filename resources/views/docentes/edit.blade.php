@@ -1,5 +1,5 @@
 @can('editar_docentes')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Docente @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -239,7 +239,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="barrio">Barrio <span class="text-danger">(*)</span></label>
+                                    <label class="form-label" for="barrio">Barrio</label>
                                     <input type="hidden" id="barrio_input" value="{{$docente->barrio_id}}">
                                     <select class="selectpicker form-control @error('barrio') is-invalid @enderror" id="barrio" name="barrio" data-live-search="true" disabled>
                                         <option value="" selected disabled>Seleccionar...</option>
@@ -257,6 +257,7 @@
                         <div class="col-lg-12 mb-3">
                             <div class="card">
                                 <div class="card-body">
+                                    @include('docentes.partials.carreras')
                                     <ul class="nav nav-pills arrow-navtabs nav-info nav-justified bg-light gap-2 mb-4" role="tablist">
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link active align-middle" data-bs-toggle="tab" href="#tablistFormacion" role="tab" aria-selected="true">

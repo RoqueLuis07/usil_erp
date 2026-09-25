@@ -1,5 +1,5 @@
 @can('ver_asistencias_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Asistencias @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">

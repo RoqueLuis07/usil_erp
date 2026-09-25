@@ -1,5 +1,5 @@
 @can('editar_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Alumno @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -223,7 +223,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="barrio">Barrio <span class="text-danger">(*)</span></label>
+                                    <label class="form-label" for="barrio">Barrio</label>
                                     <input type="hidden" id="barrio_input" value="{{$alumno->barrio_id}}">
                                     <select class="selectpicker form-control @error('barrio') is-invalid @enderror" id="barrio" name="barrio" data-live-search="true" disabled>
                                         <option value="" selected disabled>Seleccionar...</option>
@@ -241,17 +241,16 @@
                         <div class="col-lg-12 mb-3">
                             <div class="card">
                                 <div class="card-body">
+                                    @include('alumnos.partials.carrera-ingreso')
                                     <ul class="nav nav-pills arrow-navtabs nav-info nav-justified bg-light gap-2 mb-4" role="tablist">
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link active align-middle" data-bs-toggle="tab" href="#tablistFormacion" role="tab" aria-selected="true">
                                                 Formación Educativa
-                                                <span class="badge bg-danger">Req.</span>
                                             </a>
                                         </li>
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link align-middle" data-bs-toggle="tab" href="#tablistFamiliar1" role="tab" aria-selected="true">
                                                 Familiar 1
-                                                <span class="badge bg-danger">Req.</span>
                                             </a>
                                         </li>
                                         <li class="nav-item" role="presentation">
@@ -269,7 +268,7 @@
                                         <div class="tab-pane active show" id="tablistFormacion" role="tabpanel">
                                             <div class="row">
                                                 <div class="col-lg-4 mb-3">
-                                                    <label class="form-label" for="formacion">Formación <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="formacion">Formación</label>
                                                     <select class="selectpicker form-control @error('formacion') is-invalid @enderror" id="formacion" name="formacion" data-live-search="true">
                                                         <option value="" selected disabled>Seleccionar...</option>
                                                         @foreach ($alumnos_formaciones as $formacion)
@@ -283,7 +282,7 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-4 mb-3">
-                                                    <label class="form-label" for="institucion_educativa">Institución Educativa <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="institucion_educativa">Institución Educativa</label>
                                                     <div class="d-flex flex-row bd-highlight">
                                                         <select class="selectpicker form-control @error('institucion_educativa') is-invalid @enderror" id="institucion_educativa" name="institucion_educativa" data-live-search="true">
                                                             <option value="" selected disabled>Seleccionar...</option>
@@ -316,7 +315,7 @@
                                         <div class="tab-pane" id="tablistFamiliar1" role="tabpanel">
                                             <div class="row">
                                                 <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_nombre_familiar1">Primer Nombre <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="primer_nombre_familiar1">Primer Nombre</label>
                                                     <input type="text" class="form-control @error('primer_nombre_familiar1') is-invalid @enderror" id="primer_nombre_familiar1" name="primer_nombre_familiar1" @if ($alumno->familiar_uno_id) value="{{old('primer_nombre_familiar1', $alumno->familiarUno->primer_nombre)}}" @else value="{{old('primer_nombre_familiar1')}}" @endif  placeholder="Escriba el nombre">
                                                     @error('primer_nombre_familiar1')
                                                         <span class="invalid-feedback" role="alert">
@@ -343,7 +342,7 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_apellido_familiar1">Primer Apellido <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="primer_apellido_familiar1">Primer Apellido</label>
                                                     <input type="text" class="form-control @error('primer_apellido_familiar1') is-invalid @enderror" id="primer_apellido_familiar1" name="primer_apellido_familiar1" @if ($alumno->familiar_uno_id) value="{{old('primer_apellido_familiar1', $alumno->familiarUno->primer_apellido)}}" @else value="{{old('primer_apellido_familiar1')}}" @endif placeholder="Escriba el apellido">
                                                     @error('primer_apellido_familiar1')
                                                         <span class="invalid-feedback" role="alert">
@@ -361,7 +360,7 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="relacion_familiar1">Relación Familiar <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="relacion_familiar1">Relación Familiar</label>
                                                     <select class="selectpicker form-control @error('relacion_familiar1') is-invalid @enderror" id="relacion_familiar1" name="relacion_familiar1">
                                                         <option value="" selected disabled>Seleccionar...</option>
                                                         @if ($alumno->familiar_uno_id)
@@ -383,7 +382,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="celular_familiar1">N° de Celular <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="celular_familiar1">N° de Celular</label>
                                                     <input type="text" class="form-control @error('celular_familiar1') is-invalid @enderror" id="celular_familiar1" name="celular_familiar1" @if ($alumno->familiar_uno_id) value="{{old('celular_familiar1', $alumno->familiarUno->celular)}}" @else value="{{old('celular_familiar1')}}" @endif placeholder="Escriba el N° de celular">
                                                     @error('celular_familiar1')
                                                         <span class="invalid-feedback" role="alert">
@@ -392,7 +391,7 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-4 mb-3">
-                                                    <label class="form-label" for="email_familiar1">Correo <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="email_familiar1">Correo</label>
                                                     <input type="text" class="form-control @error('email_familiar1') is-invalid @enderror" id="email_familiar1" name="email_familiar1" @if ($alumno->familiar_uno_id) value="{{old('email_familiar1', $alumno->familiarUno->email)}}" @else value="{{old('email_familiar1')}}" @endif placeholder="Escriba el correo electrónico">
                                                     @error('email_familiar1')
                                                         <span class="invalid-feedback" role="alert">
@@ -694,6 +693,7 @@
         <script src="{{ URL::asset('js/flatpickr.min.js') }}"></script>
         <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
         @include('alumnos.scripts.edit-scripts')
+        @include('alumnos.scripts.carrera-ingreso-scripts')
         @include('alumnos.scripts.edit-clientes-scripts')
     @endsection
 @endcan

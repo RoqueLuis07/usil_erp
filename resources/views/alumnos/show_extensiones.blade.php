@@ -1,5 +1,5 @@
 @can('ver_extensiones_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Extensiones Universitarias @endsection
     @section('content')
         @component('components.breadcrumb')
