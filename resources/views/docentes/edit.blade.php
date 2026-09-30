@@ -122,7 +122,7 @@
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
-                                    <select class="form-control @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
+                                    <select class="form-control @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" data-size="5" multiple title="Seleccionar...">
 
                                     </select>
                                     @error('nacionalidad')

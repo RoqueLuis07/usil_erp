@@ -77,16 +77,30 @@
 
         /* ---- Estructura de la maqueta académica ---- */
         .ac-shell{display:flex;min-height:100vh;}
-        .ac-nav{width:250px;flex:0 0 250px;background:var(--ac-surface);border-right:1px solid var(--ac-border);padding:18px 10px;box-sizing:border-box;position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;}
+        .ac-nav{width:250px;flex:0 0 250px;background:var(--ac-surface);border-right:1px solid var(--ac-border);padding:18px 10px;box-sizing:border-box;position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;overflow-x:hidden;transition:width .15s, flex-basis .15s;}
         .ac-nav-brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;}
         .ac-nav-brand svg{flex:0 0 auto;}
-        .ac-nav-brand span{font-size:13px;font-weight:700;color:var(--ac-text);line-height:1.25;}
+        .ac-nav-brand span{font-size:13px;font-weight:700;color:var(--ac-text);line-height:1.25;white-space:nowrap;}
         .ac-nav-group{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ac-text-muted);padding:14px 10px 6px;text-transform:uppercase;letter-spacing:0.05em;}
-        .ac-nav-item{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:0;border-left:3px solid transparent;font-size:13px;color:var(--ac-text);text-decoration:none;}
+        .ac-nav-item{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:0;border-left:3px solid transparent;font-size:13px;color:var(--ac-text);text-decoration:none;white-space:nowrap;}
         .ac-nav-item:hover{background:rgba(15,76,92,0.08);color:var(--ac-text);}
         .ac-nav-item.active{background:var(--ac-accent-soft);border-left-color:var(--ac-accent);color:var(--ac-accent);font-weight:600;}
-        .ac-nav-item .ac-num{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ac-text-muted);}
-        .ac-nav-item.active .ac-num{color:var(--ac-accent);}
+        .ac-nav-item svg{flex:0 0 auto;}
+        .ac-nav-section-toggle{display:flex;align-items:center;width:100%;gap:6px;background:none;border:none;margin-top:8px;padding:8px 10px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ac-text-muted);text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;text-align:left;white-space:nowrap;}
+        .ac-nav-section-toggle:hover{color:var(--ac-text);}
+        .ac-nav-section-toggle .ac-chevron{margin-left:auto;flex:0 0 auto;transition:transform .15s;}
+        .ac-nav-section-toggle[aria-expanded="false"] .ac-chevron{transform:rotate(-90deg);}
+        .ac-nav-section-body.collapsed{display:none;}
+        .ac-nav-section-body .ac-nav-item{padding-left:20px;}
+        .ac-nav-collapse-btn{position:sticky;top:18px;align-self:flex-start;flex:0 0 20px;width:20px;height:20px;margin:18px 0 0 -10px;border-radius:50%;background:var(--ac-surface);border:1px solid var(--ac-border-strong);color:var(--ac-text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;padding:0;}
+        .ac-nav-collapse-btn:hover{color:var(--ac-accent);border-color:var(--ac-accent);}
+        .ac-nav-collapse-btn svg{transition:transform .15s;}
+        .ac-nav.ac-nav-mini{width:60px;flex:0 0 60px;}
+        .ac-nav.ac-nav-mini .ac-nav-label, .ac-nav.ac-nav-mini .ac-nav-brand span, .ac-nav.ac-nav-mini .ac-nav-section-toggle{display:none;}
+        .ac-nav.ac-nav-mini .ac-nav-section-body.collapsed{display:block;}
+        .ac-nav.ac-nav-mini .ac-nav-item{justify-content:center;padding:0;}
+        .ac-nav.ac-nav-mini .ac-nav-brand{justify-content:center;padding:0 0 18px;}
+        .ac-nav.ac-nav-mini ~ .ac-nav-collapse-btn svg{transform:rotate(180deg);}
         .ac-content-col{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--ac-bg);}
         .ac-topbar{flex:0 0 auto;background:var(--ac-surface);border-bottom:1px solid var(--ac-border-strong);padding:14px 24px 0;}
         .ac-topbar-row{display:flex;align-items:center;gap:14px;padding-bottom:12px;}
@@ -118,142 +132,169 @@
             </div>
 
             @if (Auth::user()->hasRole('ALUMNO'))
-                <div class="ac-nav-group">Inicio</div>
                 <a href="{{route('pantallas_alumnos.index', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_alumnos.index') ? 'active' : '' }}">
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
-                    Panel
-                    <span class="ac-num">01</span>
+                    <span class="ac-nav-label">Panel</span>
                 </a>
                 @can('ver_extensiones_alumnos_pantalla')
-                    <div class="ac-nav-group">Extensión Universitaria</div>
-                    <a href="{{route('pantallas_alumnos.extensiones_universitarias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_alumnos.extensiones_universitarias') ? 'active' : '' }}">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 6.3v3.9l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-                        Mi Extensión
-                        <span class="ac-num">02</span>
-                    </a>
-                    @can('ver_catalogo_extensiones_alumnos_pantalla')
-                        <a href="{{route('pantallas_alumnos.catalogo_extensiones_universitarias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_alumnos.catalogo_extensiones_universitarias') ? 'active' : '' }}">
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-                            Catálogo de Proyectos
-                            <span class="ac-num">03</span>
+                    @php $abierto = request()->routeIs('pantallas_alumnos.extensiones_universitarias') || request()->routeIs('pantallas_alumnos.catalogo_extensiones_universitarias'); @endphp
+                    <button type="button" class="ac-nav-section-toggle" data-target="acsec-ext" aria-expanded="{{ $abierto ? 'true' : 'false' }}">
+                        Extensión Universitaria
+                        <svg class="ac-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="ac-nav-section-body {{ $abierto ? '' : 'collapsed' }}" id="acsec-ext">
+                        <a href="{{route('pantallas_alumnos.extensiones_universitarias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_alumnos.extensiones_universitarias') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 6.3v3.9l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                            <span class="ac-nav-label">Mi Extensión</span>
                         </a>
-                    @endcan
+                        @can('ver_catalogo_extensiones_alumnos_pantalla')
+                            <a href="{{route('pantallas_alumnos.catalogo_extensiones_universitarias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_alumnos.catalogo_extensiones_universitarias') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                                <span class="ac-nav-label">Catálogo de Proyectos</span>
+                            </a>
+                        @endcan
+                    </div>
                 @endcan
                 @can('ver_noticias_avisos_alumnos_pantalla')
-                    <div class="ac-nav-group">Noticias</div>
                     <a href="{{route('pantallas_alumnos.noticias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_alumnos.noticias') ? 'active' : '' }}">
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
-                        Noticias y Avisos
-                        <span class="ac-num">04</span>
+                        <span class="ac-nav-label">Noticias y Avisos</span>
                     </a>
                 @endcan
 
             @elseif (Auth::user()->hasAnyRole(['DOCENTE', 'ENCARGADO_DOCENTE']))
-                <div class="ac-nav-group">Inicio</div>
                 <a href="{{route('pantallas_docentes.index', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_docentes.index') ? 'active' : '' }}">
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
-                    Panel
-                    <span class="ac-num">01</span>
+                    <span class="ac-nav-label">Panel</span>
                 </a>
                 @can('ver_extensiones_docentes_pantalla')
-                    <div class="ac-nav-group">Extensión Universitaria</div>
-                    <a href="{{route('pantallas_docentes.extensiones_universitarias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_docentes.extensiones_universitarias') ? 'active' : '' }}">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 6.3v3.9l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-                        Mis Extensiones
-                        <span class="ac-num">02</span>
-                    </a>
-                    @can('crear_extensiones_docentes_pantalla')
-                        <a href="{{route('pantallas_docentes.create_extensiones_universitarias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_docentes.create_extensiones_universitarias') ? 'active' : '' }}">
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                            Nueva Extensión
-                            <span class="ac-num">03</span>
+                    @php $abierto = request()->routeIs('pantallas_docentes.extensiones_universitarias') || request()->routeIs('pantallas_docentes.create_extensiones_universitarias'); @endphp
+                    <button type="button" class="ac-nav-section-toggle" data-target="acsec-ext" aria-expanded="{{ $abierto ? 'true' : 'false' }}">
+                        Extensión Universitaria
+                        <svg class="ac-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="ac-nav-section-body {{ $abierto ? '' : 'collapsed' }}" id="acsec-ext">
+                        <a href="{{route('pantallas_docentes.extensiones_universitarias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_docentes.extensiones_universitarias') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 6.3v3.9l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                            <span class="ac-nav-label">Mis Extensiones</span>
                         </a>
-                    @endcan
+                        @can('crear_extensiones_docentes_pantalla')
+                            <a href="{{route('pantallas_docentes.create_extensiones_universitarias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_docentes.create_extensiones_universitarias') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                                <span class="ac-nav-label">Nueva Extensión</span>
+                            </a>
+                        @endcan
+                    </div>
                 @endcan
 
             @else
-                <div class="ac-nav-group">Inicio</div>
                 <a href="{{route('root')}}" class="ac-nav-item {{ request()->routeIs('root') ? 'active' : '' }}">
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
-                    Panel
-                    <span class="ac-num">01</span>
+                    <span class="ac-nav-label">Panel</span>
                 </a>
                 @if (Auth::user()->can('ver_alumnos') || Auth::user()->can('ver_docentes'))
-                    <div class="ac-nav-group">Gestión académica</div>
-                    @can('ver_alumnos')
-                        <a href="{{route('alumnos.index')}}" class="ac-nav-item {{ request()->routeIs('alumnos.*') ? 'active' : '' }}">
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M2 6.5L10 3l8 3.5-8 3.5-8-3.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-                            Alumnos
-                            <span class="ac-num">02</span>
-                        </a>
-                    @endcan
-                    @can('ver_docentes')
-                        <a href="{{route('docentes.index')}}" class="ac-nav-item {{ request()->routeIs('docentes.*') ? 'active' : '' }}">
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="2.6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 16c0-3 2.5-4.6 5.5-4.6s5.5 1.6 5.5 4.6" stroke="currentColor" stroke-width="1.2"/></svg>
-                            Docentes
-                            <span class="ac-num">03</span>
-                        </a>
-                    @endcan
-                    @if (Auth::user()->can('crear_alumnos') || Auth::user()->can('crear_docentes'))
-                        <a href="{{route('importaciones.index')}}" class="ac-nav-item {{ request()->routeIs('importaciones.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
-                            Carga masiva (CSV)
-                            <span class="ac-num">04</span>
-                        </a>
-                    @endif
+                    @php $abierto = request()->routeIs('alumnos.*') || request()->routeIs('docentes.*') || request()->routeIs('importaciones.*'); @endphp
+                    <button type="button" class="ac-nav-section-toggle" data-target="acsec-gestion" aria-expanded="{{ $abierto ? 'true' : 'false' }}">
+                        Gestión Académica
+                        <svg class="ac-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="ac-nav-section-body {{ $abierto ? '' : 'collapsed' }}" id="acsec-gestion">
+                        @can('ver_alumnos')
+                            <a href="{{route('alumnos.index')}}" class="ac-nav-item {{ request()->routeIs('alumnos.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M2 6.5L10 3l8 3.5-8 3.5-8-3.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                                <span class="ac-nav-label">Alumnos</span>
+                            </a>
+                        @endcan
+                        @can('ver_docentes')
+                            <a href="{{route('docentes.index')}}" class="ac-nav-item {{ request()->routeIs('docentes.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="2.6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 16c0-3 2.5-4.6 5.5-4.6s5.5 1.6 5.5 4.6" stroke="currentColor" stroke-width="1.2"/></svg>
+                                <span class="ac-nav-label">Docentes</span>
+                            </a>
+                        @endcan
+                        @if (Auth::user()->can('crear_alumnos') || Auth::user()->can('crear_docentes'))
+                            <a href="{{route('importaciones.index')}}" class="ac-nav-item {{ request()->routeIs('importaciones.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 3v9M10 3l-3.2 3.2M10 3l3.2 3.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 14.5v1.8a1 1 0 001 1h10a1 1 0 001-1v-1.8" stroke="currentColor" stroke-width="1.3"/></svg>
+                                <span class="ac-nav-label">Carga masiva (CSV)</span>
+                            </a>
+                        @endif
+                    </div>
                 @endif
                 @can('ver_extensiones_universitarias')
-                    <div class="ac-nav-group">Extensión Universitaria</div>
-                    <a href="{{route('extensiones_universitarias.index')}}" class="ac-nav-item {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 6.3v3.9l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-                        Actividades
-                        <span class="ac-num">05</span>
-                    </a>
-                    @can('ver_tipos_extensiones_universitarias')
-                        <a href="{{route('tipos_extensiones_universitarias.index')}}" class="ac-nav-item {{ request()->routeIs('tipos_extensiones_universitarias.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
-                            Tipos de Actividad
-                            <span class="ac-num">06</span>
+                    @php $abierto = request()->routeIs('extensiones_universitarias.*') || request()->routeIs('tipos_extensiones_universitarias.*') || request()->routeIs('requerimientos_extensiones_universitarias.*') || request()->routeIs('parametros_extension.*'); @endphp
+                    <button type="button" class="ac-nav-section-toggle" data-target="acsec-extuniv" aria-expanded="{{ $abierto ? 'true' : 'false' }}">
+                        Extensión Universitaria
+                        <svg class="ac-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="ac-nav-section-body {{ $abierto ? '' : 'collapsed' }}" id="acsec-extuniv">
+                        <a href="{{route('extensiones_universitarias.index')}}" class="ac-nav-item {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 6.3v3.9l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                            <span class="ac-nav-label">Actividades</span>
                         </a>
-                    @endcan
-                    @can('ver_requerimientos_extensiones_universitarias')
-                        <a href="{{route('requerimientos_extensiones_universitarias.show')}}" class="ac-nav-item {{ request()->routeIs('requerimientos_extensiones_universitarias.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
-                            Requerimientos
-                            <span class="ac-num">07</span>
-                        </a>
-                    @endcan
-                    @can('gestionar_parametros_extensiones_universitarias')
-                        <a href="{{route('parametros_extension.index')}}" class="ac-nav-item {{ request()->routeIs('parametros_extension.*') ? 'active' : '' }}" style="padding-left:22px;font-size:12px;">
-                            Facultades y Carreras
-                            <span class="ac-num">08</span>
-                        </a>
-                    @endcan
+                        @can('ver_tipos_extensiones_universitarias')
+                            <a href="{{route('tipos_extensiones_universitarias.index')}}" class="ac-nav-item {{ request()->routeIs('tipos_extensiones_universitarias.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 10.3V4a1 1 0 011-1h6.3L17 9.7 10.3 16.4 3 9.7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+                                <span class="ac-nav-label">Tipos de Actividad</span>
+                            </a>
+                        @endcan
+                        @can('ver_requerimientos_extensiones_universitarias')
+                            <a href="{{route('requerimientos_extensiones_universitarias.show')}}" class="ac-nav-item {{ request()->routeIs('requerimientos_extensiones_universitarias.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M6 7.3h8M6 10h8M6 12.7h5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+                                <span class="ac-nav-label">Requerimientos</span>
+                            </a>
+                        @endcan
+                        @can('gestionar_parametros_extensiones_universitarias')
+                            <a href="{{route('parametros_extension.index')}}" class="ac-nav-item {{ request()->routeIs('parametros_extension.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 17V8l6-4 6 4v9" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M3 17h14M8 17v-4h4v4" stroke="currentColor" stroke-width="1.2"/></svg>
+                                <span class="ac-nav-label">Facultades y Carreras</span>
+                            </a>
+                        @endcan
+                    </div>
                 @endcan
                 @if (Auth::user()->can('generar_reportes_extensiones_universitarias') || Auth::user()->can('ver_docentes'))
-                    <div class="ac-nav-group">Reportes</div>
-                    @can('generar_reportes_extensiones_universitarias')
-                        <a href="{{route('reportes_extension.extensiones')}}" class="ac-nav-item {{ request()->routeIs('reportes_extension.extensiones') ? 'active' : '' }}">
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="6" width="3" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="14" y="3" width="3" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
-                            Reporte de Extensión
-                            <span class="ac-num">09</span>
-                        </a>
-                    @endcan
-                    @can('ver_docentes')
-                        <a href="{{route('reportes_extension.docentes')}}" class="ac-nav-item {{ request()->routeIs('reportes_extension.docentes') ? 'active' : '' }}">
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="6" width="3" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="14" y="3" width="3" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
-                            Reporte de Docentes
-                            <span class="ac-num">10</span>
-                        </a>
-                    @endcan
+                    @php $abierto = request()->routeIs('reportes_extension.*'); @endphp
+                    <button type="button" class="ac-nav-section-toggle" data-target="acsec-reportes" aria-expanded="{{ $abierto ? 'true' : 'false' }}">
+                        Reportes
+                        <svg class="ac-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="ac-nav-section-body {{ $abierto ? '' : 'collapsed' }}" id="acsec-reportes">
+                        @can('generar_reportes_extensiones_universitarias')
+                            <a href="{{route('reportes_extension.extensiones')}}" class="ac-nav-item {{ request()->routeIs('reportes_extension.extensiones') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="6" width="3" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="14" y="3" width="3" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+                                <span class="ac-nav-label">Reporte de Extensión</span>
+                            </a>
+                        @endcan
+                        @can('ver_docentes')
+                            <a href="{{route('reportes_extension.docentes')}}" class="ac-nav-item {{ request()->routeIs('reportes_extension.docentes') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="6" width="3" height="11" stroke="currentColor" stroke-width="1.2"/><rect x="14" y="3" width="3" height="14" stroke="currentColor" stroke-width="1.2"/></svg>
+                                <span class="ac-nav-label">Reporte de Docentes</span>
+                            </a>
+                        @endcan
+                    </div>
                 @endif
                 @can('ver_usuarios')
-                    <div class="ac-nav-group">Administración</div>
-                    <a href="{{route('usuarios.index')}}" class="ac-nav-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="2.6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 16c0-3 2.5-4.6 5.5-4.6s5.5 1.6 5.5 4.6" stroke="currentColor" stroke-width="1.2"/></svg>
-                        Usuarios
-                        <span class="ac-num">11</span>
-                    </a>
+                    @php $abierto = request()->routeIs('usuarios.*') || request()->routeIs('roles.*'); @endphp
+                    <button type="button" class="ac-nav-section-toggle" data-target="acsec-admin" aria-expanded="{{ $abierto ? 'true' : 'false' }}">
+                        Administración
+                        <svg class="ac-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="ac-nav-section-body {{ $abierto ? '' : 'collapsed' }}" id="acsec-admin">
+                        <a href="{{route('usuarios.index')}}" class="ac-nav-item {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="2.6" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 16c0-3 2.5-4.6 5.5-4.6s5.5 1.6 5.5 4.6" stroke="currentColor" stroke-width="1.2"/></svg>
+                            <span class="ac-nav-label">Usuarios</span>
+                        </a>
+                        @can('ver_roles')
+                            <a href="{{route('roles.index')}}" class="ac-nav-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 2.5l6 2.3v4.4c0 3.6-2.4 6.7-6 7.8-3.6-1.1-6-4.2-6-7.8V4.8l6-2.3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.3 10l1.9 1.9L12.7 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span class="ac-nav-label">Roles</span>
+                            </a>
+                        @endcan
+                    </div>
                 @endcan
             @endif
         </div>
+        <button type="button" id="ac-nav-collapse" class="ac-nav-collapse-btn" title="Contraer panel" aria-label="Contraer panel">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5L3.5 6l4 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
 
         <div class="ac-content-col">
             <div class="ac-topbar">
@@ -309,6 +350,33 @@
                 try { localStorage.setItem('ac-theme', nuevo); } catch (e) {}
                 pintarIconoTema();
             });
+
+            document.querySelectorAll('.ac-nav-section-toggle').forEach(function (boton) {
+                boton.addEventListener('click', function () {
+                    var cuerpo = document.getElementById(boton.getAttribute('data-target'));
+                    var abierto = boton.getAttribute('aria-expanded') === 'true';
+                    boton.setAttribute('aria-expanded', abierto ? 'false' : 'true');
+                    if (cuerpo) cuerpo.classList.toggle('collapsed', abierto);
+                });
+            });
+
+            var nav = document.querySelector('.ac-nav');
+            var botonNav = document.getElementById('ac-nav-collapse');
+            if (nav && botonNav) {
+                function pintarNavMini() {
+                    var mini = nav.classList.contains('ac-nav-mini');
+                    botonNav.setAttribute('title', mini ? 'Expandir panel' : 'Contraer panel');
+                }
+                try {
+                    if (localStorage.getItem('ac-nav-mini') === '1') nav.classList.add('ac-nav-mini');
+                } catch (e) {}
+                pintarNavMini();
+                botonNav.addEventListener('click', function () {
+                    nav.classList.toggle('ac-nav-mini');
+                    try { localStorage.setItem('ac-nav-mini', nav.classList.contains('ac-nav-mini') ? '1' : '0'); } catch (e) {}
+                    pintarNavMini();
+                });
+            }
 
             var nombresIconos = {
                 'ri-eye-fill': 'Ver', 'ri-edit-fill': 'Editar', 'ri-delete-bin-fill': 'Eliminar',

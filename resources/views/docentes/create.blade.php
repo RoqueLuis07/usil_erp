@@ -123,7 +123,7 @@
                                 </div>
                                 <div class="col-lg-4 mb-3">
                                     <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
-                                    <select class="selectpicker form-control nacionalidad @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
+                                    <select class="selectpicker form-control nacionalidad @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" data-size="5" multiple title="Seleccionar...">
                                         @foreach ($nacionalidades as $nacionalidad)
                                             <option value="{{$nacionalidad->id}}" @if (in_array(strval($nacionalidad->id), array_map("strval", (array) old("nacionalidad", [])))) selected @endif>{{$nacionalidad->nombre}}</option>
                                         @endforeach
