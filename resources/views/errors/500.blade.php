@@ -52,7 +52,7 @@ Error 500
 
                                                         document.write(new Date().getFullYear())
 
-                                                    </script>. Creado con <i class="ti ti-heart-filled text-danger"></i> by BSoft
+                                                    </script>. {{ config('app.name') }}
                                                 </p>
                                             </div>
                                         </div>
