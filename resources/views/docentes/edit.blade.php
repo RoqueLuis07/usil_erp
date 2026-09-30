@@ -23,8 +23,10 @@
                         <!-- end card header -->
                         <div class="card-body">
                             <p class="text-muted">Por favor, complete los <code>campos marcados</code> para poder agregar un registro con éxito</p>
+
+                            <h6 class="text-muted text-uppercase mb-3" style="font-size: 12px; letter-spacing: .04em;">Identidad</h6>
                             <div class="row">
-                                <div class="col-lg-4 mb-3">
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="nombres_docente">Nombres <span class="text-danger">(*)</span></label>
                                     <input type="text" class="form-control @error('nombres_docente') is-invalid @enderror" id="nombres_docente" name="nombres_docente" value="{{old('nombres_docente', implode(' ', array_filter([$docente->primer_nombre, $docente->segundo_nombre, $docente->tercer_nombre])))}}" placeholder="Todos los nombres, ej.: Juan Carlos">
                                     @error('nombres_docente')
@@ -33,7 +35,7 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-4 mb-3">
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="apellidos_docente">Apellidos <span class="text-danger">(*)</span></label>
                                     <input type="text" class="form-control @error('apellidos_docente') is-invalid @enderror" id="apellidos_docente" name="apellidos_docente" value="{{old('apellidos_docente', implode(' ', array_filter([$docente->primer_apellido, $docente->segundo_apellido])))}}" placeholder="Todos los apellidos, ej.: Gonzalez Benitez">
                                     @error('apellidos_docente')
@@ -47,19 +49,6 @@
                                     <input type="text" class="form-control @error('numero_documento') is-invalid @enderror" id="numero_documento" name="numero_documento" value="{{old('numero_documento', $docente->numero_documento)}}" placeholder="Escriba el N° de documento">
                                     @error('numero_documento')
                                         <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4 mb-3">
-                                    <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
-                                    <select class="form-control @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
-
-                                    </select>
-                                    @error('nacionalidad')
-                                        <span class="invalid-feedback" role="alert" id="error-select">
                                             <strong>{{$message}}</strong>
                                         </span>
                                     @enderror
@@ -90,25 +79,10 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="email_personal">Correo Personal <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('email_personal') is-invalid @enderror" id="email_personal" name="email_personal" value="{{old('email_personal', $docente->email_personal)}}" placeholder="Escriba el correo electrónico">
-                                    @error('email_personal')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="email_institucional">Correo Institucional</label>
-                                    <input type="text" class="form-control @error('email_institucional') is-invalid @enderror" id="email_institucional" name="email_institucional" value="{{old('email_institucional', $docente->email_institucional)}}" placeholder="Escriba el correo electrónico">
-                                    @error('email_institucional')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
                             </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Contacto</h6>
                             <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="telefono">N° de Teléfono</label>
@@ -128,53 +102,39 @@
                                         </span>
                                     @enderror
                                 </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="email_personal">Correo Personal <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('email_personal') is-invalid @enderror" id="email_personal" name="email_personal" value="{{old('email_personal', $docente->email_personal)}}" placeholder="Escriba el correo electrónico">
+                                    @error('email_personal')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="usuario">Usuario Asignado</label>
-                                    <select class="selectpicker form-control @error('usuario') is-invalid @enderror" id="usuario" name="usuario" data-live-search="true">
-                                        <option value="" selected disabled>Seleccionar...</option>
-                                        @foreach ($usuarios as $usuario)
-                                            <option value="{{$usuario->id}}" @if (old('usuario') == strval($usuario->id) || $docente->usuario_id == strval($usuario->id)) selected @endif data-subtext="{{$usuario->rol->name}}">{{$usuario->name}}</option>
-                                        @endforeach
+                                    <label class="form-label" for="email_institucional">Correo Institucional</label>
+                                    <input type="text" class="form-control @error('email_institucional') is-invalid @enderror" id="email_institucional" name="email_institucional" value="{{old('email_institucional', $docente->email_institucional)}}" placeholder="Escriba el correo electrónico">
+                                    @error('email_institucional')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
+                                    <select class="form-control @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
+
                                     </select>
-                                    @error('usuario')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3 text-center">
-                                    <div>
-                                        <label class="form-label" for="ubs">Docente UBS <span class="text-danger">(*)</span></label>
-                                    </div>
-                                    <div class="btn-group @error('ubs') is-invalid @enderror" role="group">
-                                        <input type="radio" class="btn-check ubs1" id="ubs1" name="ubs" value="false" @if (old('ubs') == 'false' || $docente->ubs == false) checked @endif>
-                                        <label class="btn btn-outline-danger" for="ubs1">No</label>
-                                        <input type="radio" class="btn-check ubs2" id="ubs2" name="ubs" value="true" @if (old('ubs') == 'true' || $docente->ubs == true) checked @endif>
-                                        <label class="btn btn-outline-success" for="ubs2">Si</label>
-                                    </div>
-                                    @error('ubs')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3 text-center">
-                                    <div>
-                                        <label class="form-label" for="tutor_tesis">Tutor T.F.G. <span class="text-danger">(*)</span></label>
-                                    </div>
-                                    <div class="btn-group @error('tutor_tesis') is-invalid @enderror" role="group">
-                                        <input type="radio" class="btn-check tutor_tesis1" id="tutor_tesis1" name="tutor_tesis" value="false" @if (old('tutor_tesis') == 'false' || $docente->tutor_tesis == false) checked @endif>
-                                        <label class="btn btn-outline-danger" for="tutor_tesis1">No</label>
-                                        <input type="radio" class="btn-check tutor_tesis2" id="tutor_tesis2" name="tutor_tesis" value="true" @if (old('tutor_tesis') == 'true' || $docente->tutor_tesis == true) checked @endif>
-                                        <label class="btn btn-outline-success" for="tutor_tesis2">Si</label>
-                                    </div>
-                                    @error('tutor_tesis')
-                                        <span class="invalid-feedback" role="alert">
+                                    @error('nacionalidad')
+                                        <span class="invalid-feedback" role="alert" id="error-select">
                                             <strong>{{$message}}</strong>
                                         </span>
                                     @enderror
                                 </div>
                             </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Ubicación</h6>
                             <div class="row">
                                 <div class="col-lg-6 mb-3">
                                     <label class="form-label" for="direccion">Dirección <span class="text-danger">(*)</span></label>
@@ -219,6 +179,57 @@
                                     </select>
                                     @error('barrio')
                                         <span class="invalid-feedback" role="alert" id="error-select">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Cuenta</h6>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="usuario">Usuario Asignado</label>
+                                    <select class="selectpicker form-control @error('usuario') is-invalid @enderror" id="usuario" name="usuario" data-live-search="true">
+                                        <option value="" selected disabled>Seleccionar...</option>
+                                        @foreach ($usuarios as $usuario)
+                                            <option value="{{$usuario->id}}" @if (old('usuario') == strval($usuario->id) || $docente->usuario_id == strval($usuario->id)) selected @endif data-subtext="{{$usuario->rol->name}}">{{$usuario->name}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('usuario')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-2 mb-3 text-center">
+                                    <div>
+                                        <label class="form-label" for="ubs">Docente UBS <span class="text-danger">(*)</span></label>
+                                    </div>
+                                    <div class="btn-group @error('ubs') is-invalid @enderror" role="group">
+                                        <input type="radio" class="btn-check ubs1" id="ubs1" name="ubs" value="false" @if (old('ubs') == 'false' || $docente->ubs == false) checked @endif>
+                                        <label class="btn btn-outline-danger" for="ubs1">No</label>
+                                        <input type="radio" class="btn-check ubs2" id="ubs2" name="ubs" value="true" @if (old('ubs') == 'true' || $docente->ubs == true) checked @endif>
+                                        <label class="btn btn-outline-success" for="ubs2">Si</label>
+                                    </div>
+                                    @error('ubs')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-2 mb-3 text-center">
+                                    <div>
+                                        <label class="form-label" for="tutor_tesis">Tutor T.F.G. <span class="text-danger">(*)</span></label>
+                                    </div>
+                                    <div class="btn-group @error('tutor_tesis') is-invalid @enderror" role="group">
+                                        <input type="radio" class="btn-check tutor_tesis1" id="tutor_tesis1" name="tutor_tesis" value="false" @if (old('tutor_tesis') == 'false' || $docente->tutor_tesis == false) checked @endif>
+                                        <label class="btn btn-outline-danger" for="tutor_tesis1">No</label>
+                                        <input type="radio" class="btn-check tutor_tesis2" id="tutor_tesis2" name="tutor_tesis" value="true" @if (old('tutor_tesis') == 'true' || $docente->tutor_tesis == true) checked @endif>
+                                        <label class="btn btn-outline-success" for="tutor_tesis2">Si</label>
+                                    </div>
+                                    @error('tutor_tesis')
+                                        <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
                                         </span>
                                     @enderror

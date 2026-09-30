@@ -25,8 +25,10 @@
                         <!-- end card header -->
                         <div class="card-body">
                             <p class="text-muted">Por favor, complete los <code>campos marcados</code> para poder agregar un registro con éxito</p>
+
+                            <h6 class="text-muted text-uppercase mb-3" style="font-size: 12px; letter-spacing: .04em;">Identidad</h6>
                             <div class="row">
-                                <div class="col-lg-4 mb-3">
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="nombres_alumno">Nombres <span class="text-danger">(*)</span></label>
                                     <input type="text" class="form-control @error('nombres_alumno') is-invalid @enderror" id="nombres_alumno" name="nombres_alumno" value="{{old('nombres_alumno')}}" placeholder="Todos los nombres, ej.: Juan Carlos">
                                     @error('nombres_alumno')
@@ -35,7 +37,7 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-4 mb-3">
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="apellidos_alumno">Apellidos <span class="text-danger">(*)</span></label>
                                     <input type="text" class="form-control @error('apellidos_alumno') is-invalid @enderror" id="apellidos_alumno" name="apellidos_alumno" value="{{old('apellidos_alumno')}}" placeholder="Todos los apellidos, ej.: Gonzalez Benitez">
                                     @error('apellidos_alumno')
@@ -53,8 +55,6 @@
                                         </span>
                                     @enderror
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="sexo">Sexo <span class="text-danger">(*)</span></label>
                                     <select class="selectpicker form-control @error('sexo') is-invalid @enderror" id="sexo" name="sexo">
@@ -81,6 +81,11 @@
                                         @enderror
                                     </div>
                                 </div>
+                            </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Contacto</h6>
+                            <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="telefono">N° de Teléfono</label>
                                     <input type="text" class="form-control @error('telefono') is-invalid @enderror" id="telefono" name="telefono" value="{{old('telefono')}}" placeholder="Escriba el N° de línea baja">
@@ -99,7 +104,16 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3">
+                                <div class="col-lg-4 mb-3">
+                                    <label class="form-label" for="email_personal">Correo Personal <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('email_personal') is-invalid @enderror" id="email_personal" name="email_personal" value="{{old('email_personal')}}" placeholder="Escriba el correo electrónico">
+                                    @error('email_personal')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-4 mb-3">
                                     <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
                                     <select class="selectpicker form-control nacionalidad @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
                                         @foreach ($nacionalidades as $nacionalidad)
@@ -110,16 +124,10 @@
 
                                     </span>
                                 </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="email_personal">Correo Personal <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('email_personal') is-invalid @enderror" id="email_personal" name="email_personal" value="{{old('email_personal')}}" placeholder="Escriba el correo electrónico">
-                                    @error('email_personal')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
                             </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Ubicación</h6>
                             <div class="row">
                                 <div class="col-lg-6 mb-3">
                                     <label class="form-label" for="direccion">Dirección <span class="text-danger">(*)</span></label>
@@ -167,8 +175,11 @@
                                     @enderror
                                 </div>
                             </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Cuenta</h6>
                             <div class="row">
-                                <div class="col-lg-2 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <label class="form-label" for="usuario">Usuario Asignado</label>
                                     <select class="selectpicker form-control @error('usuario') is-invalid @enderror" id="usuario" name="usuario">
                                         <option value="" selected disabled>Seleccionar...</option>
@@ -176,6 +187,7 @@
                                             <option value="{{$usuario->id}}" @if (old('usuario') == strval($usuario->id)) selected @endif data-subtext="{{$usuario->rol->name}}">{{$usuario->name}}</option>
                                         @endforeach
                                     </select>
+                                    <p class="text-muted mt-1 mb-0" style="font-size: 12px">Si se deja vacío, se crea un usuario nuevo con el rol Alumno.</p>
                                     @error('usuario')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
