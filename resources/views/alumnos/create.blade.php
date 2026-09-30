@@ -26,46 +26,19 @@
                         <div class="card-body">
                             <p class="text-muted">Por favor, complete los <code>campos marcados</code> para poder agregar un registro con éxito</p>
                             <div class="row">
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="primer_nombre_alumno">Primer Nombre <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('primer_nombre_alumno') is-invalid @enderror" id="primer_nombre_alumno" name="primer_nombre_alumno" value="{{old('primer_nombre_alumno')}}" placeholder="Escriba el nombre">
-                                    @error('primer_nombre_alumno')
+                                <div class="col-lg-4 mb-3">
+                                    <label class="form-label" for="nombres_alumno">Nombres <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('nombres_alumno') is-invalid @enderror" id="nombres_alumno" name="nombres_alumno" value="{{old('nombres_alumno')}}" placeholder="Todos los nombres, ej.: Juan Carlos">
+                                    @error('nombres_alumno')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="segundo_nombre_alumno">Segundo Nombre</label>
-                                    <input type="text" class="form-control @error('segundo_nombre_alumno') is-invalid @enderror" id="segundo_nombre_alumno" name="segundo_nombre_alumno" value="{{old('segundo_nombre_alumno')}}" placeholder="Escriba el nombre">
-                                    @error('segundo_nombre_alumno')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="tercer_nombre_alumno">Tercer Nombre</label>
-                                    <input type="text" class="form-control @error('tercer_nombre_alumno') is-invalid @enderror" id="tercer_nombre_alumno" name="tercer_nombre_alumno" value="{{old('tercer_nombre_alumno')}}" placeholder="Escriba el nombre">
-                                    @error('tercer_nombre_alumno')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="primer_apellido_alumno">Primer Apellido <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('primer_apellido_alumno') is-invalid @enderror" id="primer_apellido_alumno" name="primer_apellido_alumno" value="{{old('primer_apellido_alumno')}}" placeholder="Escriba el apellido">
-                                    @error('primer_apellido_alumno')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="segundo_apellido_alumno">Segundo Apellido</label>
-                                    <input type="text" class="form-control @error('segundo_apellido_alumno') is-invalid @enderror" id="segundo_apellido_alumno" name="segundo_apellido_alumno" value="{{old('segundo_apellido_alumno')}}" placeholder="Escriba el apellido">
-                                    @error('segundo_apellido_alumno')
+                                <div class="col-lg-4 mb-3">
+                                    <label class="form-label" for="apellidos_alumno">Apellidos <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('apellidos_alumno') is-invalid @enderror" id="apellidos_alumno" name="apellidos_alumno" value="{{old('apellidos_alumno')}}" placeholder="Todos los apellidos, ej.: Gonzalez Benitez">
+                                    @error('apellidos_alumno')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
                                         </span>

@@ -35,7 +35,7 @@ Error 500
                                     <div class="card auth-card bg-secondary h-100 border-0 shadow-none d-none d-sm-block mb-0">
                                         <div class="card-body py-5 d-flex justify-content-between flex-column h-100">
                                             <div class="text-center">
-                                                <h5 class="text-white">USIL</h5>
+                                                <h5 class="text-white">{{ config('app.name') }}</h5>
                                                 <p class="text-white opacity-75">Gracias por trabajar con nosotros.</p>
                                             </div>
 

@@ -673,7 +673,7 @@
                                     @endcan
                                     @can('ver_formas_conocimientos')
                                         <li class="nav-item">
-                                            <a href="{{route('formas_conocimientos.index')}}" class="nav-link {{ request()->routeIs('formas_conocimientos.*') ? 'active' : '' }}" data-key="t-formas-conocimientos">Formas de Conocer USIL</a>
+                                            <a href="{{route('formas_conocimientos.index')}}" class="nav-link {{ request()->routeIs('formas_conocimientos.*') ? 'active' : '' }}" data-key="t-formas-conocimientos">Formas de Conocer la Institución</a>
                                         </li>
                                     @endcan
                                 </ul>

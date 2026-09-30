@@ -56,9 +56,14 @@ class ReporteExtensionController extends Controller
         $resumen = [
             'extensiones' => $filas->count(),
             'estudiantes' => $filas->sum('estudiantes'),
+            'estudiantes_unicos' => $filas->flatMap(fn ($f) => $f->alumno_ids)->unique()->count(),
             'horas' => $filas->sum('horas'),
             'con_certificado' => $filas->where('tiene_certificado', true)->count(),
             'certificados_cargados' => $filas->sum('certificados_cargados'),
+            'promedio_horas' => $filas->count() ? round($filas->avg('horas'), 1) : 0,
+            'promedio_estudiantes' => $filas->count() ? round($filas->avg('estudiantes'), 1) : 0,
+            'porcentaje_certificado' => $filas->count() ? round($filas->where('tiene_certificado', true)->count() / $filas->count() * 100) : 0,
+            'porcentaje_certificados_cargados' => $filas->sum('estudiantes') ? round($filas->sum('certificados_cargados') / $filas->sum('estudiantes') * 100) : 0,
         ];
 
         $porTipo = $this->contar($filas, fn ($f) => [$f->tipo]);
@@ -130,6 +135,7 @@ class ReporteExtensionController extends Controller
                 'docente_id' => $e->docente_id,
                 'horas' => (float) $e->cantidad_horas,
                 'estudiantes' => $detalles->count(),
+                'alumno_ids' => $detalles->pluck('alumno_id')->values(),
                 'carreras' => $carrerasEst->pluck('nombre_fantasia')->unique()->values(),
                 'facultades' => $carrerasEst->map(fn ($c) => optional($c->Facultad)->nombre)->filter()->unique()->values(),
                 'carreras_estudiantes' => $carrerasEst->pluck('nombre_fantasia')->values(),
@@ -270,6 +276,11 @@ class ReporteExtensionController extends Controller
             'resumen' => [
                 'docentes' => $filas->count(), 'tutores' => $filas->where('tutor', true)->count(), 'didactica' => $filas->where('didactica', true)->count(),
                 'extensiones' => $filas->sum('extensiones'), 'horas' => $filas->sum('ext_horas'),
+                'con_extension' => $filas->where('extensiones', '>', 0)->count(),
+                'porcentaje_tutores' => $filas->count() ? round($filas->where('tutor', true)->count() / $filas->count() * 100) : 0,
+                'porcentaje_didactica' => $filas->count() ? round($filas->where('didactica', true)->count() / $filas->count() * 100) : 0,
+                'porcentaje_con_extension' => $filas->count() ? round($filas->where('extensiones', '>', 0)->count() / $filas->count() * 100) : 0,
+                'promedio_horas_docente' => $filas->count() ? round($filas->avg('ext_horas'), 1) : 0,
             ],
             'porFacultad' => $conteo(fn ($f) => $f->facultades->isEmpty() ? ['Sin facultad'] : $f->facultades->all()),
             'porCarrera' => $conteo(fn ($f) => $f->carreras->isEmpty() ? ['Sin carrera'] : $f->carreras->all()),

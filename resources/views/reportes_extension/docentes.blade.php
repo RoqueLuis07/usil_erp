@@ -1,6 +1,10 @@
 @extends('layouts.master-academic')
 @section('title') Reporte de Docentes @endsection
+@section('css')
+    <link rel="stylesheet" href="{{ URL::asset('build/libs/apexcharts/apexcharts.css') }}">
+@endsection
 @section('content')
+    <script src="{{ URL::asset('build/libs/apexcharts/apexcharts.min.js') }}"></script>
     @component('components.breadcrumb')
         @slot('li_1') Reportes @endslot
         @slot('href') {{ route('reportes_extension.docentes') }} @endslot
@@ -50,25 +54,33 @@
 
     <div class="row text-center mb-3 g-3">
         @php
-            $tiles = [['Docentes registrados', $resumen['docentes']], ['Tutores', $resumen['tutores']], ['Con capacitación didáctica', $resumen['didactica']], ['Extensiones realizadas', $resumen['extensiones']], ['Horas de extensión', $resumen['horas']]];
+            $tiles = [
+                ['Docentes registrados', $resumen['docentes']],
+                ['Con extensión activa', $resumen['con_extension'] . ' (' . $resumen['porcentaje_con_extension'] . '%)'],
+                ['Tutores', $resumen['tutores'] . ' (' . $resumen['porcentaje_tutores'] . '%)'],
+                ['Con capacitación didáctica', $resumen['didactica'] . ' (' . $resumen['porcentaje_didactica'] . '%)'],
+                ['Extensiones realizadas', $resumen['extensiones']],
+                ['Horas de extensión', number_format($resumen['horas'], 0, ',', '.')],
+                ['Promedio horas / docente', $resumen['promedio_horas_docente']],
+            ];
         @endphp
         @foreach ($tiles as [$etiqueta, $valor])
-            <div class="col"><div class="card mb-0"><div class="card-body py-3"><div class="fs-3 fw-bold">{{ $valor }}</div><div class="text-muted" style="font-size: 12px">{{ $etiqueta }}</div></div></div></div>
+            <div class="col-6 col-lg"><div class="card mb-0"><div class="card-body py-3"><div class="fs-4 fw-bold">{{ $valor }}</div><div class="text-muted" style="font-size: 11.5px">{{ $etiqueta }}</div></div></div></div>
         @endforeach
     </div>
 
     <div class="row g-3 mb-3">
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Docentes por facultad', 'datos' => $porFacultad])</div>
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Docentes por carrera', 'datos' => $porCarrera])</div>
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Nivel académico', 'datos' => $porNivel])</div>
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Sexo', 'datos' => $porSexo, 'destacar' => false])</div>
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Rango de edad', 'datos' => $porEdad, 'destacar' => false])</div>
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Año de alta', 'datos' => $porAnio, 'destacar' => false])</div>
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Nacionalidad', 'datos' => $porNacionalidad])</div>
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Departamento', 'datos' => $porDepartamento])</div>
-        <div class="col-lg-4">@include('reportes_extension.partials.ranking', ['titulo' => 'Ciudad', 'datos' => $porCiudad])</div>
-        <div class="col-lg-6">@include('reportes_extension.partials.ranking', ['titulo' => 'Extensión realizada por carrera (estudiantes participantes)', 'datos' => $extPorCarrera, 'unidad' => ' ext.'])</div>
-        <div class="col-lg-6">@include('reportes_extension.partials.ranking', ['titulo' => 'Extensión realizada por semestre de los estudiantes', 'datos' => $extPorSemestre, 'unidad' => ' est.'])</div>
+        <div class="col-lg-6">@include('reportes_extension.partials.grafico', ['titulo' => 'Docentes por facultad', 'datos' => $porFacultad, 'unidad' => 'Docentes', 'tipo' => 'bar'])</div>
+        <div class="col-lg-6">@include('reportes_extension.partials.grafico', ['titulo' => 'Docentes por carrera', 'datos' => $porCarrera, 'unidad' => 'Docentes', 'tipo' => 'bar'])</div>
+        <div class="col-lg-4">@include('reportes_extension.partials.grafico', ['titulo' => 'Nivel académico', 'datos' => $porNivel, 'tipo' => 'donut'])</div>
+        <div class="col-lg-4">@include('reportes_extension.partials.grafico', ['titulo' => 'Sexo', 'datos' => $porSexo, 'tipo' => 'donut'])</div>
+        <div class="col-lg-4">@include('reportes_extension.partials.grafico', ['titulo' => 'Rango de edad', 'datos' => $porEdad, 'unidad' => 'Docentes', 'tipo' => 'bar'])</div>
+        <div class="col-lg-6">@include('reportes_extension.partials.grafico', ['titulo' => 'Año de alta', 'datos' => $porAnio, 'unidad' => 'Docentes', 'tipo' => 'line', 'limite' => 24])</div>
+        <div class="col-lg-6">@include('reportes_extension.partials.grafico', ['titulo' => 'Nacionalidad', 'datos' => $porNacionalidad, 'unidad' => 'Docentes', 'tipo' => 'bar'])</div>
+        <div class="col-lg-6">@include('reportes_extension.partials.grafico', ['titulo' => 'Departamento', 'datos' => $porDepartamento, 'unidad' => 'Docentes', 'tipo' => 'bar'])</div>
+        <div class="col-lg-6">@include('reportes_extension.partials.grafico', ['titulo' => 'Ciudad', 'datos' => $porCiudad, 'unidad' => 'Docentes', 'tipo' => 'bar'])</div>
+        <div class="col-lg-6">@include('reportes_extension.partials.grafico', ['titulo' => 'Extensión realizada por carrera (estudiantes participantes)', 'datos' => $extPorCarrera, 'unidad' => 'Extensiones', 'tipo' => 'bar'])</div>
+        <div class="col-lg-6">@include('reportes_extension.partials.grafico', ['titulo' => 'Extensión realizada por semestre de los estudiantes', 'datos' => $extPorSemestre, 'unidad' => 'Estudiantes', 'tipo' => 'bar'])</div>
     </div>
 
     <div class="card">

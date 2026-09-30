@@ -34,13 +34,13 @@ class ImportacionMasivaController extends Controller
     private const MAX_FILAS = 2000;
 
     private const COLUMNAS_ALUMNO = [
-        'documento', 'primer_nombre', 'segundo_nombre', 'tercer_nombre', 'primer_apellido', 'segundo_apellido',
+        'documento', 'nombres', 'apellidos',
         'sexo', 'fecha_nacimiento', 'nacionalidad', 'telefono', 'celular', 'correo', 'direccion',
         'departamento', 'ciudad', 'barrio', 'facultad', 'carrera', 'anho_ingreso', 'semestre_ingreso',
     ];
 
     private const COLUMNAS_DOCENTE = [
-        'documento', 'primer_nombre', 'segundo_nombre', 'tercer_nombre', 'primer_apellido', 'segundo_apellido',
+        'documento', 'nombres', 'apellidos',
         'sexo', 'fecha_nacimiento', 'nacionalidad', 'telefono', 'celular', 'correo', 'direccion',
         'departamento', 'ciudad', 'barrio', 'nivel_academico', 'area_conocimiento', 'capacitacion_didactica',
         'tutor', 'facultad', 'carreras',
@@ -72,8 +72,8 @@ class ImportacionMasivaController extends Controller
 
         $columnas = $tipo === 'alumnos' ? self::COLUMNAS_ALUMNO : self::COLUMNAS_DOCENTE;
         $ejemplo = $tipo === 'alumnos'
-            ? ['1234567', 'Maria', '', '', 'Gonzalez', 'Benitez', 'Femenino', '15/03/2004', 'Paraguaya', '', '0981123456', 'maria@correo.com', 'Calle 1 y Av. 2', 'Central', 'Luque', 'Centro', 'Facultad de Ciencias', 'Ingenieria en Informatica', '2023', '1']
-            : ['7654321', 'Juan', '', '', 'Perez', 'Lopez', 'Masculino', '02/11/1985', 'Paraguaya', '', '0971654321', 'juan@correo.com', 'Calle 3', 'Central', 'San Lorenzo', '', 'Maestria', 'Tecnologia e Ingenieria', 'SI', 'NO', 'Facultad de Ciencias', 'Ingenieria en Informatica|Otra Carrera'];
+            ? ['1234567', 'Maria', 'Gonzalez Benitez', 'Femenino', '15/03/2004', 'Paraguaya', '', '0981123456', 'maria@correo.com', 'Calle 1 y Av. 2', 'Central', 'Luque', 'Centro', 'Facultad de Ciencias', 'Ingenieria en Informatica', '2023', '1']
+            : ['7654321', 'Juan', 'Perez Lopez', 'Masculino', '02/11/1985', 'Paraguaya', '', '0971654321', 'juan@correo.com', 'Calle 3', 'Central', 'San Lorenzo', '', 'Maestria', 'Tecnologia e Ingenieria', 'SI', 'NO', 'Facultad de Ciencias', 'Ingenieria en Informatica|Otra Carrera'];
 
         $salida = "\xEF\xBB\xBF" . implode(';', $columnas) . "\r\n" . implode(';', array_map(fn ($v) => '"' . str_replace('"', '""', $v) . '"', $ejemplo)) . "\r\n";
 
@@ -105,7 +105,7 @@ class ImportacionMasivaController extends Controller
             return back()->with('error-message', $e->getMessage());
         }
 
-        $faltantes = array_diff(['documento', 'primer_nombre', 'primer_apellido'], $cabecera);
+        $faltantes = array_diff(['documento', 'nombres', 'apellidos'], $cabecera);
         if ($faltantes) {
             return back()->with('error-message', 'Al archivo le faltan columnas obligatorias: ' . implode(', ', $faltantes) . '. Descargá la plantilla y respetá los títulos.');
         }
@@ -147,7 +147,7 @@ class ImportacionMasivaController extends Controller
 
     private function procesarAlumno(array $d): string
     {
-        $this->exigir($d, ['documento', 'primer_nombre', 'primer_apellido']);
+        $this->exigir($d, ['documento', 'nombres', 'apellidos']);
         $documento = removeAccents(Str::upper($d['documento']));
 
         $carrera = $this->resolverCarrera($d['carrera'] ?? '', $d['facultad'] ?? '');
@@ -187,7 +187,7 @@ class ImportacionMasivaController extends Controller
 
     private function procesarDocente(array $d): string
     {
-        $this->exigir($d, ['documento', 'primer_nombre', 'primer_apellido']);
+        $this->exigir($d, ['documento', 'nombres', 'apellidos']);
         $documento = removeAccents(Str::upper($d['documento']));
 
         $carreras = [];
@@ -242,11 +242,11 @@ class ImportacionMasivaController extends Controller
     /** Datos personales comunes de Alumno y Docente (mismas columnas). */
     private function completarPersona($persona, array $d, string $documento): void
     {
-        $persona->primer_nombre = removeAccents(Str::upper($d['primer_nombre']));
-        $persona->segundo_nombre = removeAccents(Str::upper($d['segundo_nombre'] ?? '')) ?: null;
-        $persona->tercer_nombre = removeAccents(Str::upper($d['tercer_nombre'] ?? '')) ?: null;
-        $persona->primer_apellido = removeAccents(Str::upper($d['primer_apellido']));
-        $persona->segundo_apellido = removeAccents(Str::upper($d['segundo_apellido'] ?? '')) ?: null;
+        $persona->primer_nombre = removeAccents(Str::upper(trim($d['nombres'])));
+        $persona->segundo_nombre = null;
+        $persona->tercer_nombre = null;
+        $persona->primer_apellido = removeAccents(Str::upper(trim($d['apellidos'])));
+        $persona->segundo_apellido = null;
         $persona->numero_documento = $documento;
         $persona->telefono = ($d['telefono'] ?? '') ?: null;
         $persona->celular = $d['celular'] ?? '';
@@ -286,9 +286,9 @@ class ImportacionMasivaController extends Controller
         }
 
         $usuario = new User();
-        $usuario->name = removeAccents(Str::upper($d['primer_nombre'])) . ' ' . removeAccents(Str::upper($d['primer_apellido']));
+        $usuario->name = removeAccents(Str::upper(trim($d['nombres']))) . ' ' . removeAccents(Str::upper(trim($d['apellidos'])));
         $usuario->email = $correo;
-        $usuario->password = Hash::make($documento . '-' . Str::substr(removeAccents(Str::upper($d['primer_nombre'])), 0, 1) . Str::substr(removeAccents(Str::lower($d['primer_apellido'])), 0, 1));
+        $usuario->password = Hash::make($documento . '-' . Str::substr(removeAccents(Str::upper(trim($d['nombres']))), 0, 1) . Str::substr(removeAccents(Str::lower(trim($d['apellidos']))), 0, 1));
         $usuario->avatar = 'no_image.jpg';
         $usuario->portada = 'no_portada.jpg';
         $rolModelo = \Spatie\Permission\Models\Role::where('name', $rol)->where('guard_name', 'web')->first();

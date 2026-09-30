@@ -206,11 +206,8 @@ class DocenteController extends Controller
         $this->authorize('crear_docentes');
 
         $request->validate([
-            'primer_nombre_docente' => 'required',
-            'segundo_nombre_docente' => 'nullable',
-            'tercer_nombre_docente' => 'nullable',
-            'primer_apellido_docente' => 'required',
-            'segundo_apellido_docente' => 'nullable',
+            'nombres_docente' => 'required',
+            'apellidos_docente' => 'required',
             'numero_documento' => ['required', Rule::unique('docentes')],
             'sexo' => ['required', 'numeric'],
             'fecha_nacimiento' => ['required', 'date'],
@@ -235,11 +232,11 @@ class DocenteController extends Controller
 
         try {
             $docente = new Docente();
-            $docente->primer_nombre = removeAccents(Str::upper($request->primer_nombre_docente));
-            $docente->segundo_nombre = removeAccents(Str::upper($request->segundo_nombre_docente));
-            $docente->tercer_nombre = removeAccents(Str::upper($request->tercer_nombre_docente));
-            $docente->primer_apellido = removeAccents(Str::upper($request->primer_apellido_docente));
-            $docente->segundo_apellido = removeAccents(Str::upper($request->segundo_apellido_docente));
+            $docente->primer_nombre = removeAccents(Str::upper(trim($request->nombres_docente)));
+            $docente->segundo_nombre = null;
+            $docente->tercer_nombre = null;
+            $docente->primer_apellido = removeAccents(Str::upper(trim($request->apellidos_docente)));
+            $docente->segundo_apellido = null;
             $docente->numero_documento = removeAccents(Str::upper($request->numero_documento));
             $docente->sexo_id = $request->sexo;
             $docente->fecha_nacimiento = $request->fecha_nacimiento;
@@ -259,11 +256,11 @@ class DocenteController extends Controller
                 $docente->email_institucional = User::findOrFail($request->usuario)->email;
             } else {
                 $usuario = new User();
-                $usuario->name = removeAccents(Str::upper($request->primer_nombre_docente)) . ' ' . removeAccents(Str::upper($request->primer_apellido_docente));
+                $usuario->name = removeAccents(Str::upper(trim($request->nombres_docente))) . ' ' . removeAccents(Str::upper(trim($request->apellidos_docente)));
                 $usuario->email = removeAccents(Str::lower($request->email_personal));
                 $usuario->role_id = 3; //asignar el id de rol docente
                 $usuario->assignRole(3); //asignar el id de rol docente
-                $password = $request->numero_documento . '-' . Str::substr(removeAccents(Str::upper($request->primer_nombre_docente)), 0, 1) . Str::substr(removeAccents(Str::lower($request->primer_apellido_docente)), 0, 1);
+                $password = $request->numero_documento . '-' . Str::substr(removeAccents(Str::upper(trim($request->nombres_docente))), 0, 1) . Str::substr(removeAccents(Str::lower(trim($request->apellidos_docente))), 0, 1);
                 $usuario->password = Hash::make($password);
                 $usuario->avatar = 'no_image.jpg';
                 $usuario->portada = 'no_portada.jpg';
@@ -337,11 +334,8 @@ class DocenteController extends Controller
         $this->authorize('editar_docentes');
 
         $request->validate([
-            'primer_nombre_docente' => 'required',
-            'segundo_nombre_docente' => 'nullable',
-            'tercer_nombre_docente' => 'nullable',
-            'primer_apellido_docente' => 'required',
-            'segundo_apellido_docente' => 'nullable',
+            'nombres_docente' => 'required',
+            'apellidos_docente' => 'required',
             'numero_documento' => ['required', Rule::unique('docentes')->ignore($id)],
             'sexo' => ['required', 'numeric'],
             'fecha_nacimiento' => ['required', 'date'],
@@ -368,11 +362,11 @@ class DocenteController extends Controller
 
         try {
             $docente = Docente::findOrFail($id);
-            $docente->primer_nombre = removeAccents(Str::upper($request->primer_nombre_docente));
-            $docente->segundo_nombre = removeAccents(Str::upper($request->segundo_nombre_docente));
-            $docente->tercer_nombre = removeAccents(Str::upper($request->tercer_nombre_docente));
-            $docente->primer_apellido = removeAccents(Str::upper($request->primer_apellido_docente));
-            $docente->segundo_apellido = removeAccents(Str::upper($request->segundo_apellido_docente));
+            $docente->primer_nombre = removeAccents(Str::upper(trim($request->nombres_docente)));
+            $docente->segundo_nombre = null;
+            $docente->tercer_nombre = null;
+            $docente->primer_apellido = removeAccents(Str::upper(trim($request->apellidos_docente)));
+            $docente->segundo_apellido = null;
             $docente->numero_documento = removeAccents(Str::upper($request->numero_documento));
             $docente->sexo_id = $request->sexo;
             $docente->fecha_nacimiento = $request->fecha_nacimiento;
