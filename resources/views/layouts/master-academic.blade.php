@@ -6,16 +6,33 @@
     <title> @yield('title') | {{config('app.name')}} </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ URL::asset('apple-touch-icon.png') }}">
+    <script>
+        (function () {
+            try {
+                var tema = localStorage.getItem('ac-theme') || 'light';
+                document.documentElement.setAttribute('data-bs-theme', tema);
+            } catch (e) {}
+        })();
+    </script>
     @include('layouts.head-css')
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     <style>
-        :root{
+        :root, :root[data-bs-theme="light"]{
             --ac-accent:#0f4c5c; --ac-accent-soft:#dbe7ea; --ac-bg:#f7f9f9; --ac-surface:#ffffff;
             --ac-text:#1b2427; --ac-text-muted:#5c6a6e; --ac-border:#e4eaec; --ac-border-strong:#d3dade;
             --ac-ok-bg:#e2efe9; --ac-ok-fg:#1f6b4f; --ac-warn-bg:#f8ecdd; --ac-warn-fg:#8a4d13;
             --ac-info-bg:#e3eef1; --ac-info-fg:#0f4c5c; --ac-danger-bg:#f4e1e1; --ac-danger-fg:#8a2b2b;
-            --ac-neutral-bg:#eef2f3; --ac-neutral-fg:#33454a;
+            --ac-neutral-bg:#eef2f3; --ac-neutral-fg:#33454a; --ac-panel-bg:#eef2f3;
         }
+        :root[data-bs-theme="dark"]{
+            --ac-accent:#4fc3d3; --ac-accent-soft:rgba(79,195,211,0.16); --ac-bg:#17191b; --ac-surface:#212325;
+            --ac-text:#e8ebec; --ac-text-muted:#98a1a4; --ac-border:#33363a; --ac-border-strong:#43474b;
+            --ac-ok-bg:rgba(31,107,79,0.3); --ac-ok-fg:#7fd6ae; --ac-warn-bg:rgba(138,77,19,0.3); --ac-warn-fg:#e3ac66;
+            --ac-info-bg:rgba(15,76,92,0.35); --ac-info-fg:#7fd3e6; --ac-danger-bg:rgba(138,43,43,0.3); --ac-danger-fg:#e79a9a;
+            --ac-neutral-bg:rgba(255,255,255,0.07); --ac-neutral-fg:#c9cfd1; --ac-panel-bg:#26292c;
+        }
+        [data-bs-theme="dark"] .marca-login svg path, [data-bs-theme="dark"] .ac-nav-brand svg path{stroke:var(--ac-accent);}
         body{margin:0;font-family:'Open Sans','Segoe UI',system-ui,-apple-system,sans-serif !important;color:var(--ac-text);background:var(--ac-bg);}
         .ac-mono{font-family:'IBM Plex Mono',monospace;}
 
@@ -23,24 +40,24 @@
         .btn{border-radius:2px !important;font-family:inherit;box-shadow:none !important;}
         .btn-success, .btn-primary{background-color:var(--ac-accent) !important;border-color:var(--ac-accent) !important;}
         .btn-success:hover, .btn-primary:hover{background-color:#0c3b47 !important;border-color:#0c3b47 !important;}
-        .btn-warning{background-color:#fff !important;border-color:var(--ac-border-strong) !important;color:var(--ac-text) !important;}
+        .btn-warning{background-color:var(--ac-surface) !important;border-color:var(--ac-border-strong) !important;color:var(--ac-text) !important;}
         .btn-danger{border-radius:2px !important;}
-        .btn-secondary{background-color:#fff !important;border:1px solid var(--ac-accent) !important;color:var(--ac-accent) !important;}
+        .btn-secondary{background-color:var(--ac-surface) !important;border:1px solid var(--ac-accent) !important;color:var(--ac-accent) !important;}
         .btn-secondary:hover{background-color:var(--ac-accent-soft) !important;color:var(--ac-accent) !important;}
-        .btn-neutro{background-color:#fff !important;border:1px solid var(--ac-border-strong) !important;color:var(--ac-text) !important;}
+        .btn-neutro{background-color:var(--ac-surface) !important;border:1px solid var(--ac-border-strong) !important;color:var(--ac-text) !important;}
         .btn-neutro:hover{background-color:var(--ac-bg) !important;color:var(--ac-text) !important;}
-        .dropdown-menu-plantillas{background-color:#fff !important;}
+        .dropdown-menu-plantillas{background-color:var(--ac-surface) !important;}
         .dropdown-item-plantillas{color:var(--ac-text) !important;}
         .dropdown-item-plantillas:hover{background-color:var(--ac-accent-soft) !important;color:var(--ac-accent) !important;}
         a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible{outline:2px solid var(--ac-accent) !important;outline-offset:2px;}
         .card{border-radius:0 !important;border:1px solid var(--ac-border-strong) !important;box-shadow:none !important;}
-        .card-header{background:#eef2f3 !important;border-bottom:1px solid var(--ac-border-strong) !important;}
-        .table{border:1px solid var(--ac-border-strong) !important;}
-        .table thead th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;color:var(--ac-text-muted);text-transform:uppercase;letter-spacing:0.04em;background:#eef2f3 !important;border:1px solid var(--ac-border-strong) !important;}
+        .card-header{background:var(--ac-panel-bg) !important;border-bottom:1px solid var(--ac-border-strong) !important;}
+        .table{border:1px solid var(--ac-border-strong) !important;color:var(--ac-text);}
+        .table thead th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;color:var(--ac-text-muted);text-transform:uppercase;letter-spacing:0.04em;background:var(--ac-panel-bg) !important;border:1px solid var(--ac-border-strong) !important;}
         .table td{font-size:12.5px;vertical-align:middle;border:1px solid var(--ac-border) !important;}
         .table tbody tr:hover td{background:var(--ac-accent-soft) !important;}
         .table-light{background:transparent !important;}
-        .form-control, .form-select, .selectpicker + .dropdown-toggle{border-radius:2px !important;border-color:var(--ac-border-strong) !important;background:#fff !important;font-size:12.5px !important;}
+        .form-control, .form-select, .selectpicker + .dropdown-toggle{border-radius:2px !important;border-color:var(--ac-border-strong) !important;background:var(--ac-surface) !important;color:var(--ac-text) !important;font-size:12.5px !important;}
         .form-control:focus, .form-select:focus{border-color:var(--ac-accent) !important;box-shadow:0 0 0 1px var(--ac-accent) !important;}
         .dropdown-menu{border-radius:2px !important;border-color:var(--ac-border-strong) !important;}
         .badge{border-radius:2px !important;font-weight:600;font-size:11px;}
@@ -60,7 +77,7 @@
 
         /* ---- Estructura de la maqueta académica ---- */
         .ac-shell{display:flex;min-height:100vh;}
-        .ac-nav{width:250px;flex:0 0 250px;background:var(--ac-surface);border-right:1px solid var(--ac-border);padding:18px 10px;box-sizing:border-box;}
+        .ac-nav{width:250px;flex:0 0 250px;background:var(--ac-surface);border-right:1px solid var(--ac-border);padding:18px 10px;box-sizing:border-box;position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;}
         .ac-nav-brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;}
         .ac-nav-brand svg{flex:0 0 auto;}
         .ac-nav-brand span{font-size:13px;font-weight:700;color:var(--ac-text);line-height:1.25;}
@@ -236,6 +253,9 @@
                 <div class="ac-topbar-row">
                     <span class="ac-title">@yield('title')</span>
                     <div style="flex:1;"></div>
+                    <button type="button" id="ac-theme-toggle" class="btn btn-neutro btn-sm" style="width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;" title="Cambiar tema" aria-label="Cambiar tema claro/oscuro">
+                        <i class="ri-moon-line" id="ac-theme-icon" style="font-size:15px;"></i>
+                    </button>
                     <div class="ac-avatar">{{ Str::upper(Str::substr(Auth::user()->name ?? '?', 0, 2)) }}</div>
                     @php
                         $rol_actual = optional(Auth::user()->roles->first())->name;
@@ -267,6 +287,22 @@
         // Coherencia de botones (auditoría UX): el rojo queda solo para acciones destructivas,
         // y todo botón de solo icono muestra qué hace al pasar el mouse.
         document.addEventListener('DOMContentLoaded', function () {
+            var botonTema = document.getElementById('ac-theme-toggle');
+            var iconoTema = document.getElementById('ac-theme-icon');
+            function pintarIconoTema() {
+                var esOscuro = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                iconoTema.className = esOscuro ? 'ri-sun-line' : 'ri-moon-line';
+                botonTema.setAttribute('title', esOscuro ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+            }
+            pintarIconoTema();
+            botonTema.addEventListener('click', function () {
+                var actual = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+                var nuevo = actual === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-bs-theme', nuevo);
+                try { localStorage.setItem('ac-theme', nuevo); } catch (e) {}
+                pintarIconoTema();
+            });
+
             var nombresIconos = {
                 'ri-eye-fill': 'Ver', 'ri-edit-fill': 'Editar', 'ri-delete-bin-fill': 'Eliminar',
                 'ri-check-fill': 'Aprobar / aceptar', 'ri-close-fill': 'Rechazar', 'bi-slash-circle': 'Rechazar',

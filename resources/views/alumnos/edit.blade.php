@@ -298,46 +298,19 @@
                                     <div class="tab-content">
                                         <div class="tab-pane" id="tablistFamiliar1" role="tabpanel">
                                             <div class="row">
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_nombre_familiar1">Primer Nombre</label>
-                                                    <input type="text" class="form-control @error('primer_nombre_familiar1') is-invalid @enderror" id="primer_nombre_familiar1" name="primer_nombre_familiar1" @if ($alumno->familiar_uno_id) value="{{old('primer_nombre_familiar1', $alumno->familiarUno->primer_nombre)}}" @else value="{{old('primer_nombre_familiar1')}}" @endif  placeholder="Escriba el nombre">
-                                                    @error('primer_nombre_familiar1')
+                                                <div class="col-lg-3 mb-3">
+                                                    <label class="form-label" for="nombres_familiar1">Nombres</label>
+                                                    <input type="text" class="form-control @error('nombres_familiar1') is-invalid @enderror" id="nombres_familiar1" name="nombres_familiar1" @if ($alumno->familiar_uno_id) value="{{old('nombres_familiar1', implode(' ', array_filter([$alumno->familiarUno->primer_nombre, $alumno->familiarUno->segundo_nombre, $alumno->familiarUno->tercer_nombre])))}}" @else value="{{old('nombres_familiar1')}}" @endif placeholder="Todos los nombres">
+                                                    @error('nombres_familiar1')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{$message}}</strong>
                                                         </span>
                                                     @enderror
                                                 </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="segundo_nombre_familiar1">Segundo Nombre</label>
-                                                    <input type="text" class="form-control @error('segundo_nombre_familiar1') is-invalid @enderror" id="segundo_nombre_familiar1" name="segundo_nombre_familiar1" @if ($alumno->familiar_uno_id) value="{{old('segundo_nombre_familiar1', $alumno->familiarUno->segundo_nombre)}}" @else value="{{old('segundo_nombre_familiar1')}}" @endif placeholder="Escriba el nombre">
-                                                    @error('segundo_nombre_familiar1')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="tercer_nombre_familiar1">Tercer Nombre</label>
-                                                    <input type="text" class="form-control @error('tercer_nombre_familiar1') is-invalid @enderror" id="tercer_nombre_familiar1" name="tercer_nombre_familiar1" @if ($alumno->familiar_uno_id) value="{{old('tercer_nombre_familiar1', $alumno->familiarUno->tercer_nombre)}}" @else value="{{old('tercer_nombre_familiar1')}}" @endif placeholder="Escriba el nombre">
-                                                    @error('tercer_nombre_familiar1')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_apellido_familiar1">Primer Apellido</label>
-                                                    <input type="text" class="form-control @error('primer_apellido_familiar1') is-invalid @enderror" id="primer_apellido_familiar1" name="primer_apellido_familiar1" @if ($alumno->familiar_uno_id) value="{{old('primer_apellido_familiar1', $alumno->familiarUno->primer_apellido)}}" @else value="{{old('primer_apellido_familiar1')}}" @endif placeholder="Escriba el apellido">
-                                                    @error('primer_apellido_familiar1')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="segundo_apellido_familiar1">Segundo Apellido</label>
-                                                    <input type="text" class="form-control @error('segundo_apellido_familiar1') is-invalid @enderror" id="segundo_apellido_familiar1" name="segundo_apellido_familiar1" @if ($alumno->familiar_uno_id) value="{{old('segundo_apellido_familiar1', $alumno->familiarUno->segundo_apellido)}}" @else value="{{old('segundo_apellido_familiar1')}}" @endif placeholder="Escriba el apellido">
-                                                    @error('segundo_apellido_familiar1')
+                                                <div class="col-lg-3 mb-3">
+                                                    <label class="form-label" for="apellidos_familiar1">Apellidos</label>
+                                                    <input type="text" class="form-control @error('apellidos_familiar1') is-invalid @enderror" id="apellidos_familiar1" name="apellidos_familiar1" @if ($alumno->familiar_uno_id) value="{{old('apellidos_familiar1', implode(' ', array_filter([$alumno->familiarUno->primer_apellido, $alumno->familiarUno->segundo_apellido])))}}" @else value="{{old('apellidos_familiar1')}}" @endif placeholder="Todos los apellidos">
+                                                    @error('apellidos_familiar1')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{$message}}</strong>
                                                         </span>
@@ -389,66 +362,27 @@
                                     <div class="tab-content">
                                         <div class="tab-pane" id="tablistFamiliar2" role="tabpanel">
                                             <div class="row">
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_nombre_familiar2">Primer Nombre</label>
+                                                <div class="col-lg-3 mb-3">
+                                                    <label class="form-label" for="nombres_familiar2">Nombres</label>
                                                     @if ($alumno->familiar_dos_id)
-                                                        <input type="text" class="form-control @error('primer_nombre_familiar2') is-invalid @enderror" id="primer_nombre_familiar2" name="primer_nombre_familiar2" value="{{old('primer_nombre_familiar2', $alumno->familiarDos->primer_nombre)}}" placeholder="Escriba el nombre">
+                                                        <input type="text" class="form-control @error('nombres_familiar2') is-invalid @enderror" id="nombres_familiar2" name="nombres_familiar2" value="{{old('nombres_familiar2', implode(' ', array_filter([$alumno->familiarDos->primer_nombre, $alumno->familiarDos->segundo_nombre, $alumno->familiarDos->tercer_nombre])))}}" placeholder="Todos los nombres">
                                                     @else
-                                                        <input type="text" class="form-control @error('primer_nombre_familiar2') is-invalid @enderror" id="primer_nombre_familiar2" name="primer_nombre_familiar2" value="{{old('primer_nombre_familiar2')}}" placeholder="Escriba el nombre">
+                                                        <input type="text" class="form-control @error('nombres_familiar2') is-invalid @enderror" id="nombres_familiar2" name="nombres_familiar2" value="{{old('nombres_familiar2')}}" placeholder="Todos los nombres">
                                                     @endif
-                                                    @error('primer_nombre_familiar2')
+                                                    @error('nombres_familiar2')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{$message}}</strong>
                                                         </span>
                                                     @enderror
                                                 </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="segundo_nombre_familiar2">Segundo Nombre</label>
+                                                <div class="col-lg-3 mb-3">
+                                                    <label class="form-label" for="apellidos_familiar2">Apellidos</label>
                                                     @if ($alumno->familiar_dos_id)
-                                                        <input type="text" class="form-control @error('segundo_nombre_familiar2') is-invalid @enderror" id="segundo_nombre_familiar2" name="segundo_nombre_familiar2" value="{{old('segundo_nombre_familiar2', $alumno->familiarDos->segundo_nombre)}}" placeholder="Escriba el nombre">
+                                                        <input type="text" class="form-control @error('apellidos_familiar2') is-invalid @enderror" id="apellidos_familiar2" name="apellidos_familiar2" value="{{old('apellidos_familiar2', implode(' ', array_filter([$alumno->familiarDos->primer_apellido, $alumno->familiarDos->segundo_apellido])))}}" placeholder="Todos los apellidos">
                                                     @else
-                                                        <input type="text" class="form-control @error('segundo_nombre_familiar2') is-invalid @enderror" id="segundo_nombre_familiar2" name="segundo_nombre_familiar2" value="{{old('segundo_nombre_familiar2')}}" placeholder="Escriba el nombre">
+                                                        <input type="text" class="form-control @error('apellidos_familiar2') is-invalid @enderror" id="apellidos_familiar2" name="apellidos_familiar2" value="{{old('apellidos_familiar2')}}" placeholder="Todos los apellidos">
                                                     @endif
-                                                    @error('segundo_nombre_familiar2')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="tercer_nombre_familiar2">Tercer Nombre</label>
-                                                    @if ($alumno->familiar_dos_id)
-                                                        <input type="text" class="form-control @error('tercer_nombre_familiar2') is-invalid @enderror" id="tercer_nombre_familiar2" name="tercer_nombre_familiar2" value="{{old('tercer_nombre_familiar2', $alumno->familiarDos->tercer_nombre)}}" placeholder="Escriba el nombre">
-                                                    @else
-                                                        <input type="text" class="form-control @error('tercer_nombre_familiar2') is-invalid @enderror" id="tercer_nombre_familiar2" name="tercer_nombre_familiar2" value="{{old('tercer_nombre_familiar2')}}" placeholder="Escriba el nombre">
-                                                    @endif
-                                                    @error('tercer_nombre_familiar2')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_apellido_familiar2">Primer Apellido</label>
-                                                    @if ($alumno->familiar_dos_id)
-                                                        <input type="text" class="form-control @error('primer_apellido_familiar2') is-invalid @enderror" id="primer_apellido_familiar2" name="primer_apellido_familiar2" value="{{old('primer_apellido_familiar2', $alumno->familiarDos->primer_apellido)}}" placeholder="Escriba el apellido">
-                                                    @else
-                                                        <input type="text" class="form-control @error('primer_apellido_familiar2') is-invalid @enderror" id="primer_apellido_familiar2" name="primer_apellido_familiar2" value="{{old('primer_apellido_familiar2')}}" placeholder="Escriba el apellido">
-                                                    @endif
-                                                    @error('primer_apellido_familiar2')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="segundo_apellido_familiar2">Segundo Apellido</label>
-                                                    @if ($alumno->familiar_dos_id)
-                                                        <input type="text" class="form-control @error('segundo_apellido_familiar2') is-invalid @enderror" id="segundo_apellido_familiar2" name="segundo_apellido_familiar2" value="{{old('segundo_apellido_familiar2', $alumno->familiarDos->segundo_apellido)}}" placeholder="Escriba el apellido">
-                                                    @else
-                                                        <input type="text" class="form-control @error('segundo_apellido_familiar2') is-invalid @enderror" id="segundo_apellido_familiar2" name="segundo_apellido_familiar2" value="{{old('segundo_apellido_familiar2')}}" placeholder="Escriba el apellido">
-                                                    @endif
-                                                    @error('segundo_apellido_familiar2')
+                                                    @error('apellidos_familiar2')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{$message}}</strong>
                                                         </span>

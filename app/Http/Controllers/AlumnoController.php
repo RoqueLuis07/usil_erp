@@ -322,23 +322,17 @@ class AlumnoController extends Controller
             'formacion' => ['nullable', 'numeric'],
             'institucion_educativa' => ['nullable', 'numeric'],
 
-            'primer_nombre_familiar1' => 'nullable',
-            'segundo_nombre_familiar1' => 'nullable',
-            'tercer_nombre_familiar1' => 'nullable',
-            'primer_apellido_familiar1' => ['nullable', 'required_with:primer_nombre_familiar1'],
-            'segundo_apellido_familiar1' => 'nullable',
-            'relacion_familiar1' => ['nullable', 'numeric', 'required_with:primer_nombre_familiar1'],
-            'celular_familiar1' => ['nullable', 'required_with:primer_nombre_familiar1'],
-            'email_familiar1' => ['nullable', 'email', 'required_with:primer_nombre_familiar1'],
+            'nombres_familiar1' => 'nullable',
+            'apellidos_familiar1' => ['nullable', 'required_with:nombres_familiar1'],
+            'relacion_familiar1' => ['nullable', 'numeric', 'required_with:nombres_familiar1'],
+            'celular_familiar1' => ['nullable', 'required_with:nombres_familiar1'],
+            'email_familiar1' => ['nullable', 'email', 'required_with:nombres_familiar1'],
 
-            'primer_nombre_familiar2' => 'nullable',
-            'segundo_nombre_familiar2' => 'nullable',
-            'tercer_nombre_familiar2' => 'nullable',
-            'primer_apellido_familiar2' => ['nullable', 'required_with:primer_nombre_familiar2'],
-            'segundo_apellido_familiar2' => 'nullable',
-            'relacion_familiar2' => ['nullable', 'numeric', 'required_with:primer_nombre_familiar2'],
-            'celular_familiar2' => ['nullable', 'required_with:primer_nombre_familiar2'],
-            'email_familiar2' => ['nullable', 'email', 'required_with:primer_nombre_familiar2'],
+            'nombres_familiar2' => 'nullable',
+            'apellidos_familiar2' => ['nullable', 'required_with:nombres_familiar2'],
+            'relacion_familiar2' => ['nullable', 'numeric', 'required_with:nombres_familiar2'],
+            'celular_familiar2' => ['nullable', 'required_with:nombres_familiar2'],
+            'email_familiar2' => ['nullable', 'email', 'required_with:nombres_familiar2'],
 
             'empresa' => 'nullable',
             'cargo' => ['nullable', 'required_with:empresa'],
@@ -379,13 +373,13 @@ class AlumnoController extends Controller
             $alumno->formacion_id = $request->formacion ?: null;
             $alumno->institucion_educativa_id = $request->institucion_educativa ?: null;
 
-            if ($request->primer_nombre_familiar1 != null) {
+            if ($request->nombres_familiar1 != null) {
                 $familiar1 = new AlumnoFamiliar();
-                $familiar1->primer_nombre = removeAccents(Str::upper($request->primer_nombre_familiar1));
-                $familiar1->segundo_nombre = removeAccents(Str::upper($request->segundo_nombre_familiar1));
-                $familiar1->tercer_nombre = removeAccents(Str::upper($request->tercer_nombre_familiar1));
-                $familiar1->primer_apellido = removeAccents(Str::upper($request->primer_apellido_familiar1));
-                $familiar1->segundo_apellido = removeAccents(Str::upper($request->segundo_apellido_familiar1));
+                $familiar1->primer_nombre = removeAccents(Str::upper(trim($request->nombres_familiar1)));
+                $familiar1->segundo_nombre = null;
+                $familiar1->tercer_nombre = null;
+                $familiar1->primer_apellido = removeAccents(Str::upper(trim($request->apellidos_familiar1)));
+                $familiar1->segundo_apellido = null;
                 $familiar1->relacion_id = $request->relacion_familiar1;
                 $familiar1->email = removeAccents(Str::lower($request->email_familiar1));
                 $familiar1->celular = $request->celular_familiar1;
@@ -393,13 +387,13 @@ class AlumnoController extends Controller
                 $alumno->familiar_uno_id = $familiar1->id;
             }
 
-            if ($request->primer_nombre_familiar2 != null) {
+            if ($request->nombres_familiar2 != null) {
                 $familiar2 = new AlumnoFamiliar();
-                $familiar2->primer_nombre = removeAccents(Str::upper($request->primer_nombre_familiar2));
-                $familiar2->segundo_nombre = removeAccents(Str::upper($request->segundo_nombre_familiar2));
-                $familiar2->tercer_nombre = removeAccents(Str::upper($request->tercer_nombre_familiar2));
-                $familiar2->primer_apellido = removeAccents(Str::upper($request->primer_apellido_familiar2));
-                $familiar2->segundo_apellido = removeAccents(Str::upper($request->segundo_apellido_familiar2));
+                $familiar2->primer_nombre = removeAccents(Str::upper(trim($request->nombres_familiar2)));
+                $familiar2->segundo_nombre = null;
+                $familiar2->tercer_nombre = null;
+                $familiar2->primer_apellido = removeAccents(Str::upper(trim($request->apellidos_familiar2)));
+                $familiar2->segundo_apellido = null;
                 $familiar2->relacion_id = $request->relacion_familiar2;
                 $familiar2->email = removeAccents(Str::lower($request->email_familiar2));
                 $familiar2->celular = $request->celular_familiar2;
@@ -591,22 +585,16 @@ class AlumnoController extends Controller
             'formacion' => ['nullable', 'numeric'],
             'institucion_educativa' => ['nullable', 'numeric'],
 
-            'primer_nombre_familiar1' => 'nullable',
-            'segundo_nombre_familiar1' => 'nullable',
-            'tercer_nombre_familiar1' => 'nullable',
-            'primer_apellido_familiar1' => ['nullable', 'required_with:primer_nombre_familiar1'],
-            'segundo_apellido_familiar1' => 'nullable',
-            'relacion_familiar1' => ['nullable', 'numeric', 'required_with:primer_nombre_familiar1'],
-            'celular_familiar1' => ['nullable', 'required_with:primer_nombre_familiar1'],
+            'nombres_familiar1' => 'nullable',
+            'apellidos_familiar1' => ['nullable', 'required_with:nombres_familiar1'],
+            'relacion_familiar1' => ['nullable', 'numeric', 'required_with:nombres_familiar1'],
+            'celular_familiar1' => ['nullable', 'required_with:nombres_familiar1'],
             'email_familiar1' => 'nullable',
 
-            'primer_nombre_familiar2' => 'nullable',
-            'segundo_nombre_familiar2' => 'nullable',
-            'tercer_nombre_familiar2' => 'nullable',
-            'primer_apellido_familiar2' => ['nullable', 'required_with:primer_nombre_familiar2'],
-            'segundo_apellido_familiar2' => 'nullable',
-            'relacion_familiar2' => ['nullable', 'numeric', 'required_with:primer_nombre_familiar2'],
-            'celular_familiar2' => ['nullable', 'required_with:primer_nombre_familiar2'],
+            'nombres_familiar2' => 'nullable',
+            'apellidos_familiar2' => ['nullable', 'required_with:nombres_familiar2'],
+            'relacion_familiar2' => ['nullable', 'numeric', 'required_with:nombres_familiar2'],
+            'celular_familiar2' => ['nullable', 'required_with:nombres_familiar2'],
             'email_familiar2' => 'nullable',
 
             'empresa' => 'nullable',
@@ -651,13 +639,13 @@ class AlumnoController extends Controller
             $alumno->formacion_id = $request->formacion ?: null;
             $alumno->institucion_educativa_id = $request->institucion_educativa ?: null;
 
-            if ($request->primer_nombre_familiar1 != null) {
+            if ($request->nombres_familiar1 != null) {
                 $familiar1 = $alumno->familiar_uno_id ? AlumnoFamiliar::findOrFail($alumno->familiar_uno_id) : new AlumnoFamiliar();
-                $familiar1->primer_nombre = removeAccents(Str::upper($request->primer_nombre_familiar1));
-                $familiar1->segundo_nombre = removeAccents(Str::upper($request->segundo_nombre_familiar1));
-                $familiar1->tercer_nombre = removeAccents(Str::upper($request->tercer_nombre_familiar1));
-                $familiar1->primer_apellido = removeAccents(Str::upper($request->primer_apellido_familiar1));
-                $familiar1->segundo_apellido = removeAccents(Str::upper($request->segundo_apellido_familiar1));
+                $familiar1->primer_nombre = removeAccents(Str::upper(trim($request->nombres_familiar1)));
+                $familiar1->segundo_nombre = null;
+                $familiar1->tercer_nombre = null;
+                $familiar1->primer_apellido = removeAccents(Str::upper(trim($request->apellidos_familiar1)));
+                $familiar1->segundo_apellido = null;
                 $familiar1->relacion_id = $request->relacion_familiar1;
                 $familiar1->email = removeAccents(Str::lower($request->email_familiar1));
                 $familiar1->celular = $request->celular_familiar1;
@@ -665,17 +653,17 @@ class AlumnoController extends Controller
                 $alumno->familiar_uno_id = $familiar1->id;
             }
 
-            if ($request->primer_nombre_familiar2 != null) {
+            if ($request->nombres_familiar2 != null) {
                 if ($alumno->familiar_dos_id != null) {
                     $familiar2 = AlumnoFamiliar::findOrFail($alumno->familiar_dos_id);
                 } else {
                     $familiar2 = new AlumnoFamiliar();
                 }
-                $familiar2->primer_nombre = removeAccents(Str::upper($request->primer_nombre_familiar2));
-                $familiar2->segundo_nombre = removeAccents(Str::upper($request->segundo_nombre_familiar2));
-                $familiar2->tercer_nombre = removeAccents(Str::upper($request->tercer_nombre_familiar2));
-                $familiar2->primer_apellido = removeAccents(Str::upper($request->primer_apellido_familiar2));
-                $familiar2->segundo_apellido = removeAccents(Str::upper($request->segundo_apellido_familiar2));
+                $familiar2->primer_nombre = removeAccents(Str::upper(trim($request->nombres_familiar2)));
+                $familiar2->segundo_nombre = null;
+                $familiar2->tercer_nombre = null;
+                $familiar2->primer_apellido = removeAccents(Str::upper(trim($request->apellidos_familiar2)));
+                $familiar2->segundo_apellido = null;
                 $familiar2->relacion_id = $request->relacion_familiar2;
                 $familiar2->email = removeAccents(Str::lower($request->email_familiar2));
                 $familiar2->celular = $request->celular_familiar2;
