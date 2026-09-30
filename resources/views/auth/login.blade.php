@@ -36,7 +36,17 @@ Bienvenido
                                 <div class="card mb-0 border-0 shadow-none mb-0">
                                     <div class="card-body p-sm-5 m-lg-4">
                                         <div class="text-center mt-5">
-                                            <div class="marca-login"><svg width="34" height="34" viewBox="0 0 28 28" fill="none"><path d="M14 3L26 9.5V18.5L14 25L2 18.5V9.5L14 3Z" stroke="#0f4c5c" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3V14M14 14L26 9.5M14 14L2 9.5M14 14V25" stroke="#0f4c5c" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Sistema Académico<br>Extensión Universitaria</span></div>
+                                            <div class="marca-login">
+                                                <svg width="40" height="40" viewBox="0 0 300 300">
+                                                    <circle cx="150" cy="150" r="97" fill="none" stroke="#33454a" stroke-width="5"/>
+                                                    <circle cx="150" cy="150" r="88" fill="none" stroke="#8a4d13" stroke-width="1.6"/>
+                                                    <polygon points="150.00,65.00 223.61,107.50 150.00,150.00 76.39,107.50" fill="#0f4c5c" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
+                                                    <polygon points="223.61,107.50 223.61,192.50 150.00,235.00 150.00,150.00" fill="#1f6b4f" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
+                                                    <polygon points="150.00,150.00 150.00,235.00 76.39,192.50 76.39,107.50" fill="#33454a" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
+                                                    <circle cx="150" cy="150" r="3.2" fill="#8a4d13"/>
+                                                </svg>
+                                                <span>Sistema Académico<br>Extensión Universitaria</span>
+                                            </div>
                                             <h5 class="fs-3xl">Bienvenido!</h5>
                                             <p class="text-muted">Inicia tu sesión para continuar a {{config('app.name')}}</p>
                                         </div>
