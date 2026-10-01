@@ -14,6 +14,8 @@ use OwenIt\Auditing\Models\Audit;
  */
 class AuditoriaController extends Controller
 {
+    private const EVENTOS = ['created' => 'Creó', 'updated' => 'Actualizó', 'deleted' => 'Eliminó', 'restored' => 'Restauró'];
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -60,7 +62,7 @@ class AuditoriaController extends Controller
         $usuarios = \App\Models\User::whereIn('id', Audit::where('user_type', 'App\\Models\\User')->select('user_id')->distinct()->pluck('user_id'))
             ->orderBy('name')->get(['id', 'name']);
 
-        $eventos = ['created' => 'Creó', 'updated' => 'Actualizó', 'deleted' => 'Eliminó', 'restored' => 'Restauró'];
+        $eventos = self::EVENTOS;
 
         return view('auditoria.index', compact('auditorias', 'modulos', 'usuarios', 'eventos'));
     }
@@ -77,7 +79,9 @@ class AuditoriaController extends Controller
         $campos = array_unique(array_merge(array_keys($antes), array_keys($despues)));
         sort($campos);
 
-        return view('auditoria.show', compact('auditoria', 'modulo', 'antes', 'despues', 'campos'));
+        $eventos = self::EVENTOS;
+
+        return view('auditoria.show', compact('auditoria', 'modulo', 'antes', 'despues', 'campos', 'eventos'));
     }
 
     /** "App\Models\ExtensionUniversitaria" -> "Extension Universitaria" */
