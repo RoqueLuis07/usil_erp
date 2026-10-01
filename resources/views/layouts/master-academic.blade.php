@@ -272,7 +272,7 @@
                     </div>
                 @endif
                 @can('ver_usuarios')
-                    @php $abierto = request()->routeIs('usuarios.*') || request()->routeIs('roles.*'); @endphp
+                    @php $abierto = request()->routeIs('usuarios.*') || request()->routeIs('roles.*') || request()->routeIs('auditoria.*'); @endphp
                     <button type="button" class="ac-nav-section-toggle" data-target="acsec-admin" aria-expanded="{{ $abierto ? 'true' : 'false' }}">
                         Administración
                         <svg class="ac-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -286,6 +286,12 @@
                             <a href="{{route('roles.index')}}" class="ac-nav-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
                                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 2.5l6 2.3v4.4c0 3.6-2.4 6.7-6 7.8-3.6-1.1-6-4.2-6-7.8V4.8l6-2.3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.3 10l1.9 1.9L12.7 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 <span class="ac-nav-label">Roles</span>
+                            </a>
+                        @endcan
+                        @can('ver_auditoria')
+                            <a href="{{route('auditoria.index')}}" class="ac-nav-item {{ request()->routeIs('auditoria.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M9 5.5v3.8l2.6 1.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M14.5 14.5L17.5 17.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                                <span class="ac-nav-label">Auditoría</span>
                             </a>
                         @endcan
                     </div>

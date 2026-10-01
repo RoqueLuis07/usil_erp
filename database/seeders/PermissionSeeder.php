@@ -675,6 +675,7 @@ class PermissionSeeder extends Seeder
             'ver_areas_conocimientos',
             'ver_areas_tesis',
             'ver_arqueos_cajas_cajero',
+            'ver_auditoria',
             'ver_arqueos_cajero',
             'ver_articulos',
             'ver_asientos_contables',

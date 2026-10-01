@@ -1505,6 +1505,9 @@ Auth::routes();
             Route::delete('roles/eliminar/{id}', 'RoleController@destroy')->name('roles.destroy');
         //Permisos
             Route::get('permisos', 'PermissionController@index')->name('permisos.index');
+    //Auditoría
+        Route::get('auditoria', 'AuditoriaController@index')->name('auditoria.index');
+        Route::get('auditoria/ver/{id}', 'AuditoriaController@show')->name('auditoria.show');
 
 //Parametros
     //Empresa

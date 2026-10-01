@@ -143,6 +143,9 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
             'ver_usuarios',
             'crear_usuarios',
             'editar_usuarios',
+            // Auditoría: solo lectura del historial de cambios, no habilita
+            // ninguna acción nueva, así que no es un riesgo de escalamiento.
+            'ver_auditoria',
         ]);
 
         // Usuarios de prueba, uno por rol, con su registro académico
