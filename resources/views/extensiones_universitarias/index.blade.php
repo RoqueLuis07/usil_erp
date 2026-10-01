@@ -94,7 +94,7 @@
                                                 <td class="id">{{$extension->id}}</td>
                                                 <td class="nombre">{{$extension->nombre}}</td>
                                                 <td class="tipo_extension">{{$extension->tipoExtension->nombre}}</td>
-                                                <td class="docente">{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}}</td>
+                                                <td class="docente">{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}</td>
                                                 <td>{{number_format($extension->cantidad_horas, 2, ',', '.')}} @if ($extension->maxima_cantidad_horas != 1) horas @else hora @endif</td>
                                                 <td>
                                                     {{$extension->extensionUniversitariaDetalles->count()}}

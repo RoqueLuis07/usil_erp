@@ -55,7 +55,7 @@
                         <td class="text-center">{{$key + 1}}</td>
                         <td class="text-center">{{$extension->nombre}}</td>
                         <td class="text-center">{{$extension->tipoExtension->nombre}}</td>
-                        <td class="text-center">{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}}</td>
+                        <td class="text-center">{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}</td>
                         <td class="text-center">{{number_format($extension->cantidad_horas, 2, ',', '.')}}
                             @if ($extension->cantidad_horas == 1)
                                 hora

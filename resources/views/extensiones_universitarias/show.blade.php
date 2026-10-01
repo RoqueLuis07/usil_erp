@@ -32,7 +32,7 @@
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="docente">Responsable</label>
-                                    <input type="text" class="form-control" id="docente" value="{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}}" readonly>
+                                    <input type="text" class="form-control" id="docente" value="{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -85,7 +85,11 @@
                                     <label class="form-label" for="proyecto">Proyecto</label>
                                     <div class="text-center">
                                         @can('ver_adjunto_proyectos_extensiones_universitarias')
-                                            <a type="button" class="btn btn-warning" href="{{asset($extension->ubicacion_proyecto)}}" target="_blank">Ver</a>
+                                            @if ($extension->ubicacion_proyecto && $extension->ubicacion_proyecto !== 'importado-sin-archivo')
+                                                <a type="button" class="btn btn-warning" href="{{asset($extension->ubicacion_proyecto)}}" target="_blank">Ver</a>
+                                            @else
+                                                <span class="text-muted" style="font-size:12px;">Sin archivo</span>
+                                            @endif
                                         @endcan
                                         @if ($extension->estado == 'PE')
                                             @can('cambiar_adjunto_proyectos_extensiones_universitarias')

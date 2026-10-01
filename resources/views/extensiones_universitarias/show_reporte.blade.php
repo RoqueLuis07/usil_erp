@@ -89,7 +89,7 @@
                                                     <tr>
                                                         <td>{{$extension->nombre}}</td>
                                                         <td>{{$extension->tipoExtension->nombre}}</td>
-                                                        <td>{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}} - {{$extension->docente->numero_documento}}</td>
+                                                        <td>{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido . ' - ' . $extension->docente->numero_documento : 'Sin asignar'}}</td>
                                                         <td>{{number_format($extension->cantidad_horas, 2, ',', '.')}}
                                                             @if ($extension->cantidad_horas == 1)
                                                                 hora
