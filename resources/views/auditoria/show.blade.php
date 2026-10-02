@@ -66,14 +66,22 @@
                                             $valorAntes = $antes[$campo] ?? null;
                                             $valorDespues = $despues[$campo] ?? null;
                                             $cambio = array_key_exists($campo, $antes) && array_key_exists($campo, $despues) && $valorAntes != $valorDespues;
+                                            // Los valores pueden ser arreglos (columnas JSON) o booleanos: se
+                                            // normalizan a texto para que Blade no truene con "Array to string".
+                                            $formatear = function ($v) {
+                                                if (is_null($v)) return '—';
+                                                if (is_bool($v)) return $v ? 'true' : 'false';
+                                                if (is_array($v) || is_object($v)) return json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                                                return (string) $v;
+                                            };
                                         @endphp
                                         <tr>
                                             <td class="ac-mono" style="font-size:12px;">{{ $campo }}</td>
                                             <td class="{{ $cambio ? 'bg-danger-subtle' : '' }}" style="font-size:12.5px; word-break:break-word;">
-                                                {{ is_bool($valorAntes) ? ($valorAntes ? 'true' : 'false') : ($valorAntes ?? '—') }}
+                                                {{ $formatear($valorAntes) }}
                                             </td>
                                             <td class="{{ $cambio ? 'bg-success-subtle' : '' }}" style="font-size:12.5px; word-break:break-word;">
-                                                {{ is_bool($valorDespues) ? ($valorDespues ? 'true' : 'false') : ($valorDespues ?? '—') }}
+                                                {{ $formatear($valorDespues) }}
                                             </td>
                                         </tr>
                                     @endforeach
