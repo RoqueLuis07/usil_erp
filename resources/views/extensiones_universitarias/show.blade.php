@@ -123,6 +123,38 @@
                                     @endif
                                 @endif
                             </div>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="linea_extension">Línea de Extensión</label>
+                                    <input type="text" class="form-control" id="linea_extension" value="{{ $extension->linea_extension ?? 'Sin línea' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="problematica">Problemática</label>
+                                    <input type="text" class="form-control" id="problematica" value="{{ $extension->problematica ? $extension->problematica . ' - ' . $extension->problematica_nombre : 'Sin definir' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="presupuesto">Presupuesto</label>
+                                    <input type="text" class="form-control text-end" id="presupuesto" value="{{ !is_null($extension->presupuesto) ? 'Gs. ' . number_format($extension->presupuesto, 0, ',', '.') : '—' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="cantidad_beneficiados">N° de Beneficiados</label>
+                                    <input type="text" class="form-control text-center" id="cantidad_beneficiados" value="{{ !is_null($extension->cantidad_beneficiados) ? number_format($extension->cantidad_beneficiados, 0, ',', '.') : '—' }}" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="periodo_actividad">Período de la Actividad</label>
+                                    <input type="text" class="form-control text-center" id="periodo_actividad" value="{{ $extension->periodo ?? '—' }}" readonly>
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="materia">Materia</label>
+                                    <input type="text" class="form-control" id="materia" value="{{ optional($extension->materia)->nombre_fantasia ?? 'Sin materia asociada' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="encuesta_satisfaccion">Encuesta de satisfacción</label>
+                                    <input type="text" class="form-control text-center" id="encuesta_satisfaccion" value="{{ is_null($extension->encuesta_satisfaccion) ? '—' : ($extension->encuesta_satisfaccion ? 'Sí' : 'No') }}" readonly>
+                                </div>
+                            </div>
 							<div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_inicio">Fecha de Inicio</label>

@@ -1,7 +1,7 @@
 <script type="module">
     $(document).ready(function() {
         var options = {
-            valueNames: ['nombre', 'tipo_extension', 'docente'],
+            valueNames: ['nombre', 'tipo_extension', 'linea', 'periodo', 'docente'],
             page: 50,
             pagination: true
         };

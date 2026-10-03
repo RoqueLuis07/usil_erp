@@ -80,7 +80,11 @@
                                         <tr>
                                             <th class="sort" data-sort="id">ID</th>
                                             <th class="sort" data-sort="nombre">Proyecto</th>
-                                            <th class="sort" data-sort="tipo_extension">Tipo de Proyecto</th>
+                                            <th class="sort" data-sort="tipo_extension">Tipo de Actividad</th>
+                                            <th class="sort" data-sort="linea">Línea de Extensión</th>
+                                            <th class="text-center">N° de Beneficiados</th>
+                                            <th class="text-end">Presupuesto</th>
+                                            <th class="sort" data-sort="periodo">Período</th>
                                             <th class="sort" data-sort="docente">Responsable</th>
                                             <th>Tiempo</th>
                                             <th>Cant. Alumnos</th>
@@ -94,8 +98,12 @@
                                                 <td class="id">{{$extension->id}}</td>
                                                 <td class="nombre">{{$extension->nombre}}</td>
                                                 <td class="tipo_extension">{{$extension->tipoExtension->nombre}}</td>
+                                                <td class="linea">{{ optional($extension->tipoExtension)->linea_numero ? 'Línea ' . $extension->tipoExtension->linea_numero : '—' }}</td>
+                                                <td class="text-center">{{ !is_null($extension->cantidad_beneficiados) ? number_format($extension->cantidad_beneficiados, 0, ',', '.') : '—' }}</td>
+                                                <td class="text-end">{{ !is_null($extension->presupuesto) ? 'Gs. ' . number_format($extension->presupuesto, 0, ',', '.') : '—' }}</td>
+                                                <td class="periodo">{{ $extension->periodo ?? '—' }}</td>
                                                 <td class="docente">{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}</td>
-                                                <td>{{number_format($extension->cantidad_horas, 2, ',', '.')}} @if ($extension->maxima_cantidad_horas != 1) horas @else hora @endif</td>
+                                                <td>{{number_format($extension->cantidad_horas, 2, ',', '.')}} @if ($extension->cantidad_horas != 1) horas @else hora @endif</td>
                                                 <td>
                                                     {{$extension->extensionUniversitariaDetalles->count()}}
                                                     @if ($extension->extensionUniversitariaDetalles->count() == 1)

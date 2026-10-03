@@ -17,6 +17,7 @@ use App\Models\TipoExtensionUniversitaria;
 use App\Models\Docente;
 use App\Models\Alumno;
 use App\Models\AlumnoExtension;
+use App\Models\Materia;
 use App\Models\Empresa;
 use App\Models\Carrera;
 use App\Models\Semestre;
@@ -48,7 +49,7 @@ class ExtensionUniversitariaController extends Controller
         $this->authorize('ver_extensiones_universitarias');
 
         try {
-            $extensiones = ExtensionUniversitaria::orderBy('id', 'desc')->get();
+            $extensiones = ExtensionUniversitaria::with(['tipoExtension', 'docente', 'extensionUniversitariaDetalles'])->orderBy('id', 'desc')->get();
             $alumnos = Alumno::whereHas('extensionesDetalles')->distinct()->orderBy('primer_nombre', 'asc')->get();
             $periodos = collect();
             foreach ($extensiones as $extension) {
@@ -94,7 +95,9 @@ class ExtensionUniversitariaController extends Controller
             $docentes = Docente::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
             $alumnos = Alumno::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
             $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
-            return view('extensiones_universitarias/create')->with(compact('tipos_extensiones', 'docentes', 'alumnos', 'carreras'));
+            $materias = Materia::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            $problematicas = ExtensionUniversitaria::PROBLEMATICAS;
+            return view('extensiones_universitarias/create')->with(compact('tipos_extensiones', 'docentes', 'alumnos', 'carreras', 'materias', 'problematicas'));
         } catch (\Exception $e) {
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
         }
@@ -123,6 +126,11 @@ class ExtensionUniversitariaController extends Controller
             'docente' => [$required, 'numeric'],
             'cantidad_horas_proyecto' => ['required', 'numeric', 'min:1'],
             'cupo_maximo' => ['nullable', 'numeric', 'min:1'],
+            'problematica' => ['nullable', 'integer', 'between:1,5'],
+            'presupuesto' => ['nullable', 'numeric', 'min:0'],
+            'cantidad_beneficiados' => ['nullable', 'integer', 'min:0'],
+            'materia_id' => ['nullable', 'integer', 'exists:materias,id'],
+            'encuesta_satisfaccion' => ['nullable', 'in:true,false'],
             'carreras_habilitadas' => ['nullable', 'array'],
             'carreras_habilitadas.*' => ['numeric'],
             'proyecto' => ['required', 'file', 'extensions:pdf'],
@@ -167,6 +175,7 @@ class ExtensionUniversitariaController extends Controller
 			$extension->fecha_fin = $request->fecha_fin;
             $extension->tiene_certificado = filter_var($request->tiene_certificado, FILTER_VALIDATE_BOOLEAN);
             $extension->cupo_maximo = $request->cupo_maximo ?: null;
+            $this->asignarCamposAdicionales($request, $extension);
 
             //cargar archivo
             $archivo = $request->proyecto;
@@ -232,7 +241,9 @@ class ExtensionUniversitariaController extends Controller
             $tipos_extensiones = TipoExtensionUniversitaria::where('estado', 'AC')->get();
             $docentes = Docente::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
             $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
-            return view('extensiones_universitarias/edit')->with(compact('extension', 'tipos_extensiones', 'docentes', 'carreras'));
+            $materias = Materia::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            $problematicas = ExtensionUniversitaria::PROBLEMATICAS;
+            return view('extensiones_universitarias/edit')->with(compact('extension', 'tipos_extensiones', 'docentes', 'carreras', 'materias', 'problematicas'));
         } catch (\Exception $e) {
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
         }
@@ -248,6 +259,11 @@ class ExtensionUniversitariaController extends Controller
             'docente' => ['required', 'numeric'],
             'cantidad_horas_proyecto' => ['required', 'numeric', 'min:1'],
             'cupo_maximo' => ['nullable', 'numeric', 'min:1'],
+            'problematica' => ['nullable', 'integer', 'between:1,5'],
+            'presupuesto' => ['nullable', 'numeric', 'min:0'],
+            'cantidad_beneficiados' => ['nullable', 'integer', 'min:0'],
+            'materia_id' => ['nullable', 'integer', 'exists:materias,id'],
+            'encuesta_satisfaccion' => ['nullable', 'in:true,false'],
             'carreras_habilitadas' => ['nullable', 'array'],
             'carreras_habilitadas.*' => ['numeric'],
 			'fecha_inicio' => ['required', 'date'],
@@ -263,6 +279,7 @@ class ExtensionUniversitariaController extends Controller
             $extension->tipo_extension_id = $request->tipo_extension;
             $extension->cantidad_horas = $request->cantidad_horas_proyecto;
             $extension->cupo_maximo = $request->cupo_maximo ?: null;
+            $this->asignarCamposAdicionales($request, $extension);
             $extension->docente_id = $request->docente;
 			$extension->fecha_inicio = $request->fecha_inicio;
 			$extension->fecha_fin = $request->fecha_fin;
@@ -283,6 +300,26 @@ class ExtensionUniversitariaController extends Controller
             DB::rollback();
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
         }
+    }
+
+    /**
+     * Campos opcionales de la ficha (problemática, presupuesto, beneficiados,
+     * materia, encuesta). Si no se elige problemática se toma la que
+     * corresponde a la línea del tipo de actividad.
+     */
+    private function asignarCamposAdicionales(Request $request, ExtensionUniversitaria $extension): void
+    {
+        $problematica = $request->problematica;
+        if (!$problematica) {
+            $problematica = optional(TipoExtensionUniversitaria::find($request->tipo_extension))->linea_numero;
+        }
+        $extension->problematica = $problematica ?: null;
+        $extension->presupuesto = $request->filled('presupuesto') ? $request->presupuesto : null;
+        $extension->cantidad_beneficiados = $request->filled('cantidad_beneficiados') ? (int) $request->cantidad_beneficiados : null;
+        $extension->materia_id = $request->materia_id ?: null;
+        $extension->encuesta_satisfaccion = $request->filled('encuesta_satisfaccion')
+            ? filter_var($request->encuesta_satisfaccion, FILTER_VALIDATE_BOOLEAN)
+            : null;
     }
 
     public function edit_hours($id)
