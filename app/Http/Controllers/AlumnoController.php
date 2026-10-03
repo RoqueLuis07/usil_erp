@@ -54,6 +54,7 @@ use App\Models\ExtensionUniversitariaDetalle;
 use App\Models\RequerimientoExtensionUniversitaria;
 use App\Models\TipoExtensionUniversitaria;
 use App\Models\Empresa;
+use App\Support\ResumenExtensionAlumno;
 
 
 class AlumnoController extends Controller
@@ -196,10 +197,13 @@ class AlumnoController extends Controller
                 }
             }
 
+            // Horas de extensión acumuladas y cumplimiento del requisito, solo de la página actual.
+            $resumenes_extension = ResumenExtensionAlumno::para($alumnos->getCollection());
+
             $semestres = Semestre::orderBy('id', 'desc')->get();
             $programas = Programa::whereIn('id', [1, 2, 3, 8])->where('estado', 'AC')->get();
 
-            return view('alumnos/index')->with(compact('alumnos', 'semestres', 'programas', 'buscar', 'filtro_ingreso', 'filtro_edad', 'filtro_programa', 'filtro_periodo', 'filtro_correo', 'filtro_ubs'));
+            return view('alumnos/index')->with(compact('alumnos', 'resumenes_extension', 'semestres', 'programas', 'buscar', 'filtro_ingreso', 'filtro_edad', 'filtro_programa', 'filtro_periodo', 'filtro_correo', 'filtro_ubs'));
         } catch (\Exception $e) {
             return redirect()->route('alumnos.index')->with('error-message', $e->getMessage());
         }
@@ -1154,82 +1158,17 @@ class AlumnoController extends Controller
             $actividades_requeridas = RequerimientoExtensionUniversitaria::first()->actividades_requeridas;
             $tipos_actividades = TipoExtensionUniversitaria::where('estado', 'AC')->get();
 
-            $cantidad_realizada_1 = 0;
-            $cantidad_realizada_2 = 0;
-            $cantidad_realizada_3 = 0;
-            $cantidad_realizada_4 = 0;
-            $horas_realizadas_1 = 0;
-            $horas_realizadas_2 = 0;
-            $horas_realizadas_3 = 0;
-            $horas_realizadas_4 = 0;
-            $horas_acreditadas = 0;
-            $horas_acreditadas_1 = 0;
-            $horas_acreditadas_2 = 0;
-            $horas_acreditadas_3 = 0;
-            $horas_acreditadas_4 = 0;
-
             foreach ($extensiones as $extension) {
                 $fecha = Carbon::parse($extension->extensionUniversitaria->fecha_inicio);
-                $anho = $fecha->year;
-                if ($fecha->month <= 7) {
-                    $extension->periodo = $anho . '-1';
-                } else {
-                    $extension->periodo = $anho . '-2';
-                }
-
-                if ($extension->extensionUniversitaria->estado == 'FI') {
-                    $tipo_extension_id = $extension->extensionUniversitaria->tipo_extension_id;
-                    $maxima_cantidad_horas = $extension->extensionUniversitaria->tipoExtension->maxima_cantidad_horas;
-
-                    // Dependiendo del tipo de extensión, incrementar las horas y cantidades
-                    switch ($tipo_extension_id) {
-                        case 1:
-                            $cantidad_realizada_1++;
-                            $horas_realizadas_1 += $extension->cantidad_horas;
-                            if ($horas_realizadas_1 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_1 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_1 = $horas_realizadas_1;
-                            }
-                            break;
-
-                        case 2:
-                            $cantidad_realizada_2++;
-                            $horas_realizadas_2 += $extension->cantidad_horas;
-                            if ($horas_realizadas_2 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_2 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_2 = $horas_realizadas_2;
-                            }
-                            break;
-
-                        case 3:
-                            $cantidad_realizada_3++;
-                            $horas_realizadas_3 += $extension->cantidad_horas;
-                            if ($horas_realizadas_3 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_3 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_3 = $horas_realizadas_3;
-                            }
-                            break;
-
-                        case 4:
-                            $cantidad_realizada_4++;
-                            $horas_realizadas_4 += $extension->cantidad_horas;
-                            if ($horas_realizadas_4 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_4 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_4 = $horas_realizadas_4;
-                            }
-                            break;
-                    }
-                }
+                $extension->periodo = $fecha->year . '-' . ($fecha->month <= 7 ? 1 : 2);
             }
 
-            $horas_acreditadas = $horas_acreditadas_1 + $horas_acreditadas_2 + $horas_acreditadas_3 + $horas_acreditadas_4;
-            $actividades_realizadas = $cantidad_realizada_1 + $cantidad_realizada_2 + $cantidad_realizada_3 + $cantidad_realizada_4;
+            // Avance por tipo de actividad (cualquier cantidad de tipos).
+            $resumen = ResumenExtensionAlumno::para(collect([$alumno]))[$alumno->id];
+            $horas_acreditadas = $resumen['horas_acreditadas'];
+            $actividades_realizadas = $resumen['actividades_realizadas'];
 
-            return view('alumnos/show_extensiones')->with(compact('alumno', 'extensiones', 'horas_requeridas', 'horas_acreditadas', 'actividades_requeridas', 'tipos_actividades', 'horas_realizadas_1', 'horas_realizadas_2', 'horas_realizadas_3', 'horas_realizadas_4', 'horas_acreditadas_1', 'horas_acreditadas_2', 'horas_acreditadas_3', 'horas_acreditadas_4', 'cantidad_realizada_1', 'cantidad_realizada_2', 'cantidad_realizada_3', 'cantidad_realizada_4', 'actividades_realizadas'));
+            return view('alumnos/show_extensiones')->with(compact('alumno', 'extensiones', 'horas_requeridas', 'horas_acreditadas', 'actividades_requeridas', 'tipos_actividades', 'resumen', 'actividades_realizadas'));
 
         } catch (\Exception $e) {
             return redirect()->route('alumnos.index')->with('error-message', $e->getMessage());
@@ -1250,82 +1189,17 @@ class AlumnoController extends Controller
             $empresa = Empresa::first(); //obtenemos los datos de la empresa para el header
             $fecha_hoy = Carbon::now(); //obtenemos la fecha de hoy para el footer
 
-            $cantidad_realizada_1 = 0;
-            $cantidad_realizada_2 = 0;
-            $cantidad_realizada_3 = 0;
-            $cantidad_realizada_4 = 0;
-            $horas_realizadas_1 = 0;
-            $horas_realizadas_2 = 0;
-            $horas_realizadas_3 = 0;
-            $horas_realizadas_4 = 0;
-            $horas_acreditadas = 0;
-            $horas_acreditadas_1 = 0;
-            $horas_acreditadas_2 = 0;
-            $horas_acreditadas_3 = 0;
-            $horas_acreditadas_4 = 0;
-
             foreach ($extensiones as $extension) {
                 $fecha = Carbon::parse($extension->extensionUniversitaria->fecha_inicio);
-                $anho = $fecha->year;
-                if ($fecha->month <= 7) {
-                    $extension->periodo = $anho . '-1';
-                } else {
-                    $extension->periodo = $anho . '-2';
-                }
-
-                if ($extension->extensionUniversitaria->estado == 'FI') {
-                    $tipo_extension_id = $extension->extensionUniversitaria->tipo_extension_id;
-                    $maxima_cantidad_horas = $extension->extensionUniversitaria->tipoExtension->maxima_cantidad_horas;
-
-                    // Dependiendo del tipo de extensión, incrementar las horas y cantidades
-                    switch ($tipo_extension_id) {
-                        case 1:
-                            $cantidad_realizada_1++;
-                            $horas_realizadas_1 += $extension->cantidad_horas;
-                            if ($horas_realizadas_1 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_1 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_1 = $horas_realizadas_1;
-                            }
-                            break;
-
-                        case 2:
-                            $cantidad_realizada_2++;
-                            $horas_realizadas_2 += $extension->cantidad_horas;
-                            if ($horas_realizadas_2 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_2 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_2 = $horas_realizadas_2;
-                            }
-                            break;
-
-                        case 3:
-                            $cantidad_realizada_3++;
-                            $horas_realizadas_3 += $extension->cantidad_horas;
-                            if ($horas_realizadas_3 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_3 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_3 = $horas_realizadas_3;
-                            }
-                            break;
-
-                        case 4:
-                            $cantidad_realizada_4++;
-                            $horas_realizadas_4 += $extension->cantidad_horas;
-                            if ($horas_realizadas_4 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_4 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_4 = $horas_realizadas_4;
-                            }
-                            break;
-                    }
-                }
+                $extension->periodo = $fecha->year . '-' . ($fecha->month <= 7 ? 1 : 2);
             }
 
-            $horas_acreditadas = $horas_acreditadas_1 + $horas_acreditadas_2 + $horas_acreditadas_3 + $horas_acreditadas_4;
-            $actividades_realizadas = $cantidad_realizada_1 + $cantidad_realizada_2 + $cantidad_realizada_3 + $cantidad_realizada_4;
+            // Avance por tipo de actividad (cualquier cantidad de tipos).
+            $resumen = ResumenExtensionAlumno::para(collect([$alumno]))[$alumno->id];
+            $horas_acreditadas = $resumen['horas_acreditadas'];
+            $actividades_realizadas = $resumen['actividades_realizadas'];
 
-            $pdf = Pdf::loadView('alumnos/pdf_extensiones', compact('empresa', 'fecha_hoy', 'alumno', 'extensiones', 'horas_requeridas', 'horas_acreditadas', 'actividades_requeridas', 'tipos_actividades', 'horas_realizadas_1', 'horas_realizadas_2', 'horas_realizadas_3', 'horas_realizadas_4', 'horas_acreditadas_1', 'horas_acreditadas_2', 'horas_acreditadas_3', 'horas_acreditadas_4', 'cantidad_realizada_1', 'cantidad_realizada_2', 'cantidad_realizada_3', 'cantidad_realizada_4', 'actividades_realizadas'));
+            $pdf = Pdf::loadView('alumnos/pdf_extensiones', compact('empresa', 'fecha_hoy', 'alumno', 'extensiones', 'horas_requeridas', 'horas_acreditadas', 'actividades_requeridas', 'tipos_actividades', 'resumen', 'actividades_realizadas'));
             $pdf->setPaper('A4', 'landscape');
 
             return $pdf->stream('rpt_extensiones_universitaria_' . $alumno->numero_documento . '_' . Carbon::now()->format('dmY_His') . '.pdf');
