@@ -19,4 +19,8 @@ class RequerimientoExtensionUniversitaria extends Model implements Auditable
     public function ActualizadoPor(){
         return $this->belongsTo(User::class);
     }
+
+    public function Carrera(){
+        return $this->belongsTo(Carrera::class);
+    }
 }

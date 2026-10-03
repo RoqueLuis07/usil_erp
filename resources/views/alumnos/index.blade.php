@@ -1,5 +1,5 @@
 @can('ver_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Alumnos @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -140,6 +140,8 @@
                                             <th>Ingreso</th>
                                             <th>Programa</th>
                                             <th>Periodo</th>
+                                            <th class="text-center">Horas Ext.</th>
+                                            <th class="text-center">Extensión</th>
 											<th class="text-center">Correo</th>
 											<th class="text-center">UBS</th>
                                             <th>Estado</th>
@@ -153,10 +155,30 @@
                                                 <td>{{$alumno->primer_nombre}} {{$alumno->segundo_nombre}} {{$alumno->tecer_nombre}} {{$alumno->primer_apellido}} {{$alumno->segundo_apellido}}</td>
                                                 <td>{{$alumno->numero_documento}}</td>
                                                 <td>{{$alumno->celular}} @if ($alumno->telefono) - {{$alumno->telefono}} @endif</td>
-                                                <td>{{\Carbon\Carbon::createFromDate($alumno->fecha_nacimiento)->age}} años</td>
+                                                <td>{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->age . ' años' : 'Sin dato'}}</td>
                                                 <td>{{$alumno->ingreso}}</td>
                                                 <td>{{$alumno->programa}}</td>
 												<td>{{$alumno->periodo}}</td>
+                                                @php $ext = $resumenes_extension[$alumno->id] ?? null; @endphp
+                                                <td class="text-center">
+                                                    @if ($ext)
+                                                        <span class="fw-semibold" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Realizadas: {{rtrim(rtrim(number_format($ext['horas_realizadas'], 2, ',', '.'), '0'), ',')}} h · Acreditadas: {{rtrim(rtrim(number_format($ext['horas_acreditadas'], 2, ',', '.'), '0'), ',')}} h @if (!is_null($ext['horas_requeridas']))· Requeridas: {{rtrim(rtrim(number_format($ext['horas_requeridas'], 2, ',', '.'), '0'), ',')}} h @endif">
+                                                            {{rtrim(rtrim(number_format($ext['horas_acreditadas'], 2, ',', '.'), '0'), ',')}}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-muted">0</span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center">
+                                                    @if ($ext && $ext['completo'] === true)
+                                                        <span class="badge bg-success-subtle text-success text-uppercase" data-bs-toggle="tooltip" data-bs-placement="top" title="Requisito de extensión cumplido"><i class="ri-check-fill"></i></span>
+                                                    @elseif ($ext && $ext['completo'] === false)
+                                                        <span class="badge bg-danger-subtle text-danger text-uppercase" data-bs-toggle="tooltip" data-bs-placement="top" title="Requisito de extensión pendiente"><i class="ri-close-fill"></i></span>
+                                                    @else
+                                                        <span class="text-muted" data-bs-toggle="tooltip" data-bs-placement="top" title="Sin requisito definido para la carrera">—</span>
+                                                    @endif
+                                                </td>
 												<td class="text-center">
                                                     <span
                                                         class="badge @if ($alumno->email_institucional)
@@ -245,7 +267,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="12" class="text-center">
+                                                <td colspan="14" class="text-center">
                                                     <lord-icon src="https://cdn.lordicon.com/jtkfemwz.json" trigger="in" estado="morph-cross" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
                                                     <h5 class="mt-2">Sin resultados.</h5>
                                                     <p class="text-muted mb-0">No pudimos encontrar ningún alumno según tus parámetros de búsqueda.</p>

@@ -1,5 +1,5 @@
 @can('editar_horas_alumnos_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -29,7 +29,7 @@
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="docente">Responsable</label>
-                                    <input type="text" class="form-control" id="docente" value="{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}}" readonly>
+                                    <input type="text" class="form-control" id="docente" value="{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}" readonly>
                                 </div>
                             </div>
                             <div class="row">

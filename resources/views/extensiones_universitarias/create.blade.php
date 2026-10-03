@@ -1,5 +1,5 @@
 @can('crear_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Agregar Extensiones Universitarias @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -28,6 +28,16 @@
             <form action="{{route('extensiones_universitarias.store')}}" method="post" id="store-form" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="generado_docente" value="NO">
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        <b>No se pudo guardar. Revisá lo siguiente:</b>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $mensaje_error)
+                                <li>{{ $mensaje_error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
@@ -46,7 +56,7 @@
                                         </span>
                                     @enderror
                                 </div>
-                                @unlessrole('DOCENTE')
+                                @unlessrole('ENCARGADO_DOCENTE')
                                     <div class="col-lg-3 mb-3">
                                         <label class="form-label" for="docente">Responsable <span class="text-danger">(*)</span></label>
                                         <select class="selectpicker form-control @error('docente') is-invalid @enderror" id="docente" name="docente" data-live-search="true">
@@ -64,7 +74,7 @@
                                 @endunlessrole
                             </div>
                             <div class="row">
-                                <div class="col-lg-4 mb-3">
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="tipo_extension">Tipo de Actividad <span class="text-danger">(*)</span></label>
                                     <select class="selectpicker form-control @error('tipo_extension') is-invalid @enderror" id="tipo_extension" name="tipo_extension">
                                         <option value="" selected disabled>Seleccionar...</option>
@@ -78,28 +88,49 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3">
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="linea_extension">Línea de Extensión</label>
+                                    <input type="text" class="form-control" id="linea_extension" value="" placeholder="Según el tipo de actividad" readonly tabindex="-1">
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="problematica">Problemática</label>
+                                    <select class="selectpicker form-control @error('problematica') is-invalid @enderror" id="problematica" name="problematica">
+                                        <option value="">Según el tipo de actividad</option>
+                                        @foreach ($problematicas as $numero => $nombre_problematica)
+                                            <option value="{{$numero}}" @if (strval(old('problematica')) == strval($numero)) selected @endif>{{$numero}} - {{$nombre_problematica}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('problematica')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="cantidad_horas_proyecto">Horas del Proyecto <span class="text-danger">(*)</span></label>
                                     <div class="input-group">
                                         <input type="text" class="form-control text-center @error('cantidad_horas_proyecto') is-invalid @enderror" id="cantidad_horas_proyecto" name="cantidad_horas_proyecto" value="{{old('cantidad_horas_proyecto')}}">
                                         <span class="input-group-text">horas</span>
                                         @error('cantidad_horas_proyecto')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{$message}}</strong>
-                                            </span>
-                                        @enderror
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
                                     </div>
+                                    <p class="text-muted mb-0" style="font-size: 12px" id="tope-horas"></p>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-lg-4 mb-3" id="div-proyecto">
                                     <label class="form-label" for="proyecto">Proyecto <span class="text-danger">(*)</span></label>
                                     <div class="input-group custom-file-button">
                                         <input type="file" class="form-control @error('proyecto') is-invalid @enderror" id="proyecto" name="proyecto" accept="application/pdf">
                                         <button type="button" class="btn btn-outline-danger" id="eliminar-proyecto" disabled><i class="ri-delete-bin-fill align-bottom me-2"></i>Eliminar Archivo</button>
                                         @error('proyecto')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{$message}}</strong>
-                                            </span>
-                                        @enderror
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
                                     </div>
                                     <p class="text-muted" style="font-size: 14px">Se aceptan archivos del tipo <code>.pdf</code> y con un tamaño máximo de <code>5mb</code>.</p>
                                 </div>
@@ -108,6 +139,43 @@
                                     <div>
                                         <a class="btn btn-secondary" href="{{asset('storage/extensiones_universitarias/plantillas/propuesta-proyecto.xlsx')}}" download="propuesta-proyecto.docx"><i class="ri-download-line align-bottom mb-0 me-2"></i> Descargar</a>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="presupuesto">Presupuesto</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Gs.</span>
+                                        <input type="text" class="form-control text-end @error('presupuesto') is-invalid @enderror" id="presupuesto" name="presupuesto" value="{{old('presupuesto')}}" placeholder="0">
+                                        @error('presupuesto')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="cantidad_beneficiados">N° de Beneficiados</label>
+                                    <input type="text" class="form-control text-center @error('cantidad_beneficiados') is-invalid @enderror" id="cantidad_beneficiados" name="cantidad_beneficiados" value="{{old('cantidad_beneficiados')}}" placeholder="0" inputmode="numeric">
+                                    @error('cantidad_beneficiados')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="materia_id">Materia</label>
+                                    <select class="selectpicker form-control @error('materia_id') is-invalid @enderror" id="materia_id" name="materia_id" data-live-search="true">
+                                        <option value="">Sin materia asociada</option>
+                                        @foreach ($materias as $materia)
+                                            <option value="{{$materia->id}}" @if (strval(old('materia_id')) == strval($materia->id)) selected @endif @if ($materia->codigo) data-subtext="{{$materia->codigo}}" @endif>{{$materia->nombre_fantasia}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('materia_id')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
                             </div>
 							<div class="row">
@@ -151,6 +219,44 @@
                                         </span>
                                     @enderror
                                 </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="periodo_actividad">Período de la Actividad</label>
+                                    <input type="text" class="form-control text-center" id="periodo_actividad" placeholder="Según fecha de inicio" readonly tabindex="-1">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="cupo_maximo">Cupo Máximo</label>
+                                    <input type="text" class="form-control text-center @error('cupo_maximo') is-invalid @enderror" id="cupo_maximo" name="cupo_maximo" value="{{old('cupo_maximo')}}" placeholder="Sin límite">
+                                    @error('cupo_maximo')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="carreras_habilitadas">Carreras Habilitadas para Postularse</label>
+                                    <select class="selectpicker form-control" id="carreras_habilitadas" name="carreras_habilitadas[]" multiple data-live-search="true" title="Todas las carreras">
+                                        @foreach ($carreras as $carrera)
+                                            <option value="{{$carrera->id}}" @if (collect(old('carreras_habilitadas'))->contains($carrera->id)) selected @endif>{{$carrera->nombre_fantasia}}</option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-muted" style="font-size: 12px">Sin seleccionar ninguna, el proyecto queda abierto a postulación de alumnos de cualquier carrera.</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
+                                    <div>
+                                        <label class="form-label" for="encuesta_satisfaccion">Encuesta de satisfacción ?</label>
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" id="encuesta_satisfaccion1" name="encuesta_satisfaccion" value="false" @if (old('encuesta_satisfaccion') === 'false') checked @endif>
+                                        <label class="btn btn-outline-danger" for="encuesta_satisfaccion1">No</label>
+                                        <input type="radio" class="btn-check" id="encuesta_satisfaccion2" name="encuesta_satisfaccion" value="true" @if (old('encuesta_satisfaccion') === 'true') checked @endif>
+                                        <label class="btn btn-outline-success" for="encuesta_satisfaccion2">Si</label>
+                                    </div>
+                                    <p class="text-muted mb-0" style="font-size: 12px">Indica si al finalizar la actividad se aplica la encuesta de satisfacción.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -159,16 +265,17 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h4 class="card-title mb-0">Alumnos Participantes</h4>
+                                    <p class="text-muted mb-0" style="font-size: 13px">Alta directa (sin pasar por postulación). Una vez aprobado el proyecto, también podés dejar que los alumnos se postulen desde su portal.</p>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-2 fila" id="fila-0">
                                         <div class="row d-flex flex-wrap justify-content-center">
                                             <div class="col-lg-4 col-sm-12 mb-2 text-center" id="div-alumno-0">
-                                                <label class="form-label label-alumno">Alumno <span class="text-danger">(*)</span></label>
+                                                <label class="form-label label-alumno">Alumno</label>
                                                 <select class="selectpicker form-control alumno-0 alumno @error('detalles.0.alumno') is-invalid @enderror" id="alumno-0" name="detalles[0][alumno]" data-live-search="true" data-id="0">
                                                     <option value="" selected disabled>Seleccionar...</option>
                                                     @foreach ($alumnos as $alumno)
-                                                        <option value="{{$alumno->id}}" @if (old('detalles.0.alumno') == strval($alumno->id)) selected @endif data-subtext="{{$alumno->numero_documento}}">{{$alumno->primer_nombre}} {{$alumno->primer_apellido}}</option>
+                                                        <option value="{{$alumno->id}}" @if (old('detalles.0.alumno') == strval($alumno->id)) selected @endif @if (!$alumno->tieneDatosParaExtension()) disabled @endif data-subtext="{{$alumno->numero_documento}}@if (!$alumno->tieneDatosParaExtension()) · datos incompletos @endif">{{$alumno->primer_nombre}} {{$alumno->primer_apellido}}</option>
                                                     @endforeach
                                                 </select>
                                                 @error('detalles.0.alumno')
@@ -211,5 +318,6 @@
         <script src="{{ URL::asset('build/libs/cleave.js/cleave.min.js') }}"></script>
         @include('extensiones_universitarias.scripts.create-scripts')
         @include('extensiones_universitarias.scripts.create-detalles-scripts')
+        @include('extensiones_universitarias.scripts.campos-extra-scripts')
     @endsection
 @endcan

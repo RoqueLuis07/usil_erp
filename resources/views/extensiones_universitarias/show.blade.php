@@ -1,5 +1,5 @@
 @can('ver_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -14,7 +14,7 @@
         @include('extensiones_universitarias.modals.show-modals')
 
         <div class="row">
-            <form>
+            <div>
                 @csrf
                 <div class="col-lg-12">
                     <div class="card">
@@ -32,7 +32,7 @@
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="docente">Responsable</label>
-                                    <input type="text" class="form-control" id="docente" value="{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}}" readonly>
+                                    <input type="text" class="form-control" id="docente" value="{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -85,7 +85,11 @@
                                     <label class="form-label" for="proyecto">Proyecto</label>
                                     <div class="text-center">
                                         @can('ver_adjunto_proyectos_extensiones_universitarias')
-                                            <a type="button" class="btn btn-warning" href="{{asset($extension->ubicacion_proyecto)}}" target="_blank">Ver</a>
+                                            @if ($extension->ubicacion_proyecto && $extension->ubicacion_proyecto !== 'importado-sin-archivo')
+                                                <a type="button" class="btn btn-warning" href="{{asset($extension->ubicacion_proyecto)}}" target="_blank">Ver</a>
+                                            @else
+                                                <span class="text-muted" style="font-size:12px;">Sin archivo</span>
+                                            @endif
                                         @endcan
                                         @if ($extension->estado == 'PE')
                                             @can('cambiar_adjunto_proyectos_extensiones_universitarias')
@@ -119,6 +123,38 @@
                                     @endif
                                 @endif
                             </div>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="linea_extension">Línea de Extensión</label>
+                                    <input type="text" class="form-control" id="linea_extension" value="{{ $extension->linea_extension ?? 'Sin línea' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="problematica">Problemática</label>
+                                    <input type="text" class="form-control" id="problematica" value="{{ $extension->problematica ? $extension->problematica . ' - ' . $extension->problematica_nombre : 'Sin definir' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="presupuesto">Presupuesto</label>
+                                    <input type="text" class="form-control text-end" id="presupuesto" value="{{ !is_null($extension->presupuesto) ? 'Gs. ' . number_format($extension->presupuesto, 0, ',', '.') : '—' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="cantidad_beneficiados">N° de Beneficiados</label>
+                                    <input type="text" class="form-control text-center" id="cantidad_beneficiados" value="{{ !is_null($extension->cantidad_beneficiados) ? number_format($extension->cantidad_beneficiados, 0, ',', '.') : '—' }}" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="periodo_actividad">Período de la Actividad</label>
+                                    <input type="text" class="form-control text-center" id="periodo_actividad" value="{{ $extension->periodo ?? '—' }}" readonly>
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="materia">Materia</label>
+                                    <input type="text" class="form-control" id="materia" value="{{ optional($extension->materia)->nombre_fantasia ?? 'Sin materia asociada' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="encuesta_satisfaccion">Encuesta de satisfacción</label>
+                                    <input type="text" class="form-control text-center" id="encuesta_satisfaccion" value="{{ is_null($extension->encuesta_satisfaccion) ? '—' : ($extension->encuesta_satisfaccion ? 'Sí' : 'No') }}" readonly>
+                                </div>
+                            </div>
 							<div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_inicio">Fecha de Inicio</label>
@@ -127,6 +163,14 @@
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_fin">Fecha de Fin</label>
                                     <input type="text" class="form-control" id="fecha_fin" value="{{\Carbon\Carbon::parse($extension->fecha_fin)->format('d/m/Y')}}" readonly>
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="cupo_maximo">Cupo</label>
+                                    <input type="text" class="form-control text-center" id="cupo_maximo" value="{{$extension->cupo_maximo ? $extension->cuposDisponibles() . ' / ' . $extension->cupo_maximo . ' disponibles' : 'Sin límite'}}" readonly>
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="carreras_habilitadas">Carreras Habilitadas</label>
+                                    <input type="text" class="form-control" id="carreras_habilitadas" value="{{$extension->carreras->isEmpty() ? 'Todas las carreras' : $extension->carreras->pluck('nombre_fantasia')->implode(', ')}}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -185,6 +229,31 @@
                                                         @endif
                                                     </div>
                                                 @endif
+                                                <div class="col-5 col-lg-2 mb-2 text-center">
+                                                    @if ($key == 0) <label class="form-label">Postulación</label> @endif
+                                                    <div>
+                                                        <span class="badge @if ($detalle->estado == 'AC') bg-success-subtle text-success @elseif ($detalle->estado == 'RE') bg-danger-subtle text-danger @else bg-warning-subtle text-warning @endif">
+                                                            @if ($detalle->estado == 'AC') Aceptada @elseif ($detalle->estado == 'RE') Rechazada @else Pendiente @endif
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                @can('gestionar_postulaciones_extensiones_universitarias')
+                                                    @if ($detalle->estado == 'PE')
+                                                        <div class="col-lg-2 mb-2 text-center">
+                                                            @if ($key == 0) <label class="form-label">Acciones</label> @endif
+                                                            <div>
+                                                                <form action="{{route('extensiones_universitarias.aprobar_postulacion', $detalle->id)}}" method="post" class="d-inline">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Aceptar postulación"><i class="ri-check-fill"></i></button>
+                                                                </form>
+                                                                <form action="{{route('extensiones_universitarias.rechazar_postulacion', $detalle->id)}}" method="post" class="d-inline">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Rechazar postulación"><i class="ri-close-fill"></i></button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endcan
                                             </div>
                                         </div>
                                     @endforeach
@@ -212,7 +281,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     @endsection
     @section('script')

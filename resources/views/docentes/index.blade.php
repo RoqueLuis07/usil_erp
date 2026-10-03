@@ -1,5 +1,5 @@
 @can('ver_docentes')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Docentes @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">

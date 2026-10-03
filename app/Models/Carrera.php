@@ -38,4 +38,8 @@ class Carrera extends Model implements Auditable
         return $this->belongsTo(User::class);
     }
 
+    public function RequerimientoExtensionUniversitaria(){
+        return $this->hasOne(RequerimientoExtensionUniversitaria::class);
+    }
+
 }

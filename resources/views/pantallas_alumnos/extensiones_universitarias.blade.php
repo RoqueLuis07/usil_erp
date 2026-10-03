@@ -1,5 +1,5 @@
 @can('ver_extensiones_alumnos_pantalla')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -16,13 +16,23 @@
         <div class="row d-flex flex-wrap justify-content-center">
             <div class="col-lg-8">
                 <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title mb-0">Extensión Universitaria</h4>
+                    <div class="card-header d-flex flex-wrap align-items-center">
+                        <div class="col-lg-6">
+                            <h4 class="card-title mb-0">Extensión Universitaria</h4>
+                        </div>
+                        @can('ver_catalogo_extensiones_alumnos_pantalla')
+                            <div class="col-lg-6 text-end">
+                                <a type="button" class="btn btn-success" href="{{route('pantallas_alumnos.catalogo_extensiones_universitarias', Auth::id())}}"><i class="ri-search-line align-bottom me-1"></i>Explorar Catálogo</a>
+                            </div>
+                        @endcan
                     </div>
                     <div class="card-body">
                         <ul class="nav nav-pills arrow-navtabs nav-info nav-justified bg-light gap-2 mb-4" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link active" data-bs-toggle="tab" href="#todos" role="tab" aria-selected="true">Actividades</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" data-bs-toggle="tab" href="#postulaciones" role="tab" aria-selected="false">Mis Postulaciones</a>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link" data-bs-toggle="tab" href="#tipos" role="tab" aria-selected="false">Resumen por Tipo de Actividad</a>
@@ -115,6 +125,52 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="tab-pane" id="postulaciones" role="tabpanel">
+                                <div class="table-responsive table-card mt-3 mb-1">
+                                    <table class="table align-middle table-nowrap">
+                                        <thead class="table-light text-center">
+                                            <tr>
+                                                <th>Proyecto</th>
+                                                <th>Responsable</th>
+                                                <th>Fecha de Postulación</th>
+                                                <th>Estado</th>
+                                                <th>Motivo de Rechazo</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            @forelse ($postulaciones as $postulacion)
+                                                <tr>
+                                                    <td>{{$postulacion->extensionUniversitaria->nombre}}</td>
+                                                    <td>{{$postulacion->extensionUniversitaria->docente->primer_nombre}} {{$postulacion->extensionUniversitaria->docente->primer_apellido}}</td>
+                                                    <td>{{ ($postulacion->fecha_postulacion ?? $postulacion->created_at) ? \Carbon\Carbon::parse($postulacion->fecha_postulacion ?? $postulacion->created_at)->format('d/m/Y H:i') : '-' }}</td>
+                                                    <td>
+                                                        <span class="badge @if ($postulacion->estado == 'AC') bg-success-subtle text-success @elseif ($postulacion->estado == 'RE') bg-danger-subtle text-danger @else bg-warning-subtle text-warning @endif">
+                                                            @if ($postulacion->estado == 'AC') Aceptada @elseif ($postulacion->estado == 'RE') Rechazada @else Pendiente @endif
+                                                        </span>
+                                                    </td>
+                                                    <td>{{$postulacion->motivo_rechazo ?? '-'}}</td>
+                                                    <td>
+                                                        @if ($postulacion->estado == 'PE')
+                                                            <form action="{{route('pantallas_alumnos.cancelar_postulacion_extension_universitaria', [Auth::id(), $postulacion->id])}}" method="post">
+                                                                @csrf
+                                                                @method('delete')
+                                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Cancelar esta postulación?')">Cancelar</button>
+                                                            </form>
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6">Todavía no te postulaste a ningún proyecto.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                             <div class="tab-pane" id="tipos" role="tabpanel">
                                 <div id="tipos-list">
                                     <div class="table-responsive table-card mt-3 mb-1">
@@ -140,50 +196,8 @@
                                                             }
                                                         @endphp
                                                         <td>
-                                                            @switch($tipo->id)
-                                                                @case(1)
-                                                                    @php
-                                                                        if ($cantidad_realizada_1 != 1) {
-                                                                            $texto = 'actividades';
-                                                                        } else {
-                                                                            $texto = 'actividad';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($cantidad_realizada_1, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(2)
-                                                                    @php
-                                                                        if ($cantidad_realizada_2 != 1) {
-                                                                            $texto = 'actividades';
-                                                                        } else {
-                                                                            $texto = 'actividad';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($cantidad_realizada_2, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(3)
-                                                                    @php
-                                                                        if ($cantidad_realizada_3 != 1) {
-                                                                            $texto = 'actividades';
-                                                                        } else {
-                                                                            $texto = 'actividad';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($cantidad_realizada_3, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(4)
-                                                                    @php
-                                                                        if ($cantidad_realizada_4 != 1) {
-                                                                            $texto = 'actividades';
-                                                                        } else {
-                                                                            $texto = 'actividad';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($cantidad_realizada_4, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @default
-                                                                    @break
-                                                            @endswitch
+                                                            @php $valor_tipo = $resumen['por_tipo'][$tipo->id]['cantidad'] ?? 0; @endphp
+                                                            {{number_format($valor_tipo, 0, ',', '.')}} {{ $valor_tipo == 1 ? 'actividad' : 'actividades' }}
                                                         </td>
                                                         @php
                                                             if ($tipo->maxima_cantidad_horas != 1) {
@@ -194,96 +208,12 @@
                                                         @endphp
                                                         <td>{{number_format($tipo->maxima_cantidad_horas, 0, ',', '.')}} {{$texto}}</td>
                                                         <td>
-                                                            @switch($tipo->id)
-                                                                @case(1)
-                                                                    @php
-                                                                        if ($horas_realizadas_1 != 1) {
-                                                                            $texto = 'horas';
-                                                                        } else {
-                                                                            $texto = 'hora';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($horas_realizadas_1, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(2)
-                                                                    @php
-                                                                        if ($horas_realizadas_2 != 1) {
-                                                                            $texto = 'horas';
-                                                                        } else {
-                                                                            $texto = 'hora';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($horas_realizadas_2, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(3)
-                                                                    @php
-                                                                        if ($horas_realizadas_3 != 1) {
-                                                                            $texto = 'horas';
-                                                                        } else {
-                                                                            $texto = 'hora';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($horas_realizadas_3, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(4)
-                                                                    @php
-                                                                        if ($horas_realizadas_4 != 1) {
-                                                                            $texto = 'horas';
-                                                                        } else {
-                                                                            $texto = 'hora';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($horas_realizadas_4, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @default
-                                                                    @break
-                                                            @endswitch
+                                                            @php $valor_tipo = $resumen['por_tipo'][$tipo->id]['horas'] ?? 0; @endphp
+                                                            {{number_format($valor_tipo, 0, ',', '.')}} {{ $valor_tipo == 1 ? 'hora' : 'horas' }}
                                                         </td>
                                                         <td>
-                                                            @switch($tipo->id)
-                                                                @case(1)
-                                                                    @php
-                                                                        if ($horas_acreditadas_1 != 1) {
-                                                                            $texto = 'horas';
-                                                                        } else {
-                                                                            $texto = 'hora';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($horas_acreditadas_1, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(2)
-                                                                    @php
-                                                                        if ($horas_acreditadas_2 != 1) {
-                                                                            $texto = 'horas';
-                                                                        } else {
-                                                                            $texto = 'hora';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($horas_acreditadas_2, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(3)
-                                                                    @php
-                                                                        if ($horas_acreditadas_3 != 1) {
-                                                                            $texto = 'horas';
-                                                                        } else {
-                                                                            $texto = 'hora';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($horas_acreditadas_3, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @case(4)
-                                                                    @php
-                                                                        if ($horas_acreditadas_4 != 1) {
-                                                                            $texto = 'horas';
-                                                                        } else {
-                                                                            $texto = 'hora';
-                                                                        }
-                                                                    @endphp
-                                                                    {{number_format($horas_acreditadas_4, 0, ',', '.')}} {{$texto}}
-                                                                    @break
-                                                                @default
-                                                                    @break
-                                                            @endswitch
+                                                            @php $valor_tipo = $resumen['por_tipo'][$tipo->id]['acreditadas'] ?? 0; @endphp
+                                                            {{number_format($valor_tipo, 0, ',', '.')}} {{ $valor_tipo == 1 ? 'hora' : 'horas' }}
                                                         </td>
                                                     </tr>
                                                 @empty
@@ -299,7 +229,20 @@
                 </div><!-- end card -->
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title mb-0">Resumen</h4>
+                        <h4 class="card-title mb-1">Resumen</h4>
+                        <div class="text-muted" style="font-size: 12.5px">
+                            Carrera: <b>{{ optional($alumno->Carrera)->nombre_fantasia ?? 'sin cargar' }}</b>
+                            · Facultad: <b>{{ optional(optional($alumno->Carrera)->Facultad)->nombre ?? '-' }}</b>
+                            · Ingreso: <b>{{ $alumno->ingreso_texto ?? '-' }}</b>
+                            · Semestre actual: <b>{{ $alumno->semestre_actual ? $alumno->semestre_actual . '.º' : '-' }}</b>
+                        </div>
+                        @php
+                            $porcentaje_horas = $horas_requeridas > 0 ? min(100, round($horas_acreditadas / $horas_requeridas * 100)) : 0;
+                        @endphp
+                        <div class="mt-2" style="font-size: 12px">
+                            <div class="d-flex justify-content-between"><span>Avance de horas acreditadas</span><span class="ac-mono">{{ number_format($horas_acreditadas, 0, ',', '.') }} / {{ number_format($horas_requeridas, 0, ',', '.') }} h · {{ $porcentaje_horas }}%</span></div>
+                            <div style="height: 8px; background: #eef2f3;"><div style="height: 8px; width: {{ $porcentaje_horas }}%; background: var(--ac-accent);"></div></div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">

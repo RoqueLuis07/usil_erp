@@ -1,5 +1,5 @@
 @can('editar_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -48,12 +48,12 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-4 mb-3">
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="tipo_extension">Tipo de Actividad <span class="text-danger">(*)</span></label>
                                     <select class="selectpicker form-control @error('tipo_extension') is-invalid @enderror" id="tipo_extension" name="tipo_extension">
                                         <option value="" selected disabled>Seleccionar...</option>
                                         @foreach ($tipos_extensiones as $tipo_extension)
-                                            <option value="{{$tipo_extension->id}}" @if (old('tipo_extension') == strval($tipo_extension->id) || $extension->tipo_extension_id == strval ($tipo_extension->id)) selected @endif>{{$tipo_extension->nombre}}</option>
+                                            <option value="{{$tipo_extension->id}}" @if (old('tipo_extension') == strval($tipo_extension->id) || $extension->tipo_extension_id == strval($tipo_extension->id)) selected @endif>{{$tipo_extension->nombre}}</option>
                                         @endforeach
                                     </select>
                                     @error('tipo_extension')
@@ -62,17 +62,73 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3">
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="linea_extension">Línea de Extensión</label>
+                                    <input type="text" class="form-control" id="linea_extension" value="" placeholder="Según el tipo de actividad" readonly tabindex="-1">
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="problematica">Problemática</label>
+                                    <select class="selectpicker form-control @error('problematica') is-invalid @enderror" id="problematica" name="problematica">
+                                        <option value="">Según el tipo de actividad</option>
+                                        @foreach ($problematicas as $numero => $nombre_problematica)
+                                            <option value="{{$numero}}" @if (strval(old('problematica', $extension->problematica)) == strval($numero)) selected @endif>{{$numero}} - {{$nombre_problematica}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('problematica')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="cantidad_horas_proyecto">Horas del Proyecto <span class="text-danger">(*)</span></label>
                                     <div class="input-group">
                                         <input type="text" class="form-control text-center @error('cantidad_horas_proyecto') is-invalid @enderror" id="cantidad_horas_proyecto" name="cantidad_horas_proyecto" value="{{old('cantidad_horas_proyecto', number_format($extension->cantidad_horas, 2, ',', '.'))}}">
                                         <span class="input-group-text">horas</span>
                                         @error('cantidad_horas_proyecto')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{$message}}</strong>
-                                            </span>
-                                        @enderror
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
                                     </div>
+                                    <p class="text-muted mb-0" style="font-size: 12px" id="tope-horas"></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="presupuesto">Presupuesto</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Gs.</span>
+                                        <input type="text" class="form-control text-end @error('presupuesto') is-invalid @enderror" id="presupuesto" name="presupuesto" value="{{old('presupuesto', $extension->presupuesto !== null ? (int) $extension->presupuesto : '')}}" placeholder="0">
+                                        @error('presupuesto')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="cantidad_beneficiados">N° de Beneficiados</label>
+                                    <input type="text" class="form-control text-center @error('cantidad_beneficiados') is-invalid @enderror" id="cantidad_beneficiados" name="cantidad_beneficiados" value="{{old('cantidad_beneficiados', $extension->cantidad_beneficiados)}}" placeholder="0" inputmode="numeric">
+                                    @error('cantidad_beneficiados')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="materia_id">Materia</label>
+                                    <select class="selectpicker form-control @error('materia_id') is-invalid @enderror" id="materia_id" name="materia_id" data-live-search="true">
+                                        <option value="">Sin materia asociada</option>
+                                        @foreach ($materias as $materia)
+                                            <option value="{{$materia->id}}" @if (strval(old('materia_id', $extension->materia_id)) == strval($materia->id)) selected @endif @if ($materia->codigo) data-subtext="{{$materia->codigo}}" @endif>{{$materia->nombre_fantasia}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('materia_id')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
                             </div>
 							<div class="row">
@@ -116,6 +172,44 @@
                                         </span>
                                     @enderror
                                 </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="periodo_actividad">Período de la Actividad</label>
+                                    <input type="text" class="form-control text-center" id="periodo_actividad" placeholder="Según fecha de inicio" readonly tabindex="-1">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="cupo_maximo">Cupo Máximo</label>
+                                    <input type="text" class="form-control text-center @error('cupo_maximo') is-invalid @enderror" id="cupo_maximo" name="cupo_maximo" value="{{old('cupo_maximo', $extension->cupo_maximo)}}" placeholder="Sin límite">
+                                    @error('cupo_maximo')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="carreras_habilitadas">Carreras Habilitadas para Postularse</label>
+                                    <select class="selectpicker form-control" id="carreras_habilitadas" name="carreras_habilitadas[]" multiple data-live-search="true" title="Todas las carreras">
+                                        @foreach ($carreras as $carrera)
+                                            <option value="{{$carrera->id}}" @if ($extension->carreras->contains('id', $carrera->id)) selected @endif>{{$carrera->nombre_fantasia}}</option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-muted" style="font-size: 12px">Sin seleccionar ninguna, el proyecto queda abierto a postulación de alumnos de cualquier carrera.</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
+                                    <div>
+                                        <label class="form-label" for="encuesta_satisfaccion">Encuesta de satisfacción ?</label>
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" id="encuesta_satisfaccion1" name="encuesta_satisfaccion" value="false" @if (old('encuesta_satisfaccion', is_null($extension->encuesta_satisfaccion) ? '' : ($extension->encuesta_satisfaccion ? 'true' : 'false')) === 'false') checked @endif>
+                                        <label class="btn btn-outline-danger" for="encuesta_satisfaccion1">No</label>
+                                        <input type="radio" class="btn-check" id="encuesta_satisfaccion2" name="encuesta_satisfaccion" value="true" @if (old('encuesta_satisfaccion', is_null($extension->encuesta_satisfaccion) ? '' : ($extension->encuesta_satisfaccion ? 'true' : 'false')) === 'true') checked @endif>
+                                        <label class="btn btn-outline-success" for="encuesta_satisfaccion2">Si</label>
+                                    </div>
+                                    <p class="text-muted mb-0" style="font-size: 12px">Indica si al finalizar la actividad se aplica la encuesta de satisfacción.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -123,47 +217,15 @@
                         <div class="col-lg-12 mb-3">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title mb-0">Alumnos Participantes</h4>
+                                    <h4 class="card-title mb-0">Alumnos ({{$extension->extensionUniversitariaDetalles->count()}})</h4>
                                 </div>
                                 <div class="card-body">
-                                    @foreach ($extension->extensionUniversitariaDetalles as $key => $detalle)
-                                        <div class="mb-2 fila" id="fila-{{$key}}">
-                                            <div class="row d-flex flex-wrap justify-content-center">
-                                                <div class="col-lg-4 col-sm-12 mb-2 text-center" id="div-alumno-{{$key}}">
-                                                    @if ($key == 0) <label class="form-label label-alumno">Alumno <span class="text-danger">(*)</span></label> @endif
-                                                    <select class="selectpicker form-control alumno-{{$key}} alumno @error('detalles.'. $key . '.alumno') is-invalid @enderror" id="alumno-{{$key}}" name="detalles[{{$key}}][alumno]" data-live-search="true" data-id="{{$key}}">
-                                                        <option value="" selected disabled>Seleccionar...</option>
-                                                        @foreach ($alumnos as $alumno)
-                                                            <option value="{{$alumno->id}}" @if (old('detalles.{{$key}}.alumno') == strval($alumno->id) || $detalle->alumno_id == strval($alumno->id)) selected @endif data-subtext="{{$alumno->numero_documento}}">{{$alumno->primer_nombre}} {{$alumno->primer_apellido}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('detalles.'. $key . '.alumno')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 col-sm-2 text-center">
-                                                    @if ($key == 0) <label class="form-label label-acciones">Acciones</label> @endif
-                                                    <div class="align-middle" id="acciones-{{$key}}">
-                                                        @if ($key == 0 && !$loop->last)
-                                                            <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button> {{-- primero y no ultimo --}}
-                                                        @elseif ($key > 0 && !$loop->last)
-                                                            <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button>  {{-- no primero y no ultimo --}}
-                                                        @elseif ($key > 0 && $loop->last)
-                                                            <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button> {{-- no primero y ultimo --}}
-                                                            <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-{{$key}}" data-id="{{$key}}"><i class="ri-add-fill"></i></button>
-                                                        @elseif ($key == 0 && $loop->last)
-                                                            <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-{{$key}}" data-id="{{$key}}"><i class="ri-add-fill"></i></button> {{-- primero y ultimo --}}
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                    <div id="alumno-fila">
-
-                                    </div>
+                                    <p class="text-muted" style="font-size: 13px">El listado de alumnos ya no se edita desde acá: se gestiona por postulación (el alumno se postula desde su portal, y se aprueba/rechaza desde <a href="{{route('extensiones_universitarias.show', $extension->id)}}">el detalle del proyecto</a>).</p>
+                                    @forelse ($extension->extensionUniversitariaDetalles as $detalle)
+                                        <span class="badge @if ($detalle->estado == 'AC') bg-success-subtle text-success @elseif ($detalle->estado == 'RE') bg-danger-subtle text-danger @else bg-warning-subtle text-warning @endif me-1 mb-1">{{$detalle->alumno->primer_nombre}} {{$detalle->alumno->primer_apellido}}</span>
+                                    @empty
+                                        <span class="text-muted">Todavía no hay alumnos postulados a este proyecto.</span>
+                                    @endforelse
                                 </div>
                             </div>
                         </div>
@@ -185,6 +247,6 @@
         <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
         <script src="{{ URL::asset('build/libs/cleave.js/cleave.min.js') }}"></script>
         @include('extensiones_universitarias.scripts.edit-scripts')
-        @include('extensiones_universitarias.scripts.edit-detalles-scripts')
+        @include('extensiones_universitarias.scripts.campos-extra-scripts')
     @endsection
 @endcan
