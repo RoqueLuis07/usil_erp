@@ -45,7 +45,7 @@ class AlumnoFormacionController extends Controller
                 'alumnos_formaciones' => $alumnos_formaciones,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ class AlumnoFormacionController extends Controller
                 'alumno_formacion' => $alumno_formacion,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -88,7 +88,7 @@ class AlumnoFormacionController extends Controller
                 ]);
             } catch (\Exception $e) {
                 DB::rollback();
-                return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+                return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
             }
     }
 
@@ -102,7 +102,7 @@ class AlumnoFormacionController extends Controller
                 'alumno_formacion' => $alumno_formacion,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -129,7 +129,7 @@ class AlumnoFormacionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -143,7 +143,7 @@ class AlumnoFormacionController extends Controller
                 'alumno_formacion' => $alumno_formacion,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -165,7 +165,7 @@ class AlumnoFormacionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -179,7 +179,7 @@ class AlumnoFormacionController extends Controller
                 'alumno_formacion' => $alumno_formacion,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -201,7 +201,7 @@ class AlumnoFormacionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -215,7 +215,7 @@ class AlumnoFormacionController extends Controller
                 'alumno_formacion' => $alumno_formacion,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -239,9 +239,9 @@ class AlumnoFormacionController extends Controller
 
             //Verifica si el error es por Foreign key violation / Integrity constraint violation
             if (stripos($e->getMessage(), 'Foreign key violation')) {
-                return redirect()->route('formaciones_academicas.index')->with('error-message', 'La formación académica' . $alumno_formacion->nombre . ' no se puede eliminar. Está siendo utilizado por otro registro dentro del sistema.');
+                return redirect()->route('alumnos_formaciones.index')->with('error-message', 'La formación académica' . $alumno_formacion->nombre . ' no se puede eliminar. Está siendo utilizado por otro registro dentro del sistema.');
             } else {
-                return redirect()->route('formaciones_academicas.index')->with('error-message', $e->getMessage());
+                return redirect()->route('alumnos_formaciones.index')->with('error-message', $e->getMessage());
             }
         }
     }

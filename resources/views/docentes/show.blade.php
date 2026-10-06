@@ -36,11 +36,11 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
-                                    <input type="text" class="form-control" id="fecha_nacimiento" value="{{\Carbon\Carbon::parse($docente->fecha_nacimiento)->format('d/m/Y')}}" readonly>
+                                    <input type="text" class="form-control" id="fecha_nacimiento" value="{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->format('d/m/Y') : 'Sin dato'}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="edad">Edad</label>
-                                    <input type="text" class="form-control" id="edad" value="{{\Carbon\Carbon::createFromDate($docente->fecha_nacimiento)->age}} años" readonly>
+                                    <input type="text" class="form-control" id="edad" value="{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->age . ' años' : 'Sin dato'}}" readonly>
                                 </div>
                             </div>
                             <div class="row">

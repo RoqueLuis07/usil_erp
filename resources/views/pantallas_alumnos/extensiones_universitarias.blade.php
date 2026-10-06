@@ -74,7 +74,7 @@
                                                 @forelse ($extensiones as $extension)
                                                     <tr>
                                                         <td class="evento">{{$extension->extensionUniversitaria->nombre}}</td>
-                                                        <td>{{$extension->extensionUniversitaria->docente->primer_nombre}} {{$extension->extensionUniversitaria->docente->primer_apellido}}</td>
+                                                        <td>{{ $extension->extensionUniversitaria->docente ? $extension->extensionUniversitaria->docente->primer_nombre . ' ' . $extension->extensionUniversitaria->docente->primer_apellido : 'Sin asignar' }}</td>
                                                         @php
                                                             if ($extension->cantidad_horas != 1) {
                                                                 $texto = 'horas';
@@ -142,7 +142,7 @@
                                             @forelse ($postulaciones as $postulacion)
                                                 <tr>
                                                     <td>{{$postulacion->extensionUniversitaria->nombre}}</td>
-                                                    <td>{{$postulacion->extensionUniversitaria->docente->primer_nombre}} {{$postulacion->extensionUniversitaria->docente->primer_apellido}}</td>
+                                                    <td>{{ $postulacion->extensionUniversitaria->docente ? $postulacion->extensionUniversitaria->docente->primer_nombre . ' ' . $postulacion->extensionUniversitaria->docente->primer_apellido : 'Sin asignar' }}</td>
                                                     <td>{{ ($postulacion->fecha_postulacion ?? $postulacion->created_at) ? \Carbon\Carbon::parse($postulacion->fecha_postulacion ?? $postulacion->created_at)->format('d/m/Y H:i') : '-' }}</td>
                                                     <td>
                                                         <span class="badge @if ($postulacion->estado == 'AC') bg-success-subtle text-success @elseif ($postulacion->estado == 'RE') bg-danger-subtle text-danger @else bg-warning-subtle text-warning @endif">

@@ -41,7 +41,7 @@
                                         <tr>
                                             <td class="text-start">{{$proyecto->nombre}}</td>
                                             <td>{{$proyecto->tipoExtension->nombre}}</td>
-                                            <td>{{$proyecto->docente->primer_nombre}} {{$proyecto->docente->primer_apellido}}</td>
+                                            <td>{{ $proyecto->docente ? $proyecto->docente->primer_nombre . ' ' . $proyecto->docente->primer_apellido : 'Sin asignar' }}</td>
                                             <td>{{number_format($proyecto->cantidad_horas, 0, ',', '.')}} @if ($proyecto->cantidad_horas != 1) horas @else hora @endif</td>
                                             <td>
                                                 @if ($proyecto->cupo_maximo)

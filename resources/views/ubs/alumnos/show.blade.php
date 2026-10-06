@@ -33,15 +33,15 @@
                                     </div>
                                     <div class="col-lg-2 mb-3">
                                         <label class="form-label" for="sexo">Sexo</label>
-                                        <input type="text" class="form-control" id="sexo" @if ($alumno->sexo_id) value="{{$alumno->sexo->nombre}}" @endif readonly>
+                                        <input type="text" class="form-control" id="sexo" @if ($alumno->sexo_id) value="{{optional($alumno->sexo)->nombre}}" @endif readonly>
                                     </div>
                                     <div class="col-lg-2 mb-3">
                                         <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
-                                        <input type="text" class="form-control" id="fecha_nacimiento" value="{{\Carbon\Carbon::parse($alumno->fecha_nacimiento)->format('d/m/Y')}}" readonly>
+                                        <input type="text" class="form-control" id="fecha_nacimiento" value="{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->format('d/m/Y') : 'Sin dato'}}" readonly>
                                     </div>
                                     <div class="col-lg-2 mb-3">
                                         <label class="form-label" for="edad">Edad</label>
-                                        <input type="text" class="form-control" id="edad" value="{{\Carbon\Carbon::createFromDate($alumno->fecha_nacimiento)->age}} años" readonly>
+                                        <input type="text" class="form-control" id="edad" value="{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->age . ' años' : 'Sin dato'}}" readonly>
                                     </div>
                                 </div>
                                 <div class="row">

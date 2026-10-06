@@ -538,7 +538,7 @@ class PantallaDocenteController extends Controller
 
             return view('pantallas_docentes/clases/show')->with(compact('clase', 'docente'));
         } catch (\Exception $e) {
-            return redirect()->route('pantallas_docentes.clases.index', Auth::id())->with('error-message', $e->getMessage());
+            return redirect()->route('pantallas_docentes.clases', Auth::id())->with('error-message', $e->getMessage());
         }
     }
 
@@ -795,7 +795,7 @@ class PantallaDocenteController extends Controller
             $problematicas = \App\Models\ExtensionUniversitaria::PROBLEMATICAS;
             return view('pantallas_docentes/extensiones/create')->with(compact('docente', 'tipos_extensiones', 'alumnos', 'carreras', 'materias', 'problematicas'));
         } catch (\Exception $e) {
-            return redirect()->route('pantallas_docentes.extensiones.index', Auth::id())->with('error-message', $e->getMessage());
+            return redirect()->route('pantallas_docentes.extensiones_universitarias', Auth::id())->with('error-message', $e->getMessage());
         }
     }
 
@@ -808,7 +808,7 @@ class PantallaDocenteController extends Controller
             $docente = Docente::findOrFail($extension->docente_id);
             return view('pantallas_docentes/extensiones/show')->with(compact('extension', 'docente'));
         } catch (\Exception $e) {
-            return redirect()->route('pantallas_docentes.extensiones.index', Auth::id())->with('error-message', $e->getMessage());
+            return redirect()->route('pantallas_docentes.extensiones_universitarias', Auth::id())->with('error-message', $e->getMessage());
         }
     }
 

@@ -46,7 +46,7 @@ class LineaTesisUbsController extends Controller
                 'lineas_tesis' => $lineas_tesis,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -60,7 +60,7 @@ class LineaTesisUbsController extends Controller
                 'linea_tesis' => $linea_tesis,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -90,7 +90,7 @@ class LineaTesisUbsController extends Controller
                 ]);
             } catch (\Exception $e) {
                 DB::rollback();
-                return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+                return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
             }
     }
 
@@ -104,7 +104,7 @@ class LineaTesisUbsController extends Controller
                 'linea_tesis' => $linea_tesis,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -132,7 +132,7 @@ class LineaTesisUbsController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -146,7 +146,7 @@ class LineaTesisUbsController extends Controller
                 'linea_tesis' => $linea_tesis,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -169,7 +169,7 @@ class LineaTesisUbsController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -183,7 +183,7 @@ class LineaTesisUbsController extends Controller
                 'linea_tesis' => $linea_tesis,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -206,7 +206,7 @@ class LineaTesisUbsController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -220,7 +220,7 @@ class LineaTesisUbsController extends Controller
                 'linea_tesis' => $linea_tesis,
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+            return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -244,9 +244,9 @@ class LineaTesisUbsController extends Controller
 
             //Verifica si el error es por Foreign key violation / Integrity constraint violation
             if (stripos($e->getMessage(), 'Foreign key violation')) {
-                return redirect()->route('tesis_ubs.lineas_index')->with('error-message', 'La línea de trabajo final de grado ' . $linea_tesis->nombre . ' no se puede eliminar. Está siendo utilizado por otro registro dentro del sistema.');
+                return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', 'La línea de trabajo final de grado ' . $linea_tesis->nombre . ' no se puede eliminar. Está siendo utilizado por otro registro dentro del sistema.');
             } else {
-                return redirect()->route('tesis_ubs.lineas_index')->with('error-message', $e->getMessage());
+                return redirect()->route('tesis_parametros_ubs.lineas_index')->with('error-message', $e->getMessage());
             }
         }
     }

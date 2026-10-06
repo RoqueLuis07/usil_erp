@@ -391,7 +391,7 @@ class ConvalidacionInternaController extends Controller
             return redirect()->route('convalidaciones_internas.show', $convalidacion->id)->with('success-message','El adjunto del dictamen de convalidación N° ' . $detalle->numero_dictamen . ' fue eliminado exitosamente.');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('convalidacion_internas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('convalidaciones_internas.index')->with('error-message', $e->getMessage());
         }
     }
 
@@ -533,7 +533,7 @@ class ConvalidacionInternaController extends Controller
             return redirect()->route('convalidaciones_internas.show', $convalidacion->id)->with('success-message','El adjunto de la resolución de convalidación N° ' . $detalle->numero_resolucion . ' fue eliminado exitosamente.');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('convalidacion_internas.index')->with('error-message', $e->getMessage());
+            return redirect()->route('convalidaciones_internas.index')->with('error-message', $e->getMessage());
         }
     }
 

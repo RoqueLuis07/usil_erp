@@ -116,7 +116,7 @@
                                                 <td>{{$docente->primer_nombre}} {{$docente->segundo_nombre}} {{$docente->tercer_nombre}} {{$docente->primer_apellido}} {{$docente->segundo_apellido}}</td>
                                                 <td>{{$docente->numero_documento}}</td>
                                                 <td>{{$docente->celular}} @if ($docente->telefono) - {{$docente->telefono}} @endif</td>
-                                                <td>{{\Carbon\Carbon::createFromDate($docente->fecha_nacimiento)->age}} años</td>
+                                                <td>{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->age . ' años' : 'Sin dato'}}</td>
                                                 <td class="text-center">@if ($docente->area_conocimiento_id) {{$docente->areaConocimiento->abreviatura}} @endif</td>
                                                 <td class="text-center">
                                                     <span

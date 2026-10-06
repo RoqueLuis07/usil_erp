@@ -119,7 +119,7 @@ class ExtensionUniversitariaUbsController extends Controller
             DB::commit();
 
             if ($request->generado_docente == 'SI') {
-                return redirect()->route('pantallas_docentes.extensiones.index')->with('success-message', 'La extensión universitaria ' . $extension->nombre . ' fue creada exitosamente.');
+                return redirect()->route('pantallas_docentes.extensiones_universitarias', Auth::id())->with('success-message', 'La extensión universitaria ' . $extension->nombre . ' fue creada exitosamente.');
             } else {
                 return redirect()->route('extensiones_universitarias_ubs.index')->with('success-message', 'La extensión universitaria ' . $extension->nombre . ' fue creada exitosamente.');
             }
