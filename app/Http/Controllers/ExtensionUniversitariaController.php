@@ -777,7 +777,7 @@ class ExtensionUniversitariaController extends Controller
 
     public function show_reporte(Request $request)
     {
-        // $this->authorize('generar_reportes_extensiones_universitarias');
+        $this->authorize('generar_reportes_extensiones_universitarias');
 
         try {
             $proyecto = '';
@@ -836,7 +836,7 @@ class ExtensionUniversitariaController extends Controller
 
     public function generate_reporte(Request $request)
     {
-        // $this->authorize('generar_reportes_extensiones_universitarias');
+        $this->authorize('generar_reportes_extensiones_universitarias');
 
         try {
             $proyecto = '';

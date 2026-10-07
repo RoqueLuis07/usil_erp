@@ -1177,7 +1177,11 @@ class AlumnoController extends Controller
 
     public function reporte_extensiones($id)
     {
-        // $this->authorize('ver_extensiones_alumnos');
+        // Quien administra puede ver el informe de cualquier alumno; un alumno, solo el suyo.
+        // Se valida antes del try para que el 403 no lo capture el catch genérico.
+        if (!Auth::user()->can('ver_extensiones_alumnos') && Alumno::where('id', $id)->value('usuario_id') != Auth::id()) {
+            abort(403);
+        }
 
         try {
             $alumno = Alumno::findOrFail($id);
