@@ -133,7 +133,7 @@ class ExtensionUniversitariaController extends Controller
             'encuesta_satisfaccion' => ['nullable', 'in:true,false'],
             'carreras_habilitadas' => ['nullable', 'array'],
             'carreras_habilitadas.*' => ['numeric'],
-            'proyecto' => ['required', 'file', 'extensions:pdf'],
+            'proyecto' => ['required', 'file', 'extensions:pdf', 'max:5120'],
 			'fecha_inicio' => ['required', 'date'],
 			'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
             'tiene_certificado' => 'required',
@@ -654,7 +654,12 @@ class ExtensionUniversitariaController extends Controller
         $this->authorize('cargar_informes_extensiones_universitarias');
 
         $request->validate([
-            'informe' => ['required', 'file', 'extensions:pdf']
+            'informe' => ['required', 'file', 'extensions:pdf', 'max:5120']
+        ], [
+            'informe.required' => 'Seleccioná el informe en PDF (máximo 5 MB).',
+            'informe.uploaded' => 'No se pudo subir el archivo: supera el tamaño permitido (5 MB).',
+            'informe.max' => 'El informe no puede superar los 5 MB.',
+            'informe.extensions' => 'El informe debe ser un archivo PDF.',
         ]);
 
         DB::beginTransaction();
@@ -683,7 +688,8 @@ class ExtensionUniversitariaController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('extensiones_universitarias.show', $extension->id)->with('error-message', $e->getMessage());
+            // La llama AJAX: un redirect acá terminaba en un "undefined" en pantalla.
+            return response()->json(['message' => 'No se pudo cargar el informe: ' . $e->getMessage()], 500);
         }
     }
 
@@ -692,7 +698,12 @@ class ExtensionUniversitariaController extends Controller
         if ($this->authorize('cambiar_adjunto_proyectos_extensiones_universitarias') || $this->authorize('cambiar_adjunto_informes_extensiones_universitarias')) {
             $request->validate([
                 'tipo_adjunto' => 'required',
-                'archivo' => ['required', 'file', 'extensions:pdf']
+                'archivo' => ['required', 'file', 'extensions:pdf', 'max:5120']
+            ], [
+                'archivo.required' => 'Seleccioná el archivo en PDF (máximo 5 MB).',
+                'archivo.uploaded' => 'No se pudo subir el archivo: supera el tamaño permitido (5 MB).',
+                'archivo.max' => 'El archivo no puede superar los 5 MB.',
+                'archivo.extensions' => 'El archivo debe ser un PDF.',
             ]);
 
             DB::beginTransaction();
@@ -757,7 +768,7 @@ class ExtensionUniversitariaController extends Controller
                 }
             } catch (\Exception $e) {
                 DB::rollback();
-                return redirect()->route('extensiones_universitarias.show', $extension->id)->with('error-message', $e->getMessage());
+                return response()->json(['message' => 'No se pudo cambiar el archivo: ' . $e->getMessage()], 500);
             }
         } else {
             abort(403);

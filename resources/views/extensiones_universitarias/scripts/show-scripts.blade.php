@@ -147,6 +147,30 @@
         })
     });
 
+    // Errores de la carga por AJAX: 422 (validación) se marca en el campo; cualquier otro
+    // (archivo más grande que el límite del servidor, sesión vencida, error interno) se avisa
+    // con un mensaje en vez de fallar en silencio.
+    function mostrarErrorAjax(response) {
+        const errores = response.responseJSON && response.responseJSON.errors;
+        if (response.status === 422 && errores) {
+            $.each(errores, function (key, value) {
+                const input = $(`[name="${key}"]`);
+                input.addClass('is-invalid');
+                $('<span>').addClass('invalid-feedback').html(value.join('<br>')).insertAfter(input);
+            });
+            return;
+        }
+        let texto = 'No se pudo guardar el archivo (error ' + response.status + '). Intentá de nuevo.';
+        if (response.status === 413) {
+            texto = 'El archivo es demasiado grande. El máximo permitido es 5 MB.';
+        } else if (response.status === 419) {
+            texto = 'La sesión venció o el archivo es demasiado grande (máx. 5 MB). Recargá la página e intentá de nuevo.';
+        } else if (response.responseJSON && response.responseJSON.message) {
+            texto = response.responseJSON.message;
+        }
+        message(texto, 'error');
+    }
+
     function save(id, url) {
         const formData = new FormData(document.getElementById('cargarInforme-form-' + id));
         $('#cargarInforme-form-' + id).find('.is-invalid').removeClass('is-invalid');
@@ -168,13 +192,7 @@
             var url_show = "{{route('extensiones_universitarias.show', ":id")}}";
             url_show = url_show.replace(':id', id);
             window.location.href = url_show;
-        }).fail(function(response) {
-            $.each(response.responseJSON.errors, function (key, value) {
-                const input = $(`[name="${key}"]`);
-                input.addClass('is-invalid');
-                $('<span>').addClass('invalid-feedback').html(value.join('<strong>')).insertAfter(input);
-            })
-        })
+        }).fail(mostrarErrorAjax)
     }
 
     function save_adjuntos(id, url) {
@@ -198,12 +216,6 @@
             var url_show = "{{route('extensiones_universitarias.show', ":id")}}";
             url_show = url_show.replace(':id', id);
             window.location.href = url_show;
-        }).fail(function(response) {
-            $.each(response.responseJSON.errors, function (key, value) {
-                const input = $(`[name="${key}"]`);
-                input.addClass('is-invalid');
-                $('<span>').addClass('invalid-feedback').html(value.join('<strong>')).insertAfter(input);
-            })
-        })
+        }).fail(mostrarErrorAjax)
     }
 </script>
