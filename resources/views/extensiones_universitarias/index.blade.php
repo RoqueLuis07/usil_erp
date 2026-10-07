@@ -74,7 +74,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive table-card mt-3 mb-1">
+                            <div class="table-responsive ac-tabla-fija table-card mt-3 mb-1">
                                 <table class="table align-middle table-nowrap" id="extensiones-list">
                                     <thead class="table-light">
                                         <tr>
@@ -171,7 +171,8 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-end">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <span class="ac-contador" id="contador-registros"></span>
                                 <div class="pagination-wrap hstack gap-2">
                                     <a class="page-item pagination-prev disabled"><</a>
                                     <ul class="pagination listjs-pagination mb-0"></ul>

@@ -37,7 +37,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive table-card mt-3 mb-1">
+                            <div class="table-responsive ac-tabla-fija table-card mt-3 mb-1">
                                 <table class="table align-middle table-nowrap" id="tipos_extensiones-list">
                                     <thead class="table-light">
                                         <tr>

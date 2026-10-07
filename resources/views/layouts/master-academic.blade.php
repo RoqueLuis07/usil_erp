@@ -57,6 +57,10 @@
         .table td{font-size:12.5px;vertical-align:middle;border:1px solid var(--ac-border) !important;}
         .table tbody tr:hover td{background:var(--ac-accent-soft) !important;}
         .table-light{background:transparent !important;}
+        /* Tabla con encabezado fijo: el contenedor scrollea por dentro y los <th> quedan pegados arriba. */
+        .table-responsive.ac-tabla-fija{max-height:calc(100vh - 380px);min-height:260px;overflow:auto;}
+        .table-responsive.ac-tabla-fija thead th{position:sticky;top:0;z-index:3;box-shadow:inset 0 -1px 0 var(--ac-border-strong);}
+        .ac-contador{font-size:12.5px;color:var(--ac-text-muted);}
         .form-control, .form-select, .selectpicker + .dropdown-toggle{border-radius:2px !important;border-color:var(--ac-border-strong) !important;background:var(--ac-surface) !important;color:var(--ac-text) !important;font-size:12.5px !important;}
         .form-control:focus, .form-select:focus{border-color:var(--ac-accent) !important;box-shadow:0 0 0 1px var(--ac-accent) !important;}
         .dropdown-menu{border-radius:2px !important;border-color:var(--ac-border-strong) !important;}

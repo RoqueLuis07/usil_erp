@@ -286,9 +286,12 @@
 
                             <div class="row">
                                 @if ($alumnos->hasPages())
-                                    <nav class="justify-content-lg-end">
-                                        {{ $alumnos->links('pagination::bootstrap-5') }}
-                                    </nav>
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                        <span class="ac-contador">Mostrando {{ $alumnos->firstItem() }}–{{ $alumnos->lastItem() }} de {{ $alumnos->total() }} registros</span>
+                                        <nav class="justify-content-lg-end">
+                                            {{ $alumnos->links('pagination::bootstrap-5') }}
+                                        </nav>
+                                    </div>
                                 @else
                                     <p class="small text-muted">
                                         Mostrando <span class="fw-semibold">{{$alumnos->count()}}</span>

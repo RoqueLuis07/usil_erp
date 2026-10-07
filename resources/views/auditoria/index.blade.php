@@ -61,7 +61,7 @@
     <div class="card mt-3">
         <div class="card-header"><h4 class="card-title mb-0">Historial de cambios ({{ $auditorias->total() }})</h4></div>
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive ac-tabla-fija">
                 <table class="table align-middle table-nowrap mb-0">
                     <thead>
                         <tr>
