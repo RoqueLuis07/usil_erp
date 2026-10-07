@@ -4,6 +4,22 @@ Bienvenido
 @endsection
 @section('css')
     <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
+    <style>
+        /* Identidad del sistema (auditoría UX): teal, esquinas rectas, sin lila */
+        body, .auth-page-wrapper{background:#f7f9f9 !important;font-family:'Open Sans','Segoe UI',system-ui,sans-serif;}
+        .auth-page-wrapper .card{border-radius:0 !important;border:1px solid #d3dade !important;box-shadow:none !important;}
+        .auth-page-wrapper .form-control, .auth-page-wrapper .input-group-text{border-radius:2px !important;border-color:#d3dade !important;background:#fff !important;}
+        .auth-page-wrapper .input-group-text{border-left:3px solid #0f4c5c !important;color:#0f4c5c;}
+        .auth-page-wrapper .form-control:focus{border-color:#0f4c5c !important;box-shadow:0 0 0 1px #0f4c5c !important;}
+        .auth-page-wrapper .form-check-input:checked{background-color:#0f4c5c !important;border-color:#0f4c5c !important;}
+        .auth-page-wrapper .btn-primary{background:#0f4c5c !important;border:1px solid #0f4c5c !important;border-radius:2px !important;}
+        .auth-page-wrapper .btn-primary:hover{background:#0c3b47 !important;}
+        .auth-page-wrapper .auth-card{background:#0f4c5c !important;border-radius:0 !important;}
+        .auth-page-wrapper .text-muted{color:#5c6a6e !important;}
+        .marca-login{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
+        .marca-login img{border-radius:50%;}
+        .marca-login span{font-size:14px;font-weight:700;color:#1b2427;line-height:1.25;text-align:center;}
+    </style>
 @endsection
 
 @include('index.scripts.messages-scripts')
@@ -21,8 +37,12 @@ Bienvenido
                                 <div class="card mb-0 border-0 shadow-none mb-0">
                                     <div class="card-body p-sm-5 m-lg-4">
                                         <div class="text-center mt-5">
+                                            <div class="marca-login">
+                                                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" width="88" height="88" alt="{{ config('institucion.nombre') }}">
+                                                <span>{{ config('institucion.nombre') }}<br>Extensión Universitaria</span>
+                                            </div>
                                             <h5 class="fs-3xl">Bienvenido!</h5>
-                                            <p class="text-muted">Inicia tu sesión para continuar a {{config('app.name')}}</p>
+                                            <p class="text-muted">Inicia tu sesión para continuar a {{ config('institucion.nombre') }}</p>
                                         </div>
                                         <div class="p-2 mt-5">
                                             <form action="{{ route('login')}}" method="post">
@@ -86,7 +106,7 @@ Bienvenido
                                                 <script>
                                                     document.write(new Date().getFullYear())
 
-                                                </script> Creado con <i class="ti ti-heart-filled text-danger"></i> by BSoft
+                                                </script> {{ config('app.name') }}
                                             </p>
                                         </div>
                                     </div>

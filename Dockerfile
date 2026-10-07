@@ -36,6 +36,7 @@ COPY --from=assets /app/public/build ./public/build
 RUN composer dump-autoload --optimize --no-dev \
     && chmod -R 775 storage bootstrap/cache
 
+COPY docker/uploads.ini /usr/local/etc/php/conf.d/zz-uploads.ini
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh && sed -i 's/\r$//' /usr/local/bin/entrypoint.sh
 

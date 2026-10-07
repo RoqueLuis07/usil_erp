@@ -1,5 +1,5 @@
 {{-- @can('ver_reportes_horas_docentes') --}}
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Horas Docente @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">

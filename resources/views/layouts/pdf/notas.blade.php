@@ -100,20 +100,9 @@
 </head>
 <body>
     <header>
-        <div id="encabezado">
-            <div id="logo">
-                <img src="{{asset('storage/empresa/' . $empresa->logo)}}" alt="logo-usil" style="width: 100px; height: 100px">
-            </div>
-            <div id="datos">
-                <div style="font-size: 14px"><b>{{$empresa->razon_social}}</b></div>
-                <div class="mb-1" style="font-size: 12px"><b>Creada por Ley N° 3093/2006</b></div>
-                <div style="font-size: 10px">{{$empresa->direccion}}</div>
-                <div style="font-size: 10px">{{$empresa->ciudad->nombre}}, {{$empresa->pais->nombre}}</div>
-                <div style="font-size: 10px">Teléfono: {{$empresa->telefono}}</div>
-            </div>
-        </div>
+        @include('layouts.pdf.encabezado', ['subtitulo' => config('institucion.ley')])
         <div class="watermark">
-            <img src="{{asset('storage/logos/logo-dark-big.png')}}" alt="logo-usil">
+            <img src="{{ public_path(config('institucion.logo')) }}" alt="logo-usil">
         </div>
     </header>
 

@@ -69,7 +69,7 @@
 
             $('.alumno-' + nro_nueva_fila).append('<option value="" selected disabled>Seleccionar...</option>');
             $.each(alumnos, function (i, val) {
-                $('.alumno-' + nro_nueva_fila).append('<option value="' + val.id + '" data-subtext="' + val.numero_documento + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
+                $('.alumno-' + nro_nueva_fila).append('<option value="' + val.id + '"' + ((val.carrera_id && val.anho_ingreso) ? '' : ' disabled') + ' data-subtext="' + val.numero_documento + ((val.carrera_id && val.anho_ingreso) ? '' : ' · datos incompletos') + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
             })
             $('.alumno-' + nro_nueva_fila).addClass('selectpicker').selectpicker('render');
 
@@ -119,7 +119,7 @@
                 // $('.alumno-' + index).append('<option value="" disabled>Seleccionar...</option>');
                 // $('.alumno-' + index).append('<option value="' + valor + '" selected>' + texto + '</option>');
                 // $.each(alumnos, function (i, val) {
-                    // $('.alumno-' + index).append('<option value="' + val.id + '" data-subtext="' + val.numero_documento + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
+                    // $('.alumno-' + index).append('<option value="' + val.id + '"' + ((val.carrera_id && val.anho_ingreso) ? '' : ' disabled') + ' data-subtext="' + val.numero_documento + ((val.carrera_id && val.anho_ingreso) ? '' : ' · datos incompletos') + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
                 // })
                 // $('.alumno-' + index).addClass('selectpicker').selectpicker('render');
             // } else {
@@ -130,7 +130,7 @@
 
                 // $('.alumno-' + index).append('<option value="" selected disabled>Seleccionar...</option>');
                 // $.each(alumnos, function (i, val) {
-                    // $('.alumno-' + index).append('<option value="' + val.id + '" data-subtext="' + val.numero_documento + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
+                    // $('.alumno-' + index).append('<option value="' + val.id + '"' + ((val.carrera_id && val.anho_ingreso) ? '' : ' disabled') + ' data-subtext="' + val.numero_documento + ((val.carrera_id && val.anho_ingreso) ? '' : ' · datos incompletos') + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
                 // })
                 // $('.alumno-' + index).addClass('selectpicker').selectpicker('render');
             // }
@@ -187,7 +187,7 @@
                 // $('.alumno-' + nro_ultima_fila).append('<option value="' + valor_siguiente + '" selected>' + texto_siguiente + '</option>');
                 // $.each(alumnos, function (i, val) {
                     // if (parseInt(valor_siguiente) != val.id) {
-                        // $('.alumno-' + nro_ultima_fila).append('<option value="' + val.id + '" data-subtext="' + val.numero_documento + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
+                        // $('.alumno-' + nro_ultima_fila).append('<option value="' + val.id + '"' + ((val.carrera_id && val.anho_ingreso) ? '' : ' disabled') + ' data-subtext="' + val.numero_documento + ((val.carrera_id && val.anho_ingreso) ? '' : ' · datos incompletos') + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
                     // }
                 // })
                 // $('.alumno-' + nro_ultima_fila).addClass('selectpicker').selectpicker('render');
@@ -200,7 +200,7 @@
                 // $('.alumno-' + nro_ultima_fila).append('<option value="" selected disabled>Seleccionar...</option>');
                     // $.each(alumnos, function (i, val) {
                     // if (parseInt(valor_siguiente) != val.id) {
-                        // $('.alumno-' + nro_ultima_fila).append('<option value="' + val.id + '" data-subtext="' + val.numero_documento + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
+                        // $('.alumno-' + nro_ultima_fila).append('<option value="' + val.id + '"' + ((val.carrera_id && val.anho_ingreso) ? '' : ' disabled') + ' data-subtext="' + val.numero_documento + ((val.carrera_id && val.anho_ingreso) ? '' : ' · datos incompletos') + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
                     // }
                 // })
                 // $('.alumno-' + nro_ultima_fila).addClass('selectpicker').selectpicker('render');
@@ -227,7 +227,7 @@
                     // $('.alumno-' + index).append('<option value="' + valor + '" selected>' + texto + '</option>');
                     // $.each(alumnos, function (i, val) {
                         // if (parseInt(valor_siguiente) != val.id) {
-                            // $('.alumno-' + index).append('<option value="' + val.id + '" data-subtext="' + val.numero_documento + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
+                            // $('.alumno-' + index).append('<option value="' + val.id + '"' + ((val.carrera_id && val.anho_ingreso) ? '' : ' disabled') + ' data-subtext="' + val.numero_documento + ((val.carrera_id && val.anho_ingreso) ? '' : ' · datos incompletos') + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
                         // }
                     // })
                     // $('.alumno-' + index).addClass('selectpicker').selectpicker('render');
@@ -240,7 +240,7 @@
                     // $('.alumno-' + index).append('<option value="" selected disabled>Seleccionar...</option>');
                     // $.each(alumnos, function (i, val) {
                         // if (parseInt(valor_siguiente) != val.id) {
-                            // $('.alumno-' + index).append('<option value="' + val.id + '" data-subtext="' + val.numero_documento + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
+                            // $('.alumno-' + index).append('<option value="' + val.id + '"' + ((val.carrera_id && val.anho_ingreso) ? '' : ' disabled') + ' data-subtext="' + val.numero_documento + ((val.carrera_id && val.anho_ingreso) ? '' : ' · datos incompletos') + '">' + val.primer_nombre + ' ' + val.primer_apellido + '</option>');
                         // }
                     // })
                     // $('.alumno-' + index).addClass('selectpicker').selectpicker('render');

@@ -1,17 +1,34 @@
 <script type="module">
     $(document).ready(function() {
         var options = {
-            valueNames: ['nombre', 'tipo_extension', 'docente'],
+            valueNames: ['nombre', 'tipo_extension', 'linea', 'periodo', 'docente'],
             page: 50,
             pagination: true
         };
         var extensionesList = new List('extensiones-list', options);
+        // "Mostrando 1-50 de 113 registros"; con búsqueda activa aclara el total sin filtrar.
+        function actualizarContador(list) {
+            const total = list.items.length;
+            const coincidencias = list.matchingItems.length;
+            let texto = 'Sin registros';
+            if (coincidencias > 0) {
+                const desde = list.i;
+                const hasta = Math.min(list.i + list.page - 1, coincidencias);
+                texto = 'Mostrando ' + desde + '–' + hasta + ' de ' + coincidencias + (coincidencias === 1 ? ' registro' : ' registros');
+                if (coincidencias !== total) {
+                    texto += ' (filtrados de ' + total + ')';
+                }
+            }
+            $('#contador-registros').text(texto);
+        }
+        actualizarContador(extensionesList);
         extensionesList.on('updated', function(list) {
             if (list.matchingItems.length > 0) {
                 $('.noresults').hide()
             } else {
                 $('.noresults').show()
             }
+            actualizarContador(list);
         });
 
         if (window.localStorage.getItem('message') && window.localStorage.getItem('type')) {

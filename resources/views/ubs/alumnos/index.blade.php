@@ -74,7 +74,7 @@
                                                 <td>{{$alumno->primer_nombre}} {{$alumno->segundo_nombre}} {{$alumno->tecer_nombre}} {{$alumno->primer_apellido}} {{$alumno->segundo_apellido}}</td>
                                                 <td>{{$alumno->numero_documento}}</td>
                                                 <td>{{$alumno->celular}} @if ($alumno->telefono) - {{$alumno->telefono}} @endif</td>
-                                                <td>{{\Carbon\Carbon::createFromDate($alumno->fecha_nacimiento)->age}} años</td>
+                                                <td>{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->age . ' años' : 'Sin dato'}}</td>
                                                 <td>
                                                     <span
                                                         class="badge @if ($alumno->estado == 'AC')

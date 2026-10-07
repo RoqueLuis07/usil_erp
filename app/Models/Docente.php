@@ -18,6 +18,16 @@ class Docente extends Model implements Auditable
         return $this->belongsToMany(Nacionalidad::class, 'docentes_nacionalidades');
     }
 
+    public function Carreras(){
+        return $this->belongsToMany(Carrera::class, 'docentes_carreras', 'docente_id', 'carrera_id');
+    }
+
+    /** Facultades a las que pertenece el docente, deducidas de sus carreras. */
+    public function facultades()
+    {
+        return $this->Carreras->pluck('Facultad')->filter()->unique('id')->values();
+    }
+
     public function Departamento(){
         return $this->belongsTo(DepartamentoParaguay::class);
     }

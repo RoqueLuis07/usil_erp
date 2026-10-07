@@ -111,4 +111,4 @@
         <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
         @include('ubs.tesis.borradores.scripts.show_entregas-scripts')
     @endsection
-@endcan
+{{-- @endcan --}}

@@ -1,5 +1,5 @@
 @can('editar_docentes')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Docente @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -23,47 +23,22 @@
                         <!-- end card header -->
                         <div class="card-body">
                             <p class="text-muted">Por favor, complete los <code>campos marcados</code> para poder agregar un registro con éxito</p>
+
+                            <h6 class="text-muted text-uppercase mb-3" style="font-size: 12px; letter-spacing: .04em;">Identidad</h6>
                             <div class="row">
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="primer_nombre_docente">Primer Nombre <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('primer_nombre_docente') is-invalid @enderror" id="primer_nombre_docente" name="primer_nombre_docente" value="{{old('primer_nombre_docente', $docente->primer_nombre)}}" placeholder="Escriba el nombre">
-                                    @error('primer_nombre_docente')
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="nombres_docente">Nombres <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('nombres_docente') is-invalid @enderror" id="nombres_docente" name="nombres_docente" value="{{old('nombres_docente', implode(' ', array_filter([$docente->primer_nombre, $docente->segundo_nombre, $docente->tercer_nombre])))}}" placeholder="Todos los nombres, ej.: Juan Carlos">
+                                    @error('nombres_docente')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="segundo_nombre_docente">Segundo Nombre</label>
-                                    <input type="text" class="form-control @error('segundo_nombre_docente') is-invalid @enderror" id="segundo_nombre_docente" name="segundo_nombre_docente" value="{{old('segundo_nombre_docente', $docente->segundo_nombre)}}" placeholder="Escriba el nombre">
-                                    @error('segundo_nombre_docente')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="tercer_nombre_docente">Tercer Nombre</label>
-                                    <input type="text" class="form-control @error('tercer_nombre_docente') is-invalid @enderror" id="tercer_nombre_docente" name="tercer_nombre_docente" value="{{old('tercer_nombre_docente', $docente->tercer_nombre)}}" placeholder="Escriba el nombre">
-                                    @error('tercer_nombre_docente')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="primer_apellido_docente">Primer Apellido <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('primer_apellido_docente') is-invalid @enderror" id="primer_apellido_docente" name="primer_apellido_docente" value="{{old('primer_apellido_docente', $docente->primer_apellido)}}" placeholder="Escriba el apellido">
-                                    @error('primer_apellido_docente')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="segundo_apellido_docente">Segundo Apellido</label>
-                                    <input type="text" class="form-control @error('segundo_apellido_docente') is-invalid @enderror" id="segundo_apellido_docente" name="segundo_apellido_docente" value="{{old('segundo_apellido_docente', $docente->segundo_apellido)}}" placeholder="Escriba el apellido">
-                                    @error('segundo_apellido_docente')
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="apellidos_docente">Apellidos <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('apellidos_docente') is-invalid @enderror" id="apellidos_docente" name="apellidos_docente" value="{{old('apellidos_docente', implode(' ', array_filter([$docente->primer_apellido, $docente->segundo_apellido])))}}" placeholder="Todos los apellidos, ej.: Gonzalez Benitez">
+                                    @error('apellidos_docente')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
                                         </span>
@@ -74,19 +49,6 @@
                                     <input type="text" class="form-control @error('numero_documento') is-invalid @enderror" id="numero_documento" name="numero_documento" value="{{old('numero_documento', $docente->numero_documento)}}" placeholder="Escriba el N° de documento">
                                     @error('numero_documento')
                                         <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4 mb-3">
-                                    <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
-                                    <select class="form-control @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
-
-                                    </select>
-                                    @error('nacionalidad')
-                                        <span class="invalid-feedback" role="alert" id="error-select">
                                             <strong>{{$message}}</strong>
                                         </span>
                                     @enderror
@@ -117,25 +79,10 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="email_personal">Correo Personal <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('email_personal') is-invalid @enderror" id="email_personal" name="email_personal" value="{{old('email_personal', $docente->email_personal)}}" placeholder="Escriba el correo electrónico">
-                                    @error('email_personal')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="email_institucional">Correo Institucional</label>
-                                    <input type="text" class="form-control @error('email_institucional') is-invalid @enderror" id="email_institucional" name="email_institucional" value="{{old('email_institucional', $docente->email_institucional)}}" placeholder="Escriba el correo electrónico">
-                                    @error('email_institucional')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
                             </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Contacto</h6>
                             <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="telefono">N° de Teléfono</label>
@@ -155,7 +102,93 @@
                                         </span>
                                     @enderror
                                 </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="email_personal">Correo Personal <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('email_personal') is-invalid @enderror" id="email_personal" name="email_personal" value="{{old('email_personal', $docente->email_personal)}}" placeholder="Escriba el correo electrónico">
+                                    @error('email_personal')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
                                 <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="email_institucional">Correo Institucional</label>
+                                    <input type="text" class="form-control @error('email_institucional') is-invalid @enderror" id="email_institucional" name="email_institucional" value="{{old('email_institucional', $docente->email_institucional)}}" placeholder="Escriba el correo electrónico">
+                                    @error('email_institucional')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
+                                    <select class="form-control @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" data-size="5" multiple title="Seleccionar...">
+
+                                    </select>
+                                    @error('nacionalidad')
+                                        <span class="invalid-feedback" role="alert" id="error-select">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Ubicación</h6>
+                            <div class="row">
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="direccion">Dirección <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('direccion') is-invalid @enderror" id="direccion" name="direccion" value="{{old('direccion', $docente->direccion)}}" placeholder="Escriba la dirección particular">
+                                    @error('direccion')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="departamento">Departamento <span class="text-danger">(*)</span></label>
+                                    <select class="selectpicker form-control @error('departamento') is-invalid @enderror" id="departamento" name="departamento" data-live-search="true">
+                                        <option value="" selected disabled>Seleccionar...</option>
+                                        @foreach ($departamentos_paraguay as $departamento)
+                                            <option value="{{$departamento->id}}" @if (old('departamento') == strval($departamento->id) || $docente->departamento_id == strval($departamento->id)) selected @endif>{{$departamento->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('departamento')
+                                        <span class="invalid-feedback" role="alert" id="error-select">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="ciudad">Ciudad <span class="text-danger">(*)</span></label>
+                                    <input type="hidden" id="ciudad_input" value="{{$docente->ciudad_id}}">
+                                    <select class="selectpicker form-control @error('ciudad') is-invalid @enderror" id="ciudad" name="ciudad" data-live-search="true" disabled>
+                                        <option value="" selected disabled>Seleccionar...</option>
+                                    </select>
+                                    @error('ciudad')
+                                        <span class="invalid-feedback" role="alert" id="error-select">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="barrio">Barrio</label>
+                                    <input type="hidden" id="barrio_input" value="{{$docente->barrio_id}}">
+                                    <select class="selectpicker form-control @error('barrio') is-invalid @enderror" id="barrio" name="barrio" data-live-search="true" disabled>
+                                        <option value="" selected disabled>Seleccionar...</option>
+                                    </select>
+                                    @error('barrio')
+                                        <span class="invalid-feedback" role="alert" id="error-select">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Cuenta</h6>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="usuario">Usuario Asignado</label>
                                     <select class="selectpicker form-control @error('usuario') is-invalid @enderror" id="usuario" name="usuario" data-live-search="true">
                                         <option value="" selected disabled>Seleccionar...</option>
@@ -202,61 +235,13 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-6 mb-3">
-                                    <label class="form-label" for="direccion">Dirección <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('direccion') is-invalid @enderror" id="direccion" name="direccion" value="{{old('direccion', $docente->direccion)}}" placeholder="Escriba la dirección particular">
-                                    @error('direccion')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="departamento">Departamento <span class="text-danger">(*)</span></label>
-                                    <select class="selectpicker form-control @error('departamento') is-invalid @enderror" id="departamento" name="departamento" data-live-search="true">
-                                        <option value="" selected disabled>Seleccionar...</option>
-                                        @foreach ($departamentos_paraguay as $departamento)
-                                            <option value="{{$departamento->id}}" @if (old('departamento') == strval($departamento->id) || $docente->departamento_id == strval($departamento->id)) selected @endif>{{$departamento->nombre}}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('departamento')
-                                        <span class="invalid-feedback" role="alert" id="error-select">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="ciudad">Ciudad <span class="text-danger">(*)</span></label>
-                                    <input type="hidden" id="ciudad_input" value="{{$docente->ciudad_id}}">
-                                    <select class="selectpicker form-control @error('ciudad') is-invalid @enderror" id="ciudad" name="ciudad" data-live-search="true" disabled>
-                                        <option value="" selected disabled>Seleccionar...</option>
-                                    </select>
-                                    @error('ciudad')
-                                        <span class="invalid-feedback" role="alert" id="error-select">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="barrio">Barrio <span class="text-danger">(*)</span></label>
-                                    <input type="hidden" id="barrio_input" value="{{$docente->barrio_id}}">
-                                    <select class="selectpicker form-control @error('barrio') is-invalid @enderror" id="barrio" name="barrio" data-live-search="true" disabled>
-                                        <option value="" selected disabled>Seleccionar...</option>
-                                    </select>
-                                    @error('barrio')
-                                        <span class="invalid-feedback" role="alert" id="error-select">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12 mb-3">
                             <div class="card">
                                 <div class="card-body">
+                                    @include('docentes.partials.carreras')
                                     <ul class="nav nav-pills arrow-navtabs nav-info nav-justified bg-light gap-2 mb-4" role="tablist">
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link active align-middle" data-bs-toggle="tab" href="#tablistFormacion" role="tab" aria-selected="true">

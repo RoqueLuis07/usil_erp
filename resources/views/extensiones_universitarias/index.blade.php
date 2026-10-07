@@ -1,5 +1,5 @@
 @can('ver_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Extensiones Universitarias @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -35,7 +35,9 @@
                         </div>
                         <div class="col-lg-6 d-flex">
                             <div class="col-lg-9 text-end">
-                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#showReporteModal">Visualizar Reporte</button>
+                                @can('generar_reportes_extensiones_universitarias')
+                                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#showReporteModal">Visualizar Reporte</button>
+                                @endcan
                                 @can('generar_reportes_extensiones_universitarias_carrera_semestre')
                                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#showReporteCarreraSemestreModal">Reporte por Carrera y Semestre</button>
                                 @endcan
@@ -74,13 +76,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive table-card mt-3 mb-1">
+                            <div class="table-responsive ac-tabla-fija table-card mt-3 mb-1">
                                 <table class="table align-middle table-nowrap" id="extensiones-list">
                                     <thead class="table-light">
                                         <tr>
                                             <th class="sort" data-sort="id">ID</th>
                                             <th class="sort" data-sort="nombre">Proyecto</th>
-                                            <th class="sort" data-sort="tipo_extension">Tipo de Proyecto</th>
+                                            <th class="sort" data-sort="tipo_extension">Tipo de Actividad</th>
+                                            <th class="sort" data-sort="linea">Línea de Extensión</th>
+                                            <th class="text-center">N° de Beneficiados</th>
+                                            <th class="text-end">Presupuesto</th>
+                                            <th class="sort" data-sort="periodo">Período</th>
                                             <th class="sort" data-sort="docente">Responsable</th>
                                             <th>Tiempo</th>
                                             <th>Cant. Alumnos</th>
@@ -94,8 +100,12 @@
                                                 <td class="id">{{$extension->id}}</td>
                                                 <td class="nombre">{{$extension->nombre}}</td>
                                                 <td class="tipo_extension">{{$extension->tipoExtension->nombre}}</td>
-                                                <td class="docente">{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}}</td>
-                                                <td>{{number_format($extension->cantidad_horas, 2, ',', '.')}} @if ($extension->maxima_cantidad_horas != 1) horas @else hora @endif</td>
+                                                <td class="linea">{{ optional($extension->tipoExtension)->linea_numero ? 'Línea ' . $extension->tipoExtension->linea_numero : '—' }}</td>
+                                                <td class="text-center">{{ !is_null($extension->cantidad_beneficiados) ? number_format($extension->cantidad_beneficiados, 0, ',', '.') : '—' }}</td>
+                                                <td class="text-end">{{ !is_null($extension->presupuesto) ? 'Gs. ' . number_format($extension->presupuesto, 0, ',', '.') : '—' }}</td>
+                                                <td class="periodo">{{ $extension->periodo ?? '—' }}</td>
+                                                <td class="docente">{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}</td>
+                                                <td>{{number_format($extension->cantidad_horas, 2, ',', '.')}} @if ($extension->cantidad_horas != 1) horas @else hora @endif</td>
                                                 <td>
                                                     {{$extension->extensionUniversitariaDetalles->count()}}
                                                     @if ($extension->extensionUniversitariaDetalles->count() == 1)
@@ -163,7 +173,8 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-end">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <span class="ac-contador" id="contador-registros"></span>
                                 <div class="pagination-wrap hstack gap-2">
                                     <a class="page-item pagination-prev disabled"><</a>
                                     <ul class="pagination listjs-pagination mb-0"></ul>
