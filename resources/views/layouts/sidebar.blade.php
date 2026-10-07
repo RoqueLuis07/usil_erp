@@ -4,18 +4,18 @@
     <div class="navbar-brand-box">
         <a href="{{route('root')}}" class="logo logo-dark">
             <span class="logo-sm">
-                <img src="{{asset('storage/logos/logo-dark-sm.png')}}" alt="" height="50">
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="40">
             </span>
             <span class="logo-lg">
-                <img src="{{asset('storage/logos/logo-dark.png')}}" alt="" height="50">
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="40">
             </span>
         </a>
         <a href="{{route('root')}}" class="logo logo-light">
             <span class="logo-sm">
-                <img src="{{asset('storage/logos/logo-light-sm.png')}}" alt="" height="50">
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="40">
             </span>
             <span class="logo-lg">
-                <img src="{{asset('storage/logos/logo-light.png')}}" alt="" height="50">
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="40">
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-3xl header-item float-end btn-vertical-sm-hover shadow-none" id="vertical-hover">

@@ -16,8 +16,8 @@ Error 500
                                     <div class="card mb-0 border-0 shadow-none mb-0">
                                         <div class="card-body p-sm-5 m-lg-4">
                                             <div class="error-img text-center px-5">
-                                                <img src="build/images/auth/500.png" class="img-fluid" alt="">
-                                            </div>
+                                            <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" class="img-fluid" alt="{{ config('institucion.nombre') }}" style="max-width:160px;border-radius:50%;">
+                                        </div>
                                             <div class="mt-4 text-center pt-4">
                                                 <div class="position-relative">
                                                     <h4 class="fs-2xl error-subtitle text-uppercase mb-0">Oops!</h4>
@@ -35,7 +35,7 @@ Error 500
                                     <div class="card auth-card bg-secondary h-100 border-0 shadow-none d-none d-sm-block mb-0">
                                         <div class="card-body py-5 d-flex justify-content-between flex-column h-100">
                                             <div class="text-center">
-                                                <h5 class="text-white">{{ config('app.name') }}</h5>
+                                                <h5 class="text-white">{{ config('institucion.nombre') }}</h5>
                                                 <p class="text-white opacity-75">Gracias por trabajar con nosotros.</p>
                                             </div>
 
@@ -52,7 +52,7 @@ Error 500
 
                                                         document.write(new Date().getFullYear())
 
-                                                    </script>. {{ config('app.name') }}
+                                                    </script>. {{ config('institucion.nombre') }}
                                                 </p>
                                             </div>
                                         </div>

@@ -16,8 +16,9 @@ Bienvenido
         .auth-page-wrapper .btn-primary:hover{background:#0c3b47 !important;}
         .auth-page-wrapper .auth-card{background:#0f4c5c !important;border-radius:0 !important;}
         .auth-page-wrapper .text-muted{color:#5c6a6e !important;}
-        .marca-login{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
-        .marca-login span{font-size:14px;font-weight:700;color:#1b2427;line-height:1.25;text-align:left;}
+        .marca-login{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
+        .marca-login img{border-radius:50%;}
+        .marca-login span{font-size:14px;font-weight:700;color:#1b2427;line-height:1.25;text-align:center;}
     </style>
 @endsection
 
@@ -37,18 +38,11 @@ Bienvenido
                                     <div class="card-body p-sm-5 m-lg-4">
                                         <div class="text-center mt-5">
                                             <div class="marca-login">
-                                                <svg width="40" height="40" viewBox="0 0 300 300">
-                                                    <circle cx="150" cy="150" r="97" fill="none" stroke="#33454a" stroke-width="5"/>
-                                                    <circle cx="150" cy="150" r="88" fill="none" stroke="#8a4d13" stroke-width="1.6"/>
-                                                    <polygon points="150.00,65.00 223.61,107.50 150.00,150.00 76.39,107.50" fill="#0f4c5c" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
-                                                    <polygon points="223.61,107.50 223.61,192.50 150.00,235.00 150.00,150.00" fill="#1f6b4f" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
-                                                    <polygon points="150.00,150.00 150.00,235.00 76.39,192.50 76.39,107.50" fill="#33454a" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
-                                                    <circle cx="150" cy="150" r="3.2" fill="#8a4d13"/>
-                                                </svg>
-                                                <span>Sistema Académico<br>Extensión Universitaria</span>
+                                                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" width="88" height="88" alt="{{ config('institucion.nombre') }}">
+                                                <span>{{ config('institucion.nombre') }}<br>Extensión Universitaria</span>
                                             </div>
                                             <h5 class="fs-3xl">Bienvenido!</h5>
-                                            <p class="text-muted">Inicia tu sesión para continuar a {{config('app.name')}}</p>
+                                            <p class="text-muted">Inicia tu sesión para continuar a {{ config('institucion.nombre') }}</p>
                                         </div>
                                         <div class="p-2 mt-5">
                                             <form action="{{ route('login')}}" method="post">

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title> @yield('title') | {{config('app.name')}} </title>
+    <title> @yield('title') | {{ config('institucion.nombre') }} </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ URL::asset('apple-touch-icon.png') }}">
@@ -83,7 +83,8 @@
         .ac-shell{display:flex;min-height:100vh;}
         .ac-nav{width:250px;flex:0 0 250px;background:var(--ac-surface);border-right:1px solid var(--ac-border);padding:18px 10px;box-sizing:border-box;position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;overflow-x:hidden;transition:width .15s, flex-basis .15s;}
         .ac-nav-brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;}
-        .ac-nav-brand svg{flex:0 0 auto;}
+        .ac-nav-brand svg, .ac-nav-brand img{flex:0 0 auto;}
+        .ac-nav-brand img{border-radius:50%;}
         .ac-nav-brand span{font-size:13px;font-weight:700;color:var(--ac-text);line-height:1.25;white-space:nowrap;}
         .ac-nav-group{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ac-text-muted);padding:14px 10px 6px;text-transform:uppercase;letter-spacing:0.05em;}
         .ac-nav-item{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:0;border-left:3px solid transparent;font-size:13px;color:var(--ac-text);text-decoration:none;white-space:nowrap;}
@@ -124,15 +125,8 @@
     <div class="ac-shell">
         <div class="ac-nav">
             <div class="ac-nav-brand">
-                <svg width="26" height="26" viewBox="0 0 300 300">
-                    <circle cx="150" cy="150" r="97" fill="none" stroke="#33454a" stroke-width="5"/>
-                    <circle cx="150" cy="150" r="88" fill="none" stroke="#8a4d13" stroke-width="1.6"/>
-                    <polygon points="150.00,65.00 223.61,107.50 150.00,150.00 76.39,107.50" fill="#0f4c5c" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
-                    <polygon points="223.61,107.50 223.61,192.50 150.00,235.00 150.00,150.00" fill="#1f6b4f" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
-                    <polygon points="150.00,150.00 150.00,235.00 76.39,192.50 76.39,107.50" fill="#33454a" stroke="#0b3540" stroke-width="1" stroke-linejoin="round"/>
-                    <circle cx="150" cy="150" r="3.2" fill="#8a4d13"/>
-                </svg>
-                <span>Sistema Académico<br>Extensión Universitaria</span>
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" width="34" height="34" alt="{{ config('institucion.nombre') }}">
+                <span>{{ config('institucion.nombre') }}<br>Extensión Universitaria</span>
             </div>
 
             @if (Auth::user()->hasRole('ALUMNO'))
@@ -330,7 +324,7 @@
             <div class="ac-statusbar">
                 <span>Conectado como {{ Auth::user()->name }}</span>
                 <div style="flex:1;"></div>
-                <span>{{ config('app.name') }}</span>
+                <span>{{ config('institucion.nombre') }}</span>
             </div>
         </div>
     </div>
