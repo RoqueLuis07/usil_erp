@@ -143,7 +143,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-3 mb-3">
-                                    <label class="form-label" for="presupuesto">Presupuesto</label>
+                                    <label class="form-label" for="presupuesto">Presupuesto <span class="text-danger">(*)</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">Gs.</span>
                                         <input type="text" class="form-control text-end @error('presupuesto') is-invalid @enderror" id="presupuesto" name="presupuesto" value="{{old('presupuesto')}}" placeholder="0">
