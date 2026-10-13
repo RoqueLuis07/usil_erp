@@ -7,7 +7,7 @@
     @component('components.breadcrumb')
         @slot('li_1') Gestión Académica @endslot
         @slot('href') {{ route('alumnos.index') }} @endslot
-        @slot('title') Carga Masiva de Alumnos y Docentes @endslot
+        @slot('title') Carga Masiva de Alumnos, Docentes y Actividades @endslot
     @endcomponent
 
     @include('extensiones_universitarias.scripts.messages-scripts')
@@ -17,7 +17,7 @@
             <div class="card-header">
                 <h4 class="card-title mb-0">
                     Resultado de {{ $resultado['modo'] === 'validar' ? 'la validación (no se guardó nada)' : 'la importación' }}
-                    — {{ $resultado['tipo'] === 'alumnos' ? 'Alumnos' : 'Docentes' }}
+                    — {{ ['alumnos' => 'Alumnos', 'docentes' => 'Docentes', 'extensiones' => 'Actividades (una fila por alumno participante)'][$resultado['tipo']] }}
                 </h4>
             </div>
             <div class="card-body">
@@ -54,11 +54,12 @@
             $bloques = [
                 ['alumnos', 'Alumnos', 'crear_alumnos', 'Carrera y año de ingreso son obligatorios: de ahí salen la facultad y el semestre.'],
                 ['docentes', 'Docentes', 'crear_docentes', 'Las carreras se separan con el signo | (por ejemplo Informática|Derecho). Nivel académico, didáctica y tutor son opcionales.'],
+                ['extensiones', 'Actividades de extensión', 'crear_extensiones_universitarias', 'Una fila por alumno y actividad: las filas con el mismo nombre y fecha forman una sola actividad. Los alumnos tienen que estar cargados antes (se buscan por documento). Tipo de actividad vacío = Extensión académica.'],
             ];
         @endphp
         @foreach ($bloques as [$tipo, $titulo, $permiso, $ayuda])
             @can($permiso)
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h4 class="card-title mb-0 flex-grow-1">{{ $titulo }}</h4>
@@ -104,7 +105,9 @@
                     @foreach ($niveles as $nivel)<div>{{ $nivel->nombre }}</div>@endforeach
                 </div>
                 <div class="col-lg-3 mb-3">
-                    <div class="fw-bold mb-1">Nacionalidades</div>
+                    <div class="fw-bold mb-1">Tipos de actividad</div>
+                    @foreach ($tipos as $tipo_actividad)<div>{{ $tipo_actividad->nombre }}</div>@endforeach
+                    <div class="fw-bold mb-1 mt-3">Nacionalidades</div>
                     @foreach ($nacionalidades as $nacionalidad)<div>{{ $nacionalidad->nombre }}</div>@endforeach
                 </div>
             </div>

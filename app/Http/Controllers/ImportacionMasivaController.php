@@ -19,24 +19,32 @@ use App\Models\Configuracion;
 use App\Models\DepartamentoParaguay;
 use App\Models\Docente;
 use App\Models\DocenteNivelAcademico;
+use App\Models\ExtensionUniversitaria;
+use App\Models\ExtensionUniversitariaDetalle;
 use App\Models\Nacionalidad;
 use App\Models\Sexo;
+use App\Models\TipoExtensionUniversitaria;
 use App\Models\User;
+use App\Traits\ResuelveCarreraSemestreAlumno;
 
 /**
- * Carga masiva de alumnos y docentes desde un CSV (Excel lo guarda como
+ * Carga masiva de alumnos, docentes y actividades de extensión (con sus
+ * participantes) desde un CSV (Excel lo guarda como
  * "CSV UTF-8"). Primero se puede "Validar" (no guarda nada) y después
  * "Importar". Las filas con error se informan con su número y motivo y no
  * frenan al resto.
  */
 class ImportacionMasivaController extends Controller
 {
+    use ResuelveCarreraSemestreAlumno;
+
     private const MAX_FILAS = 2000;
 
     private const COLUMNAS_ALUMNO = [
         'documento', 'nombres', 'apellidos',
         'sexo', 'fecha_nacimiento', 'nacionalidad', 'telefono', 'celular', 'correo', 'direccion',
         'departamento', 'ciudad', 'barrio', 'facultad', 'carrera', 'anho_ingreso', 'semestre_ingreso',
+        'crear_usuario',
     ];
 
     private const COLUMNAS_DOCENTE = [
@@ -45,6 +53,14 @@ class ImportacionMasivaController extends Controller
         'departamento', 'ciudad', 'barrio', 'nivel_academico', 'area_conocimiento', 'capacitacion_didactica',
         'tutor', 'facultad', 'carreras',
     ];
+
+    /** Una fila = un alumno participando de una actividad; las filas de la misma actividad (nombre + fecha) la arman. */
+    private const COLUMNAS_EXTENSION = [
+        'actividad', 'fecha', 'horas', 'documento', 'carrera',
+        'tipo_actividad', 'responsable', 'presupuesto', 'beneficiados', 'estado',
+    ];
+
+    private const TIPO_POR_DEFECTO = 'Extensión académica';
 
     private array $cache = [];
 
@@ -55,13 +71,14 @@ class ImportacionMasivaController extends Controller
 
     public function index()
     {
-        abort_unless(Auth::user()->can('crear_alumnos') || Auth::user()->can('crear_docentes'), 403);
+        abort_unless(Auth::user()->can('crear_alumnos') || Auth::user()->can('crear_docentes') || Auth::user()->can('crear_extensiones_universitarias'), 403);
 
         return view('importaciones.index', [
             'carreras' => Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia')->get(),
             'departamentos' => DepartamentoParaguay::orderBy('nombre')->get(),
             'niveles' => DocenteNivelAcademico::where('estado', 'AC')->orderBy('nombre')->get(),
             'nacionalidades' => Nacionalidad::orderBy('nombre')->get(),
+            'tipos' => TipoExtensionUniversitaria::where('estado', 'AC')->orderBy('nombre')->get(),
             'resultado' => session('resultado'),
         ]);
     }
@@ -70,10 +87,12 @@ class ImportacionMasivaController extends Controller
     {
         $this->autorizarTipo($tipo);
 
-        $columnas = $tipo === 'alumnos' ? self::COLUMNAS_ALUMNO : self::COLUMNAS_DOCENTE;
-        $ejemplo = $tipo === 'alumnos'
-            ? ['1234567', 'Maria', 'Gonzalez Benitez', 'Femenino', '15/03/2004', 'Paraguaya', '', '0981123456', 'maria@correo.com', 'Calle 1 y Av. 2', 'Central', 'Luque', 'Centro', 'Facultad de Ciencias', 'Ingenieria en Informatica', '2023', '1']
-            : ['7654321', 'Juan', 'Perez Lopez', 'Masculino', '02/11/1985', 'Paraguaya', '', '0971654321', 'juan@correo.com', 'Calle 3', 'Central', 'San Lorenzo', '', 'Maestria', 'Tecnologia e Ingenieria', 'SI', 'NO', 'Facultad de Ciencias', 'Ingenieria en Informatica|Otra Carrera'];
+        $columnas = $this->columnasDe($tipo);
+        $ejemplo = $tipo === 'extensiones'
+            ? ['Minga ambiental en la costanera', '15/06/2025', '5', '1234567', 'Ingenieria en Informatica', 'Voluntariado', '', '350000', '40', '']
+            : ($tipo === 'alumnos'
+            ? ['1234567', 'Maria', 'Gonzalez Benitez', 'Femenino', '15/03/2004', 'Paraguaya', '', '0981123456', 'maria@correo.com', 'Calle 1 y Av. 2', 'Central', 'Luque', 'Centro', 'Facultad de Ciencias', 'Ingenieria en Informatica', '2023', '1', 'SI']
+            : ['7654321', 'Juan', 'Perez Lopez', 'Masculino', '02/11/1985', 'Paraguaya', '', '0971654321', 'juan@correo.com', 'Calle 3', 'Central', 'San Lorenzo', '', 'Maestria', 'Tecnologia e Ingenieria', 'SI', 'NO', 'Facultad de Ciencias', 'Ingenieria en Informatica|Otra Carrera']);
 
         $salida = "\xEF\xBB\xBF" . implode(';', $columnas) . "\r\n" . implode(';', array_map(fn ($v) => '"' . str_replace('"', '""', $v) . '"', $ejemplo)) . "\r\n";
 
@@ -97,7 +116,7 @@ class ImportacionMasivaController extends Controller
         ]);
 
         $persistir = $request->modo === 'importar';
-        $columnasEsperadas = $tipo === 'alumnos' ? self::COLUMNAS_ALUMNO : self::COLUMNAS_DOCENTE;
+        $columnasEsperadas = $this->columnasDe($tipo);
 
         try {
             [$cabecera, $filas] = $this->leerCsv($request->file('archivo'));
@@ -105,7 +124,7 @@ class ImportacionMasivaController extends Controller
             return back()->with('error-message', $e->getMessage());
         }
 
-        $faltantes = array_diff(['documento', 'nombres', 'apellidos'], $cabecera);
+        $faltantes = array_diff($tipo === 'extensiones' ? ['actividad', 'fecha', 'horas', 'documento'] : ['documento', 'nombres', 'apellidos'], $cabecera);
         if ($faltantes) {
             return back()->with('error-message', 'Al archivo le faltan columnas obligatorias: ' . implode(', ', $faltantes) . '. Descargá la plantilla y respetá los títulos.');
         }
@@ -122,7 +141,11 @@ class ImportacionMasivaController extends Controller
 
                 DB::beginTransaction();
                 try {
-                    $accion = $tipo === 'alumnos' ? $this->procesarAlumno($datos) : $this->procesarDocente($datos);
+                    $accion = match ($tipo) {
+                        'alumnos' => $this->procesarAlumno($datos),
+                        'docentes' => $this->procesarDocente($datos),
+                        'extensiones' => $this->procesarExtension($datos),
+                    };
                     DB::commit();
                     $accion === 'creado' ? $resultado['creados']++ : $resultado['actualizados']++;
                 } catch (\InvalidArgumentException $e) {
@@ -161,7 +184,22 @@ class ImportacionMasivaController extends Controller
         $semestreIngreso = ($d['semestre_ingreso'] ?? '') === '2' ? 2 : 1;
 
         $alumno = Alumno::where('numero_documento', $documento)->first();
+        $conciliado = false;
+        if (!$alumno) {
+            // Los alumnos que vinieron de la planilla vieja tienen un documento provisorio (EXT-IMP-n):
+            // si el nombre coincide con uno solo, se completa con la cédula real en vez de duplicarlo.
+            $alumno = $this->buscarImportadoSinCedula($d);
+            $conciliado = (bool) $alumno;
+        }
+
         if ($alumno) {
+            if ($conciliado) {
+                $previo = ['celular' => $alumno->celular, 'email' => $alumno->email_personal, 'direccion' => $alumno->direccion];
+                $this->completarPersona($alumno, $d, $documento);
+                $alumno->celular = ($d['celular'] ?? '') !== '' ? $alumno->celular : $previo['celular'];
+                $alumno->email_personal = ($d['correo'] ?? '') !== '' ? $alumno->email_personal : $previo['email'];
+                $alumno->direccion = ($d['direccion'] ?? '') !== '' ? $alumno->direccion : $previo['direccion'];
+            }
             $alumno->carrera_id = $carrera->id;
             $alumno->anho_ingreso = $anho;
             $alumno->semestre_ingreso = $semestreIngreso;
@@ -176,11 +214,157 @@ class ImportacionMasivaController extends Controller
         $alumno->anho_ingreso = $anho;
         $alumno->semestre_ingreso = $semestreIngreso;
         $alumno->cargado_por_id = Auth::id();
-        $alumno->usuario_id = $this->crearUsuario($d, $documento, 'ALUMNO', 'alumnos.local')->id;
+        // crear_usuario = NO: el alumno queda cargado (puede participar y figurar en reportes) pero sin cuenta de acceso.
+        if (($d['crear_usuario'] ?? '') === '' || $this->esSi($d['crear_usuario'])) {
+            $alumno->usuario_id = $this->crearUsuario($d, $documento, 'ALUMNO', 'alumnos.local')->id;
+        }
         $alumno->save();
         $this->sincronizarNacionalidades($alumno, $d['nacionalidad'] ?? '');
 
         return 'creado';
+    }
+
+    /** Alumno con documento provisorio (EXT-IMP-n) cuyo nombre y apellido coinciden con la fila, si es uno solo. */
+    private function buscarImportadoSinCedula(array $d): ?Alumno
+    {
+        if (!isset($this->cache['provisorios'])) {
+            $this->cache['provisorios'] = Alumno::where('numero_documento', 'like', 'EXT-IMP-%')->get();
+        }
+        $nombres = $this->normalizar($d['nombres']);
+        $apellidos = $this->normalizar($d['apellidos']);
+        $coinciden = $this->cache['provisorios']->filter(function ($a) use ($nombres, $apellidos) {
+            return $this->normalizar($a->primer_nombre) === $nombres && $this->normalizar($a->primer_apellido) === $apellidos;
+        });
+        if ($coinciden->count() !== 1) {
+            return null;
+        }
+        $alumno = $coinciden->first();
+        $this->cache['provisorios'] = $this->cache['provisorios']->reject(fn ($a) => $a->id === $alumno->id);
+        return $alumno;
+    }
+
+    // ------------------------------------------------------------- actividades
+
+    /**
+     * Una fila = un alumno en una actividad. La actividad se identifica por nombre + fecha:
+     * si ya existe se reutiliza (no se duplica) y se le suma o actualiza el participante.
+     */
+    private function procesarExtension(array $d): string
+    {
+        $this->exigir($d, ['actividad', 'fecha', 'horas', 'documento']);
+
+        $nombre = mb_substr(removeAccents(Str::upper(trim(preg_replace('/\s+/', ' ', $d['actividad'])))), 0, 255);
+        $fecha = $this->resolverFechaActividad($d['fecha']);
+        $horas = $this->resolverNumero($d['horas'], 'horas', 0.01);
+
+        $documento = removeAccents(Str::upper($d['documento']));
+        $alumno = Alumno::where('numero_documento', $documento)->first();
+        if (!$alumno) {
+            throw new \InvalidArgumentException('No existe el alumno con documento ' . $documento . '. Cargalo primero en Alumnos.');
+        }
+
+        $carrera = ($d['carrera'] ?? '') !== '' ? $this->resolverCarrera($d['carrera'], '') : null;
+
+        $extension = $this->buscarActividad($nombre, $fecha);
+        if (!$extension) {
+            $tipo = TipoExtensionUniversitaria::find($this->buscarPorNombre('tipos_extension', TipoExtensionUniversitaria::where('estado', 'AC')->get(), ($d['tipo_actividad'] ?? '') ?: self::TIPO_POR_DEFECTO, 'Tipo de actividad'));
+
+            $estado = Str::upper($d['estado'] ?? '');
+            if ($estado === '') {
+                $estado = $fecha <= now()->toDateString() ? 'FI' : 'AP';
+            }
+            if (!in_array($estado, ['FI', 'AP', 'PE', 'IN', 'CO'], true)) {
+                throw new \InvalidArgumentException('El estado "' . $estado . '" no es válido (FI, AP, PE, IN o CO).');
+            }
+
+            $extension = new ExtensionUniversitaria();
+            $extension->nombre = $nombre;
+            $extension->tipo_extension_id = $tipo->id;
+            $extension->problematica = $tipo->linea_numero ?: null;
+            $extension->cantidad_horas = $horas;
+            if (($d['responsable'] ?? '') !== '') {
+                $docente = \App\Models\Docente::where('numero_documento', removeAccents(Str::upper($d['responsable'])))->first();
+                if (!$docente) {
+                    throw new \InvalidArgumentException('No existe el docente responsable con documento ' . $d['responsable'] . '.');
+                }
+                $extension->docente_id = $docente->id;
+            }
+            if (($d['presupuesto'] ?? '') !== '') {
+                $extension->presupuesto = $this->resolverNumero($d['presupuesto'], 'presupuesto', 0);
+            }
+            if (($d['beneficiados'] ?? '') !== '') {
+                $extension->cantidad_beneficiados = (int) $this->resolverNumero($d['beneficiados'], 'beneficiados', 0);
+            }
+            $extension->fecha_inicio = $fecha;
+            $extension->fecha_fin = $fecha;
+            $extension->ubicacion_proyecto = 'importado-sin-archivo';
+            $extension->extension_proyecto = '';
+            $extension->tiene_certificado = false;
+            $extension->estado = $estado;
+            $extension->cargado_por_id = Auth::id();
+            $extension->save();
+        } elseif ($horas > (float) $extension->cantidad_horas) {
+            // Cada alumno puede tener horas distintas: la actividad guarda la mayor.
+            $extension->cantidad_horas = $horas;
+            $extension->actualizado_por_id = Auth::id();
+            $extension->save();
+        }
+
+        $cs = $this->resolverCarreraSemestreAlumno($alumno->id, $extension->fecha_inicio);
+
+        $detalle = ExtensionUniversitariaDetalle::where('extension_universitaria_id', $extension->id)->where('alumno_id', $alumno->id)->first();
+        $existia = (bool) $detalle;
+        if (!$detalle) {
+            $detalle = new ExtensionUniversitariaDetalle();
+            $detalle->extension_universitaria_id = $extension->id;
+            $detalle->alumno_id = $alumno->id;
+        }
+        $detalle->carrera_id = optional($carrera)->id ?: $cs['carrera_id'];
+        $detalle->semestre_id = $cs['semestre_id'];
+        $detalle->estado = 'AC';
+        $detalle->cantidad_horas = $horas;
+        $detalle->revisado_por_id = Auth::id();
+        $detalle->fecha_revision = now();
+        $detalle->save();
+
+        return $existia ? 'actualizado' : 'creado';
+    }
+
+    /** Actividad con la misma fecha y el mismo nombre (sin tildes, signos ni diferencias de espacios). */
+    private function buscarActividad(string $nombre, string $fecha): ?ExtensionUniversitaria
+    {
+        $clave = fn (string $t) => preg_replace('/[^A-Z0-9]/', '', removeAccents(Str::upper($t)));
+        $buscada = $clave($nombre);
+
+        return ExtensionUniversitaria::whereDate('fecha_inicio', $fecha)->get()->first(fn ($e) => $clave($e->nombre) === $buscada);
+    }
+
+    private function resolverFechaActividad(string $valor): string
+    {
+        foreach (['d/m/Y', 'd-m-Y', 'Y-m-d', 'Y/m/d'] as $formato) {
+            try {
+                $fecha = Carbon::createFromFormat('!' . $formato, $valor);
+                if ($fecha && $fecha->format($formato) === $valor && $fecha->year >= 2000 && $fecha->lte(now()->addYears(2))) {
+                    return $fecha->format('Y-m-d');
+                }
+            } catch (\Exception $e) {
+                // probar el siguiente formato
+            }
+        }
+        throw new \InvalidArgumentException('La fecha "' . $valor . '" no es válida (usá dd/mm/aaaa, entre 2000 y dentro de 2 años).');
+    }
+
+    private function resolverNumero(string $valor, string $etiqueta, float $minimo): float
+    {
+        $limpio = trim($valor);
+        if (str_contains($limpio, ',')) {
+            // formato "1.234,56": los puntos son miles y la coma es el decimal
+            $limpio = str_replace(',', '.', str_replace('.', '', $limpio));
+        }
+        if (!is_numeric($limpio) || (float) $limpio < $minimo) {
+            throw new \InvalidArgumentException('El valor de ' . $etiqueta . ' ("' . $valor . '") no es válido.');
+        }
+        return (float) $limpio;
     }
 
     // ----------------------------------------------------------------- docentes
@@ -472,9 +656,19 @@ class ImportacionMasivaController extends Controller
         return [$cabecera, $filas];
     }
 
+    private function columnasDe($tipo): array
+    {
+        return match ($tipo) {
+            'alumnos' => self::COLUMNAS_ALUMNO,
+            'extensiones' => self::COLUMNAS_EXTENSION,
+            default => self::COLUMNAS_DOCENTE,
+        };
+    }
+
     private function autorizarTipo($tipo): void
     {
-        abort_unless(in_array($tipo, ['alumnos', 'docentes'], true), 404);
-        abort_unless(Auth::user()->can($tipo === 'alumnos' ? 'crear_alumnos' : 'crear_docentes'), 403);
+        $permisos = ['alumnos' => 'crear_alumnos', 'docentes' => 'crear_docentes', 'extensiones' => 'crear_extensiones_universitarias'];
+        abort_unless(isset($permisos[$tipo]), 404);
+        abort_unless(Auth::user()->can($permisos[$tipo]), 403);
     }
 }
