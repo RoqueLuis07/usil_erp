@@ -803,13 +803,27 @@ class PantallaDocenteController extends Controller
     {
         $this->authorize('ver_extensiones_docentes_pantalla');
 
-        try {
-            $extension = ExtensionUniversitaria::with('extensionUniversitariaDetalles')->findOrFail($id);
-            $docente = Docente::findOrFail($extension->docente_id);
-            return view('pantallas_docentes/extensiones/show')->with(compact('extension', 'docente'));
-        } catch (\Exception $e) {
-            return redirect()->route('pantallas_docentes.extensiones_universitarias', Auth::id())->with('error-message', $e->getMessage());
+        $extension = ExtensionUniversitaria::with('extensionUniversitariaDetalles.alumno')->find($id);
+        if (!$extension) {
+            return redirect()->route('pantallas_docentes.extensiones_universitarias', Auth::id())->with('error-message', 'La actividad no existe.');
         }
+
+        // Cada docente ve y gestiona sus propias actividades; Extensión, cualquiera.
+        $docente = Docente::where('usuario_id', Auth::id())->first();
+        $es_admin = Auth::user()->hasAnyRole(['ADMINISTRADOR_EXTENSION', 'SUPERADMIN']);
+        $es_propietario = $docente && $extension->docente_id === $docente->id;
+        if (!$es_admin && !$es_propietario) {
+            abort(403);
+        }
+        if (!$docente) {
+            // Administrador sin ficha de docente: usa la pantalla de Extensión.
+            return redirect()->route('extensiones_universitarias.show', $extension->id);
+        }
+
+        $puede_gestionar_alumnos = Auth::user()->can('gestionar_postulaciones_extensiones_universitarias');
+        $alumnos_disponibles = $puede_gestionar_alumnos ? $extension->alumnosDisponibles() : collect();
+
+        return view('pantallas_docentes/extensiones/show')->with(compact('extension', 'docente', 'puede_gestionar_alumnos', 'alumnos_disponibles'));
     }
 
     public function encuestas($id)

@@ -80,7 +80,9 @@ class ExtensionUniversitariaController extends Controller
 
         try {
             $extension = ExtensionUniversitaria::with(['extensionUniversitariaDetalles.alumno', 'carreras'])->findOrFail($id);
-            return view('extensiones_universitarias/show')->with(compact('extension'));
+            $puede_gestionar_alumnos = Auth::user()->can('gestionar_postulaciones_extensiones_universitarias') && $this->puedeGestionarPostulacionesDe($extension);
+            $alumnos_disponibles = $puede_gestionar_alumnos ? $extension->alumnosDisponibles() : collect();
+            return view('extensiones_universitarias/show')->with(compact('extension', 'puede_gestionar_alumnos', 'alumnos_disponibles'));
         } catch (\Exception $e) {
             return redirect()->route('extensiones_universitarias.index')->with('error-message', $e->getMessage());
         }
@@ -206,6 +208,8 @@ class ExtensionUniversitariaController extends Controller
                 // Asignado directamente por el docente/admin al cargar el proyecto,
                 // no pasa por el flujo de postulación del alumno.
                 $extension_detalle->estado = 'AC';
+                // Las horas de la actividad se asignan solas; se ajustan después si hace falta.
+                $extension_detalle->cantidad_horas = $extension->cantidad_horas;
                 $extension_detalle->revisado_por_id = Auth::id();
                 $extension_detalle->fecha_revision = now();
                 $extension_detalle->save();
@@ -275,6 +279,7 @@ class ExtensionUniversitariaController extends Controller
 
         try {
             $extension = ExtensionUniversitaria::findOrFail($id);
+            $horas_anteriores = (float) $extension->cantidad_horas;
             $extension->nombre = removeAccents(Str::upper($request->nombre_proyecto));
             $extension->tipo_extension_id = $request->tipo_extension;
             $extension->cantidad_horas = $request->cantidad_horas_proyecto;
@@ -286,6 +291,17 @@ class ExtensionUniversitariaController extends Controller
             $extension->tiene_certificado = filter_var($request->tiene_certificado, FILTER_VALIDATE_BOOLEAN);
             $extension->actualizado_por_id = Auth::id();
             $extension->save();
+
+            // Los alumnos aceptados sin horas propias (o con las del proyecto anterior) siguen las nuevas.
+            $horas_nuevas = (float) $extension->cantidad_horas;
+            if ($horas_nuevas !== $horas_anteriores) {
+                ExtensionUniversitariaDetalle::where('extension_universitaria_id', $extension->id)
+                    ->where('estado', 'AC')
+                    ->where(function ($query) use ($horas_anteriores) {
+                        $query->whereNull('cantidad_horas')->orWhere('cantidad_horas', $horas_anteriores);
+                    })
+                    ->update(['cantidad_horas' => $horas_nuevas]);
+            }
 
             // El listado de alumnos ya NO se edita acá: se maneja por el flujo
             // de postulación (el alumno se postula, el encargado docente o el
@@ -320,6 +336,136 @@ class ExtensionUniversitariaController extends Controller
         $extension->encuesta_satisfaccion = $request->filled('encuesta_satisfaccion')
             ? filter_var($request->encuesta_satisfaccion, FILTER_VALIDATE_BOOLEAN)
             : null;
+    }
+
+    /**
+     * Suma un alumno a la actividad (alta directa, ya aceptado) con las horas de
+     * la actividad. Lo usan Extensión y el docente responsable del proyecto.
+     */
+    public function agregar_alumno(Request $request, $id)
+    {
+        $this->authorize('gestionar_postulaciones_extensiones_universitarias');
+
+        $request->validate([
+            'alumno' => ['required', 'numeric', 'exists:alumnos,id'],
+        ], [
+            'alumno.required' => 'Elegí el alumno que querés agregar.',
+            'alumno.exists' => 'El alumno elegido no existe.',
+        ]);
+
+        $extension = ExtensionUniversitaria::findOrFail($id);
+        if (!$this->puedeGestionarPostulacionesDe($extension)) {
+            abort(403);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $alumno = Alumno::findOrFail($request->alumno);
+            $nombre = $alumno->primer_nombre . ' ' . $alumno->primer_apellido;
+
+            if (!$alumno->tieneDatosParaExtension()) {
+                throw new \Exception('Faltan cargar la carrera y el año de ingreso de ' . $nombre . ' en Alumnos antes de agregarlo.');
+            }
+
+            if ($extension->cupo_maximo) {
+                $aceptados = ExtensionUniversitariaDetalle::where('extension_universitaria_id', $extension->id)->where('estado', 'AC')->count();
+                if ($aceptados >= $extension->cupo_maximo) {
+                    throw new \Exception('No quedan cupos disponibles en este proyecto.');
+                }
+            }
+
+            $detalle = ExtensionUniversitariaDetalle::where('extension_universitaria_id', $extension->id)
+                ->where('alumno_id', $alumno->id)
+                ->first();
+            if ($detalle && $detalle->estado === 'AC') {
+                throw new \Exception($nombre . ' ya participa de esta actividad.');
+            }
+
+            $carrera_semestre = $this->resolverCarreraSemestreAlumno($alumno->id, $extension->fecha_inicio);
+
+            $detalle = $detalle ?: new ExtensionUniversitariaDetalle();
+            $detalle->extension_universitaria_id = $extension->id;
+            $detalle->alumno_id = $alumno->id;
+            $detalle->carrera_id = $carrera_semestre['carrera_id'];
+            $detalle->semestre_id = $carrera_semestre['semestre_id'];
+            $detalle->estado = 'AC';
+            $detalle->cantidad_horas = $extension->cantidad_horas;
+            $detalle->revisado_por_id = Auth::id();
+            $detalle->fecha_revision = now();
+            $detalle->motivo_rechazo = null;
+            $detalle->save();
+
+            $this->ajustarAcumuladoAlumno($extension, $detalle, 1);
+
+            DB::commit();
+
+            return redirect()->back()->with('success-message', 'Se agregó a ' . $nombre . ' a la actividad con ' . number_format($extension->cantidad_horas, 2, ',', '.') . ' horas.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error-message', $e->getMessage());
+        }
+    }
+
+    /** Quita a un alumno de la actividad (elimina su participación y las horas asignadas). */
+    public function quitar_alumno($id)
+    {
+        $this->authorize('gestionar_postulaciones_extensiones_universitarias');
+
+        $detalle = ExtensionUniversitariaDetalle::with(['extensionUniversitaria', 'alumno'])->findOrFail($id);
+        $extension = $detalle->extensionUniversitaria;
+        if (!$this->puedeGestionarPostulacionesDe($extension)) {
+            abort(403);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $nombre = $detalle->alumno->primer_nombre . ' ' . $detalle->alumno->primer_apellido;
+
+            if ($detalle->estado === 'AC') {
+                $this->ajustarAcumuladoAlumno($extension, $detalle, -1);
+            }
+            $detalle->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success-message', 'Se quitó a ' . $nombre . ' de la actividad.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error-message', $e->getMessage());
+        }
+    }
+
+    /**
+     * Mantiene al día el acumulado por tipo (alumnos_extensiones) cuando se suma o
+     * quita un participante de una actividad ya finalizada: finish() lo carga una
+     * sola vez al finalizar, así que sin esto quedaría desfasado.
+     */
+    private function ajustarAcumuladoAlumno(ExtensionUniversitaria $extension, ExtensionUniversitariaDetalle $detalle, int $signo): void
+    {
+        if ($extension->estado !== 'FI') {
+            return;
+        }
+
+        $acumulado = AlumnoExtension::where('alumno_id', $detalle->alumno_id)
+            ->where('tipo_extension_id', $extension->tipo_extension_id)
+            ->first();
+
+        if (!$acumulado) {
+            if ($signo < 0) {
+                return;
+            }
+            $acumulado = new AlumnoExtension();
+            $acumulado->alumno_id = $detalle->alumno_id;
+            $acumulado->tipo_extension_id = $extension->tipo_extension_id;
+            $acumulado->cantidad_actividades = 0;
+            $acumulado->cantidad_horas = 0;
+        }
+
+        $acumulado->cantidad_actividades = max(0, $acumulado->cantidad_actividades + $signo);
+        $acumulado->cantidad_horas = max(0, $acumulado->cantidad_horas + ($signo * (float) $detalle->cantidad_horas));
+        $acumulado->save();
     }
 
     public function edit_hours($id)
@@ -511,6 +657,9 @@ class ExtensionUniversitariaController extends Controller
             }
 
             $detalle->estado = 'AC';
+            if (!$detalle->cantidad_horas) {
+                $detalle->cantidad_horas = $detalle->extensionUniversitaria->cantidad_horas;
+            }
             $detalle->revisado_por_id = Auth::id();
             $detalle->fecha_revision = now();
             $detalle->motivo_rechazo = null;

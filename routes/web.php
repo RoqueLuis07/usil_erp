@@ -486,6 +486,8 @@ Auth::routes();
             Route::post('extensiones_universitarias/desaprobar/{id}', 'ExtensionUniversitariaController@unapprove')->name('extensiones_universitarias.unapprove');
             Route::post('extensiones_universitarias/postulaciones/aprobar/{id}', 'ExtensionUniversitariaController@aprobar_postulacion')->name('extensiones_universitarias.aprobar_postulacion');
             Route::post('extensiones_universitarias/postulaciones/rechazar/{id}', 'ExtensionUniversitariaController@rechazar_postulacion')->name('extensiones_universitarias.rechazar_postulacion');
+            Route::post('extensiones_universitarias/{id}/agregar_alumno', 'ExtensionUniversitariaController@agregar_alumno')->name('extensiones_universitarias.agregar_alumno');
+            Route::delete('extensiones_universitarias/quitar_alumno/{id}', 'ExtensionUniversitariaController@quitar_alumno')->name('extensiones_universitarias.quitar_alumno');
             Route::post('extensiones_universitarias/finalizar/{id}', 'ExtensionUniversitariaController@finish')->name('extensiones_universitarias.finish');
             Route::get('extensiones_universitarias/cargar_informe/{id}', 'ExtensionUniversitariaController@cargar_informe')->name('extensiones_universitarias.cargar_informe');
             Route::post('extensiones_universitarias/cargar_informe/{id}', 'ExtensionUniversitariaController@cargar_informe');

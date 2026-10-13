@@ -79,6 +79,18 @@ class ExtensionUniversitaria extends Model implements Auditable
         return self::PROBLEMATICAS[$this->problematica] ?? null;
     }
 
+    /** Alumnos activos que todavía no participan (ni están postulados) en esta actividad. */
+    public function alumnosDisponibles()
+    {
+        $participan = $this->ExtensionUniversitariaDetalles()->whereIn('estado', ['AC', 'PE'])->pluck('alumno_id');
+
+        return Alumno::where('estado', 'AC')
+            ->whereNotIn('id', $participan)
+            ->orderBy('primer_nombre')
+            ->orderBy('primer_apellido')
+            ->get();
+    }
+
     public function estaAbiertaParaPostulacion(): bool
     {
         if ($this->estado !== 'AP') {

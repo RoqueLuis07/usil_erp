@@ -3,6 +3,7 @@
     @section('title') Ver Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
     @endsection
     @section('content')
         @component('components.breadcrumb')
@@ -193,6 +194,9 @@
                                     @endcan
                                 </div>
                                 <div class="card-body">
+                                    @if ($puede_gestionar_alumnos)
+                                        @include('extensiones_universitarias.partials.agregar-alumno')
+                                    @endif
                                     @foreach ($extension->extensionUniversitariaDetalles as $key =>$detalle)
                                         <div class="mb-2 fila" id="fila-{{$key}}">
                                             <div class="row d-flex justify-content-center">
@@ -254,6 +258,9 @@
                                                         </div>
                                                     @endif
                                                 @endcan
+                                                @if ($puede_gestionar_alumnos)
+                                                    @include('extensiones_universitarias.partials.quitar-alumno')
+                                                @endif
                                             </div>
                                         </div>
                                     @endforeach
@@ -287,6 +294,8 @@
     @section('script')
         <script src="{{ URL::asset('build/js/app.js') }}"></script>
         <script src="{{ URL::asset('build/libs/sweetalert2/sweetalert2.all.min.js') }}"></script>
+        <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
+        @include('extensiones_universitarias.partials.alumnos-scripts')
         @include('extensiones_universitarias.scripts.show-scripts')
     @endsection
 @endcan
