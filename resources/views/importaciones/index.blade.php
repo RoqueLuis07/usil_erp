@@ -49,6 +49,41 @@
         </div>
     @endif
 
+    @if ($reversion)
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    {{ $reversion['modo'] === 'simular' ? 'Simulación de reversión (no se deshizo nada)' : 'Reversión realizada' }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col"><div class="fs-4 fw-bold text-danger">{{ $reversion['eliminados'] }}</div><div class="text-muted">{{ $reversion['modo'] === 'simular' ? 'Se eliminarían' : 'Eliminados' }}</div></div>
+                    <div class="col"><div class="fs-4 fw-bold text-info">{{ $reversion['restaurados'] }}</div><div class="text-muted">{{ $reversion['modo'] === 'simular' ? 'Se restaurarían' : 'Restaurados' }}</div></div>
+                    <div class="col"><div class="fs-4 fw-bold">{{ $reversion['ya_no_existian'] }}</div><div class="text-muted">Ya no existían</div></div>
+                    <div class="col"><div class="fs-4 fw-bold text-warning">{{ count($reversion['no_revertidos']) }}</div><div class="text-muted">No se pueden deshacer</div></div>
+                </div>
+                @if (count($reversion['no_revertidos']))
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead><tr><th style="width:240px">Registro</th><th>Motivo</th></tr></thead>
+                            <tbody>
+                                @foreach (array_slice($reversion['no_revertidos'], 0, 100) as $fila)
+                                    <tr><td>{{ $fila['registro'] }}</td><td>{{ $fila['motivo'] }}</td></tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (count($reversion['no_revertidos']) > 100)
+                        <p class="text-muted mt-2 mb-0" style="font-size: 12px">Se muestran los primeros 100.</p>
+                    @endif
+                @else
+                    <div class="alert alert-success mb-0">Todo se puede deshacer sin conflictos.</div>
+                @endif
+            </div>
+        </div>
+    @endif
+
     <div class="row">
         @php
             $bloques = [
@@ -69,8 +104,12 @@
                             <p class="text-muted" style="font-size: 13px">{{ $ayuda }}</p>
                             <form action="{{ route('importaciones.procesar', $tipo) }}" method="post" enctype="multipart/form-data">
                                 @csrf
-                                <label class="form-label" for="archivo-{{ $tipo }}">Archivo CSV</label>
-                                <input type="file" class="form-control mb-3" id="archivo-{{ $tipo }}" name="archivo" accept=".csv,text/csv" required>
+                                <label class="form-label" for="archivo-{{ $tipo }}">Archivo Excel (.xlsx) o CSV</label>
+                                <input type="file" class="form-control mb-2" id="archivo-{{ $tipo }}" name="archivo" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <label class="form-label mb-0" for="parte-{{ $tipo }}" style="font-size: 12.5px">Parte (hoja "{{ ["alumnos" => "Alumnos", "docentes" => "Docentes", "extensiones" => "Actividades"][$tipo] }} N", solo Excel)</label>
+                                    <input type="number" class="form-control" id="parte-{{ $tipo }}" name="parte" value="1" min="1" max="50" style="width: 80px">
+                                </div>
                                 <div class="d-flex gap-2">
                                     <button type="submit" name="modo" value="validar" class="btn btn-warning">Solo validar</button>
                                     <button type="submit" name="modo" value="importar" class="btn btn-success">Importar</button>
@@ -82,6 +121,49 @@
             @endcan
         @endforeach
     </div>
+
+    @can('revertir_importaciones')
+        <div class="card">
+            <div class="card-header"><h4 class="card-title mb-0">Historial de importaciones y reversión</h4></div>
+            <div class="card-body">
+                <p class="text-muted" style="font-size: 13px">Cada "Importar" queda registrado. Primero usá <b>Ver qué se deshace</b> (no cambia nada) y recién después <b>Revertir</b>: lo que la carga creó se elimina y lo que cambió vuelve a como estaba. Se revierte de la más reciente a la más antigua; si un registro ya lo usan datos posteriores, queda y se informa.</p>
+                @if (count($lotes))
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0" style="font-size: 12.5px">
+                            <thead><tr><th>Fecha</th><th>Usuario</th><th>Tipo</th><th class="text-center">Creados</th><th class="text-center">Cambiados</th><th>Detalle</th><th style="width:230px">Acciones</th></tr></thead>
+                            <tbody>
+                                @foreach ($lotes as $lote)
+                                    <tr>
+                                        <td>{{ $lote['inicio']->format('d/m/Y H:i') }}</td>
+                                        <td>{{ $usuariosLotes[$lote['user_id']] ?? '—' }}</td>
+                                        <td>{{ ['alumnos' => 'Alumnos', 'docentes' => 'Docentes', 'extensiones' => 'Actividades'][$lote['tipo']] }}</td>
+                                        <td class="text-center">{{ $lote['creados'] }}</td>
+                                        <td class="text-center">{{ $lote['actualizados'] }}</td>
+                                        <td>
+                                            @foreach ($lote['modelos'] as $modelo => $eventos)
+                                                <div>{{ \Illuminate\Support\Str::headline($modelo) }}: {{ $eventos['created'] ?? 0 }} nuevos, {{ $eventos['updated'] ?? 0 }} cambiados</div>
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            <form action="{{ route('importaciones.revertir') }}" method="post" class="d-flex gap-1 form-revertir" data-fecha="{{ $lote['inicio']->format('d/m/Y H:i') }}">
+                                                @csrf
+                                                <input type="hidden" name="desde" value="{{ $lote['desde'] }}">
+                                                <input type="hidden" name="hasta" value="{{ $lote['hasta'] }}">
+                                                <button type="submit" name="modo" value="simular" class="btn btn-sm btn-warning">Ver qué se deshace</button>
+                                                <button type="submit" name="modo" value="revertir" class="btn btn-sm btn-danger">Revertir</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <span class="text-muted">Todavía no hay importaciones registradas, o ya se revirtieron todas.</span>
+                @endif
+            </div>
+        </div>
+    @endcan
 
     <div class="card">
         <div class="card-header"><h4 class="card-title mb-0">Valores válidos para la plantilla</h4></div>
@@ -117,4 +199,32 @@
 @section('script')
     <script src="{{ URL::asset('build/js/app.js') }}"></script>
     <script src="{{ URL::asset('build/libs/sweetalert2/sweetalert2.all.min.js') }}"></script>
+    <script>
+        // Confirmación antes de revertir de verdad (la simulación no la necesita).
+        document.querySelectorAll('.form-revertir').forEach(function (formulario) {
+            formulario.addEventListener('submit', function (evento) {
+                if (evento.submitter && evento.submitter.value === 'revertir' && !formulario.dataset.confirmado) {
+                    evento.preventDefault();
+                    Swal.fire({
+                        title: '¿Revertir la importación del ' + formulario.dataset.fecha + '?',
+                        text: 'Se eliminará lo que esa carga creó y se restaurará lo que cambió. Conviene haber visto antes "Ver qué se deshace".',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, revertir',
+                        cancelButtonText: 'Cancelar',
+                        customClass: {confirmButton: 'btn btn-danger me-2', cancelButton: 'btn btn-light'},
+                        buttonsStyling: false,
+                    }).then(function (resultado) {
+                        if (resultado.isConfirmed) {
+                            formulario.dataset.confirmado = '1';
+                            var oculto = document.createElement('input');
+                            oculto.type = 'hidden'; oculto.name = 'modo'; oculto.value = 'revertir';
+                            formulario.appendChild(oculto);
+                            formulario.submit();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endsection

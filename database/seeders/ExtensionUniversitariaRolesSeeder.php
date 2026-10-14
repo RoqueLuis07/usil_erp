@@ -146,6 +146,8 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
             // Auditoría: solo lectura del historial de cambios, no habilita
             // ninguna acción nueva, así que no es un riesgo de escalamiento.
             'ver_auditoria',
+            // Quien carga datos masivamente puede deshacer su propia carga desde el historial.
+            'revertir_importaciones',
         ]);
 
         // Usuarios de prueba, uno por rol, con su registro académico

@@ -26,6 +26,7 @@ use App\Models\Sexo;
 use App\Models\TipoExtensionUniversitaria;
 use App\Models\User;
 use App\Traits\ResuelveCarreraSemestreAlumno;
+use OwenIt\Auditing\Models\Audit;
 
 /**
  * Carga masiva de alumnos, docentes y actividades de extensión (con sus
@@ -80,6 +81,9 @@ class ImportacionMasivaController extends Controller
             'nacionalidades' => Nacionalidad::orderBy('nombre')->get(),
             'tipos' => TipoExtensionUniversitaria::where('estado', 'AC')->orderBy('nombre')->get(),
             'resultado' => session('resultado'),
+            'reversion' => session('reversion'),
+            'lotes' => Auth::user()->can('revertir_importaciones') ? $this->lotesImportacion() : [],
+            'usuariosLotes' => User::pluck('name', 'id'),
         ]);
     }
 
@@ -108,18 +112,22 @@ class ImportacionMasivaController extends Controller
         $this->autorizarTipo($tipo);
 
         $request->validate([
-            'archivo' => ['required', 'file', 'max:5120', 'mimes:csv,txt'],
+            'archivo' => ['required', 'file', 'max:5120', 'mimes:csv,txt,xlsx'],
+            'parte' => ['nullable', 'integer', 'min:1', 'max:50'],
             'modo' => ['required', 'in:validar,importar'],
         ], [
             'archivo.required' => 'Elegí un archivo CSV.',
-            'archivo.mimes' => 'El archivo tiene que ser CSV (en Excel: Guardar como > CSV UTF-8).',
+            'archivo.mimes' => 'El archivo tiene que ser Excel (.xlsx) o CSV (en Excel: Guardar como > CSV UTF-8).',
         ]);
 
         $persistir = $request->modo === 'importar';
         $columnasEsperadas = $this->columnasDe($tipo);
 
         try {
-            [$cabecera, $filas] = $this->leerCsv($request->file('archivo'));
+            $archivo = $request->file('archivo');
+            [$cabecera, $filas] = Str::lower($archivo->getClientOriginalExtension()) === 'xlsx'
+                ? $this->leerXlsx($archivo, $tipo, (int) ($request->parte ?: 1))
+                : $this->leerCsv($archivo);
         } catch (\RuntimeException $e) {
             return back()->with('error-message', $e->getMessage());
         }
@@ -164,6 +172,150 @@ class ImportacionMasivaController extends Controller
         }
 
         return redirect()->route('importaciones.index')->with('resultado', $resultado);
+    }
+
+    // -------------------------------------------------------- historial y reversión
+
+    /**
+     * Cada importación deja su rastro en la auditoría (alta y cambio de cada registro, con la URL de la
+     * carga). Un "lote" es una tanda continua de esos registros del mismo usuario y tipo. Las validaciones
+     * ("Solo validar") no aparecen porque se deshacen y no auditan nada.
+     */
+    private function lotesImportacion(): array
+    {
+        $filas = Audit::query()
+            ->where('url', 'like', '%/importaciones/%')
+            ->where('url', 'not like', '%/importaciones/revertir%')
+            ->whereIn('event', ['created', 'updated'])
+            ->where(function ($consulta) {
+                $consulta->whereNull('tags')->orWhere('tags', '!=', 'revertido');
+            })
+            ->orderBy('id')
+            ->get(['id', 'user_id', 'url', 'event', 'auditable_type', 'created_at']);
+
+        $lotes = [];
+        $actual = null;
+        foreach ($filas as $fila) {
+            if (!preg_match('#/importaciones/(alumnos|docentes|extensiones)#', $fila->url, $m)) {
+                continue;
+            }
+            $tipo = $m[1];
+            $nuevo = !$actual
+                || $actual['user_id'] !== $fila->user_id
+                || $actual['tipo'] !== $tipo
+                || $fila->created_at->diffInMinutes($actual['fin']) > 20;
+            if ($nuevo) {
+                if ($actual) {
+                    $lotes[] = $actual;
+                }
+                $actual = ['desde' => $fila->id, 'hasta' => $fila->id, 'user_id' => $fila->user_id, 'tipo' => $tipo,
+                    'inicio' => $fila->created_at, 'fin' => $fila->created_at, 'creados' => 0, 'actualizados' => 0, 'modelos' => []];
+            }
+            $actual['hasta'] = $fila->id;
+            $actual['fin'] = $fila->created_at;
+            $fila->event === 'created' ? $actual['creados']++ : $actual['actualizados']++;
+            $modelo = class_basename($fila->auditable_type);
+            $actual['modelos'][$modelo][$fila->event] = ($actual['modelos'][$modelo][$fila->event] ?? 0) + 1;
+        }
+        if ($actual) {
+            $lotes[] = $actual;
+        }
+
+        return array_reverse($lotes); // los más recientes primero
+    }
+
+    /**
+     * Deshace un lote: lo que la importación creó se elimina y lo que modificó vuelve a su valor anterior
+     * (de más nuevo a más viejo, para respetar las dependencias). "Simular" hace lo mismo y lo cancela.
+     * Un registro que otros datos posteriores ya usan no se puede eliminar: queda y se informa.
+     */
+    public function revertir(Request $request)
+    {
+        abort_unless(Auth::user()->can('revertir_importaciones'), 403);
+        set_time_limit(0);
+
+        $request->validate([
+            'desde' => ['required', 'integer'],
+            'hasta' => ['required', 'integer'],
+            'modo' => ['required', 'in:simular,revertir'],
+        ]);
+
+        $lote = collect($this->lotesImportacion())->first(fn ($l) => $l['desde'] == $request->desde && $l['hasta'] == $request->hasta);
+        if (!$lote) {
+            return back()->with('error-message', 'Ese lote ya no existe (puede que ya se haya revertido).');
+        }
+
+        $auditorias = Audit::where('user_id', $lote['user_id'])
+            ->where('url', 'like', '%/importaciones/' . $lote['tipo'] . '%')
+            ->whereBetween('id', [$lote['desde'], $lote['hasta']])
+            ->whereIn('event', ['created', 'updated'])
+            ->orderByDesc('id')
+            ->get();
+
+        $resultado = ['modo' => $request->modo, 'tipo' => $lote['tipo'], 'eliminados' => 0, 'restaurados' => 0, 'ya_no_existian' => 0, 'no_revertidos' => []];
+        $procesadas = [];
+
+        DB::beginTransaction();
+        try {
+            foreach ($auditorias as $auditoria) {
+                DB::beginTransaction();
+                try {
+                    $clase = $auditoria->auditable_type;
+                    $modelo = class_exists($clase) ? $clase::find($auditoria->auditable_id) : null;
+                    if (!$modelo) {
+                        $resultado['ya_no_existian']++;
+                    } elseif ($auditoria->event === 'created') {
+                        $this->eliminarCreado($modelo);
+                        $resultado['eliminados']++;
+                    } else {
+                        $antes = $auditoria->old_values ?? [];
+                        unset($antes['id'], $antes['created_at'], $antes['updated_at']);
+                        if ($antes) {
+                            $modelo->forceFill($antes)->save();
+                        }
+                        $resultado['restaurados']++;
+                    }
+                    DB::commit();
+                    $procesadas[] = $auditoria->id;
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    $resultado['no_revertidos'][] = [
+                        'registro' => class_basename($auditoria->auditable_type) . ' #' . $auditoria->auditable_id,
+                        'motivo' => 'Tiene datos posteriores que lo usan o no se pudo deshacer.',
+                    ];
+                }
+            }
+            if ($request->modo === 'revertir') {
+                // El rastro de la carga no se borra: se marca para que el lote deje de aparecer en la lista.
+                if ($procesadas) {
+                    Audit::whereIn('id', $procesadas)->update(['tags' => 'revertido']);
+                }
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error-message', $e->getMessage());
+        }
+
+        return redirect()->route('importaciones.index')->with('reversion', $resultado);
+    }
+
+    /** Elimina un registro creado por una importación, limpiando antes lo que cuelga de él sin modelo propio. */
+    private function eliminarCreado($modelo): void
+    {
+        if ($modelo instanceof User) {
+            DB::table('configuraciones')->where('user_id', $modelo->id)->delete();
+            $modelo->syncRoles([]);
+        }
+        if ($modelo instanceof Alumno || $modelo instanceof Docente) {
+            $modelo->nacionalidades()->detach();
+        }
+        if ($modelo instanceof Docente) {
+            $modelo->Carreras()->detach();
+        }
+        $modelo->delete();
     }
 
     // ------------------------------------------------------------------ alumnos
@@ -628,6 +780,172 @@ class ImportacionMasivaController extends Controller
     private function esSi(string $valor): bool
     {
         return in_array($this->normalizar($valor), ['SI', 'S', '1', 'TRUE', 'VERDADERO', 'YES'], true);
+    }
+
+    // -------------------------------------------------------------------- Excel (.xlsx)
+
+    /**
+     * Lee una hoja de un .xlsx sin librerías externas (un .xlsx es un zip de XML). Se busca la hoja
+     * "Alumnos N", "Docentes N" o "Actividades N" (N = parte); si el libro tiene una sola hoja se usa esa.
+     * Las fórmulas se leen por el valor que Excel dejó guardado: hay que abrir y guardar el archivo en Excel.
+     */
+    private function leerXlsx(UploadedFile $archivo, string $tipo, int $parte): array
+    {
+        $zip = new \ZipArchive();
+        if ($zip->open($archivo->getRealPath()) !== true) {
+            throw new \RuntimeException('No se pudo abrir el Excel (¿está dañado o es un .xls antiguo? Guardalo como .xlsx).');
+        }
+
+        $nsRel = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+        $libro = simplexml_load_string((string) $zip->getFromName('xl/workbook.xml'));
+        $rels = simplexml_load_string((string) $zip->getFromName('xl/_rels/workbook.xml.rels'));
+        if (!$libro || !$rels) {
+            throw new \RuntimeException('El Excel no tiene el formato esperado.');
+        }
+
+        $destinos = [];
+        foreach ($rels->Relationship as $rel) {
+            $destinos[(string) $rel['Id']] = (string) $rel['Target'];
+        }
+        $hojas = [];
+        foreach ($libro->sheets->sheet as $hoja) {
+            $destino = $destinos[(string) $hoja->attributes($nsRel)['id']] ?? null;
+            if ($destino) {
+                $hojas[(string) $hoja['name']] = str_starts_with($destino, '/') ? ltrim($destino, '/') : 'xl/' . $destino;
+            }
+        }
+        $ruta = $this->elegirHojaXlsx($hojas, $tipo, $parte);
+
+        $compartidas = [];
+        $xmlCompartidas = $zip->getFromName('xl/sharedStrings.xml');
+        if ($xmlCompartidas !== false) {
+            $ss = simplexml_load_string($xmlCompartidas);
+            foreach ($ss->si as $si) {
+                $texto = '';
+                if (isset($si->t)) {
+                    $texto = (string) $si->t;
+                } else {
+                    foreach ($si->r as $trozo) {
+                        $texto .= (string) $trozo->t;
+                    }
+                }
+                $compartidas[] = $texto;
+            }
+        }
+
+        $hojaXml = simplexml_load_string((string) $zip->getFromName($ruta));
+        if (!$hojaXml) {
+            throw new \RuntimeException('No se pudo leer la hoja del Excel.');
+        }
+
+        $filas = [];
+        foreach ($hojaXml->sheetData->row as $fila) {
+            $celdas = [];
+            foreach ($fila->c as $celda) {
+                $celdas[$this->indiceColumnaXlsx((string) $celda['r'])] = $this->valorCeldaXlsx($celda, $compartidas);
+            }
+            if ($celdas) {
+                $completa = [];
+                for ($k = 0; $k <= max(array_keys($celdas)); $k++) {
+                    $completa[$k] = $celdas[$k] ?? '';
+                }
+                if (trim(implode('', $completa)) !== '') {
+                    $filas[] = $completa;
+                }
+            }
+        }
+
+        if (count($filas) < 2) {
+            throw new \RuntimeException('La hoja no tiene filas para importar.');
+        }
+        if (count($filas) - 1 > self::MAX_FILAS) {
+            throw new \RuntimeException('La hoja supera las ' . self::MAX_FILAS . ' filas; usá una hoja más corta.');
+        }
+
+        $cabecera = array_map(fn ($c) => trim(Str::snake(str_replace(['.', '-', ' '], '_', Str::lower(removeAccents(trim($c))))), '_'), array_shift($filas));
+
+        // Las hojas de actividades toman nombre, fecha y tipo por fórmula: si nadie las calculó (el archivo no
+        // pasó por Excel) llegan vacías. Se avisa en vez de marcar todas las filas como incorrectas.
+        $posActividad = array_search('actividad', $cabecera, true);
+        if ($tipo === 'extensiones' && in_array('id_actividad', $cabecera, true) && $posActividad !== false
+            && trim(implode('', array_column($filas, $posActividad))) === '') {
+            throw new \RuntimeException('Las fórmulas del Excel no tienen valor guardado. Abrí el archivo en Excel, guardalo (Ctrl+G) y volvé a subirlo.');
+        }
+
+        // Excel guarda las fechas escritas a mano como número de serie: se pasan a dd/mm/aaaa.
+        $columnasFecha = array_keys(array_filter($cabecera, fn ($c) => in_array($c, ['fecha', 'fecha_nacimiento'], true)));
+        if ($columnasFecha) {
+            foreach ($filas as &$fila) {
+                foreach ($columnasFecha as $i) {
+                    if (isset($fila[$i]) && preg_match('/^\d{5}(\.\d+)?$/', $fila[$i])) {
+                        $fila[$i] = Carbon::create(1899, 12, 30)->addDays((int) $fila[$i])->format('d/m/Y');
+                    }
+                }
+            }
+            unset($fila);
+        }
+
+        return [$cabecera, $filas];
+    }
+
+    private function elegirHojaXlsx(array $hojas, string $tipo, int $parte): string
+    {
+        $etiqueta = ['alumnos' => 'Alumnos', 'docentes' => 'Docentes', 'extensiones' => 'Actividades'][$tipo];
+
+        foreach ($hojas as $nombre => $ruta) {
+            if ($this->normalizar($nombre) === $this->normalizar($etiqueta . ' ' . $parte)) {
+                return $ruta;
+            }
+        }
+        if ($parte === 1) {
+            foreach ($hojas as $nombre => $ruta) {
+                if ($this->normalizar($nombre) === $this->normalizar($etiqueta)) {
+                    return $ruta;
+                }
+            }
+        }
+        if (count($hojas) === 1) {
+            return array_values($hojas)[0];
+        }
+        throw new \RuntimeException('No encuentro la hoja "' . $etiqueta . ' ' . $parte . '". Hojas del archivo: ' . implode(', ', array_keys($hojas)) . '.');
+    }
+
+    private function indiceColumnaXlsx(string $referencia): int
+    {
+        preg_match('/^[A-Z]+/', $referencia, $m);
+        $n = 0;
+        foreach (str_split($m[0] ?? 'A') as $letra) {
+            $n = $n * 26 + (ord($letra) - 64);
+        }
+        return $n - 1;
+    }
+
+    private function valorCeldaXlsx(\SimpleXMLElement $celda, array $compartidas): string
+    {
+        switch ((string) $celda['t']) {
+            case 's':
+                return trim($compartidas[(int) $celda->v] ?? '');
+            case 'inlineStr':
+                $texto = isset($celda->is->t) ? (string) $celda->is->t : '';
+                if ($texto === '' && isset($celda->is->r)) {
+                    foreach ($celda->is->r as $trozo) {
+                        $texto .= (string) $trozo->t;
+                    }
+                }
+                return trim($texto);
+            case 'str':
+                return trim((string) $celda->v);
+            case 'b':
+                return (string) $celda->v === '1' ? 'SI' : 'NO';
+            case 'e':
+                return '';
+            default:
+                $valor = trim((string) $celda->v);
+                if ($valor !== '' && is_numeric($valor) && stripos($valor, 'E') !== false) {
+                    $valor = rtrim(rtrim(number_format((float) $valor, 10, '.', ''), '0'), '.');
+                }
+                return $valor;
+        }
     }
 
     // --------------------------------------------------------------------- CSV

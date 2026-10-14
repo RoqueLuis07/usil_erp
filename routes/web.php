@@ -751,6 +751,7 @@ Auth::routes();
             //Carga masiva de alumnos y docentes (CSV)
             Route::get('importaciones', 'ImportacionMasivaController@index')->name('importaciones.index');
             Route::get('importaciones/plantilla/{tipo}', 'ImportacionMasivaController@plantilla')->name('importaciones.plantilla');
+            Route::post('importaciones/revertir', 'ImportacionMasivaController@revertir')->name('importaciones.revertir');
             Route::post('importaciones/{tipo}', 'ImportacionMasivaController@procesar')->name('importaciones.procesar');
 
             //Reportes de gestión (extensiones y docentes)
