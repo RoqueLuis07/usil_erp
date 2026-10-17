@@ -793,7 +793,8 @@ class PantallaDocenteController extends Controller
             $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
             $materias = \App\Models\Materia::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
             $problematicas = \App\Models\ExtensionUniversitaria::PROBLEMATICAS;
-            return view('pantallas_docentes/extensiones/create')->with(compact('docente', 'tipos_extensiones', 'alumnos', 'carreras', 'materias', 'problematicas'));
+            $nombres_proyectos = \App\Models\ExtensionUniversitaria::select('nombre')->distinct()->orderBy('nombre')->limit(500)->pluck('nombre');
+            return view('pantallas_docentes/extensiones/create')->with(compact('docente', 'tipos_extensiones', 'alumnos', 'carreras', 'materias', 'problematicas', 'nombres_proyectos'));
         } catch (\Exception $e) {
             return redirect()->route('pantallas_docentes.extensiones_universitarias', Auth::id())->with('error-message', $e->getMessage());
         }
