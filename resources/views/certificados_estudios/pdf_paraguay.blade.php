@@ -92,7 +92,7 @@
         <p id="certificado"><b>CERTIFICADO DE ESTUDIOS</b></p>
     </div>
     <div id="primer_parrafo">
-        <p>La que suscribe, <b>{{$nombre_suscribe}}</b>, Secretaria General de la {{$empresa->nombre_fantasia}} - Paraguay,
+        <p>La que suscribe, <b>{{$nombre_suscribe}}</b>, Secretaria General de la {{ config('institucion.nombre') }} - Paraguay,
             <b>CERTIFICA</b> que según constancia obrante en Secretaria, de esta casa de estudios, {{$alumno->pronombre}}
             <b>{{$alumno->apellido_nombre}}</b> con documento de identidad número
             {{number_format($alumno->numero_documento, 0, ',', '.')}} de nacionalidad {{$alumno->nacionalidad}}; ha obtenido
@@ -172,7 +172,7 @@
                 <br>
                 <b>1:</b> Insuficiente <b>2:</b> Aceptable <b>3:</b> Bueno <b>4:</b> Muy Bueno <b>5:</b> Excelente
                 <br>
-                En la ciudad de Asunción, capital de la República del Paraguay, a los {{$fecha_hoy->day}} días del mes
+                En la ciudad de {{ config('institucion.ciudad') ?: '__________' }}, República del Paraguay, a los {{$fecha_hoy->day}} días del mes
                 de {{$fecha_hoy->locale('es')->translatedFormat('F')}} del año {{$fecha_hoy->year}}, se hace
                 constar que este
                 @if ($carrera->terminado)

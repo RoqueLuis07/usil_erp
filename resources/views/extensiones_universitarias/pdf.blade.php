@@ -32,6 +32,15 @@
         <div class="col-12 titulo mb-3">
             <p><b>Reporte de Extensiones Universitarias</b></p>
         </div>
+@php
+    $total_horas = collect($extensiones)->sum('cantidad_horas');
+    $total_cumplidas = $alumno != '' ? collect($extensiones)->sum(function ($e) use ($alumno) {
+        return $e->extensionUniversitariaDetalles->where('alumno_id', $alumno->id)->sum('cantidad_horas');
+    }) : 0;
+    $total_alumnos = collect($extensiones)->sum(function ($e) {
+        return $e->extensionUniversitariaDetalles->count();
+    });
+@endphp
         <table class="lista">
             <thead>
                 <tr>
@@ -55,7 +64,7 @@
                         <td class="text-center">{{$key + 1}}</td>
                         <td class="text-center">{{$extension->nombre}}</td>
                         <td class="text-center">{{$extension->tipoExtension->nombre}}</td>
-                        <td class="text-center">{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}}</td>
+                        <td class="text-center">{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}</td>
                         <td class="text-center">{{number_format($extension->cantidad_horas, 2, ',', '.')}}
                             @if ($extension->cantidad_horas == 1)
                                 hora
@@ -86,6 +95,19 @@
                     </tr>
                 @endforeach
             </tbody>
+            <tfoot>
+                <tr class="fw-bold">
+                    <td colspan="4" class="text-right" style="font-weight:bold;">TOTAL</td>
+                    <td class="text-center" style="font-weight:bold;">{{number_format($total_horas, 2, ',', '.')}} {{ $total_horas == 1 ? 'hora' : 'horas' }}</td>
+                    @if ($alumno != '')
+                        <td class="text-center" style="font-weight:bold;">{{number_format($total_cumplidas, 2, ',', '.')}} {{ $total_cumplidas == 1 ? 'hora' : 'horas' }}</td>
+                    @endif
+                    <td></td>
+                    @if ($alumno == '')
+                        <td class="text-center" style="font-weight:bold;">{{ $total_alumnos }} {{ $total_alumnos == 1 ? 'alumno' : 'alumnos' }}</td>
+                    @endif
+                </tr>
+            </tfoot>
         </table>
         <table class="lista">
             @php

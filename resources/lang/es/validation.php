@@ -172,9 +172,6 @@ return [
         ],
         'carrera' => [
             'unique' => 'El alumno ya se encuentra matriculado en esta combinación de semestre, programa y carrera.'
-        ],
-        'carrera_siu' => [
-            'required_if' => 'El campo carrera SIU es requerido.',
         ]
     ],
 
@@ -241,7 +238,6 @@ return [
             'legajo' => 'archivo',
 
         //Matriculaciones
-            'carrera_siu' => 'carrera SIU',
             'tipo_pago' => 'tipo de pago',
 
         //Programas
@@ -311,11 +307,6 @@ return [
             'detalles.*.alumno' => 'alumno',
             'detalles.*.cantidad_horas_alumno' => 'cantidad de horas',
 
-        //Mallas Espejo
-            'malla_paraguay' => 'malla Paraguay',
-            'malla_siu' => 'malla SIU',
-            'detalles.*.materia_paraguay' => 'materia Paraguay',
-            'detalles.*.materia_siu' => 'materia SIU',
     ],
 
     'values' => [

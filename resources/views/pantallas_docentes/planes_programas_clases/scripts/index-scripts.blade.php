@@ -5,7 +5,7 @@
             if (input.files[0].type == 'application/pdf') {
                 $('#vista-imagen').css('width', '100px');
                 $('#vista-imagen').css('height', '100px');
-                $('#vista-imagen').prop('src', '{{asset('storage/pdf.png')}}');
+                $('#vista-imagen').prop('src', '{{asset('images/placeholders/pdf.svg')}}');
             } else {
                 reader.onload = function (e) {
                     $('#vista-imagen').prop('src', e.target.result);

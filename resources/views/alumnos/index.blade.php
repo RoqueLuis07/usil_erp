@@ -1,5 +1,5 @@
 @can('ver_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Alumnos @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -52,7 +52,6 @@
                                                 <input type="hidden" id="filtro_programa_input" name="filtro_programa" value="{{$filtro_programa}}">
                                                 <input type="hidden" id="filtro_periodo_input" name="filtro_periodo" value="{{$filtro_periodo}}">
                                                 <input type="hidden" id="filtro_correo_input" name="filtro_correo" value="{{$filtro_correo}}">
-                                                <input type="hidden" id="filtro_ubs_input" name="filtro_ubs" value="{{$filtro_ubs}}">
 												<i class="ri-search-line search-icon"></i>
 												<button class="btn btn-primary py-0 d-none" type="submit">
 												</button>
@@ -117,16 +116,6 @@
                                         <button class="btn btn-sm btn-outline-danger" id="delete-correo-filter-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Filtro por Correo"><i class="ri-close-line"></i></button>
                                     </div>
                                 </div>
-                                <div class="col-lg-2">
-                                    <div class="input-group">
-                                        <select class="selectpicker form-control" id="filtro_ubs" data-live-search="true">
-                                            <option value="" selected disabled>Filtrar por UBS...</option>
-                                            <option value="GRADO" @if ($filtro_ubs == 'GRADO') selected @endif>GRADO</option>
-                                            <option value="UBS" @if ($filtro_ubs == 'UBS') selected @endif>UBS</option>
-                                        </select>
-                                        <button class="btn btn-sm btn-outline-danger" id="delete-ubs-filter-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Filtro por UBS"><i class="ri-close-line"></i></button>
-                                    </div>
-                                </div>
                             </div>
                             <div class="table-responsive table-card mt-3 mb-1">
 								<table class="table align-middle table-nowrap">
@@ -140,8 +129,9 @@
                                             <th>Ingreso</th>
                                             <th>Programa</th>
                                             <th>Periodo</th>
+                                            <th class="text-center">Horas Ext.</th>
+                                            <th class="text-center">Extensión</th>
 											<th class="text-center">Correo</th>
-											<th class="text-center">UBS</th>
                                             <th>Estado</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -153,24 +143,33 @@
                                                 <td>{{$alumno->primer_nombre}} {{$alumno->segundo_nombre}} {{$alumno->tecer_nombre}} {{$alumno->primer_apellido}} {{$alumno->segundo_apellido}}</td>
                                                 <td>{{$alumno->numero_documento}}</td>
                                                 <td>{{$alumno->celular}} @if ($alumno->telefono) - {{$alumno->telefono}} @endif</td>
-                                                <td>{{\Carbon\Carbon::createFromDate($alumno->fecha_nacimiento)->age}} años</td>
+                                                <td>{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->age . ' años' : 'Sin dato'}}</td>
                                                 <td>{{$alumno->ingreso}}</td>
                                                 <td>{{$alumno->programa}}</td>
 												<td>{{$alumno->periodo}}</td>
-												<td class="text-center">
-                                                    <span
-                                                        class="badge @if ($alumno->email_institucional)
-                                                            bg-success-subtle text-success text-uppercase">
-														<i class="ri-check-fill"></i>
-                                                        @else
-                                                            bg-danger-subtle text-danger text-uppercase">
-														<i class="ri-close-fill"></i>
-                                                        @endif
-                                                    </span>
+                                                @php $ext = $resumenes_extension[$alumno->id] ?? null; @endphp
+                                                <td class="text-center">
+                                                    @if ($ext)
+                                                        <span class="fw-semibold" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Realizadas: {{rtrim(rtrim(number_format($ext['horas_realizadas'], 2, ',', '.'), '0'), ',')}} h · Acreditadas: {{rtrim(rtrim(number_format($ext['horas_acreditadas'], 2, ',', '.'), '0'), ',')}} h @if (!is_null($ext['horas_requeridas']))· Requeridas: {{rtrim(rtrim(number_format($ext['horas_requeridas'], 2, ',', '.'), '0'), ',')}} h @endif">
+                                                            {{rtrim(rtrim(number_format($ext['horas_acreditadas'], 2, ',', '.'), '0'), ',')}}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-muted">0</span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center">
+                                                    @if ($ext && $ext['completo'] === true)
+                                                        <span class="badge bg-success-subtle text-success text-uppercase" data-bs-toggle="tooltip" data-bs-placement="top" title="Requisito de extensión cumplido"><i class="ri-check-fill"></i></span>
+                                                    @elseif ($ext && $ext['completo'] === false)
+                                                        <span class="badge bg-danger-subtle text-danger text-uppercase" data-bs-toggle="tooltip" data-bs-placement="top" title="Requisito de extensión pendiente"><i class="ri-close-fill"></i></span>
+                                                    @else
+                                                        <span class="text-muted" data-bs-toggle="tooltip" data-bs-placement="top" title="Sin requisito definido para la carrera">—</span>
+                                                    @endif
                                                 </td>
 												<td class="text-center">
                                                     <span
-                                                        class="badge @if ($alumno->ubs)
+                                                        class="badge @if ($alumno->email_institucional)
                                                             bg-success-subtle text-success text-uppercase">
 														<i class="ri-check-fill"></i>
                                                         @else
@@ -216,7 +215,6 @@
                                                                 @endcan
                                                                 @can('ver_notas_alumnos')
                                                                     <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_notas', $alumno->id)}}">Notas</a></li>
-                                                                    <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_notas_espejo', $alumno->id)}}">Espejo</a></li>
                                                                 @endcan
                                                                 @can('ver_asistencias_alumnos')
                                                                     <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_asistencias', $alumno->id)}}">Asistencias</a></li>
@@ -231,13 +229,6 @@
 																		<li><a class="dropdown-item dropdown-item-mas" href="{{asset($alumno->url_certificado_estudio)}}" target="_blank">Cert. Estudios</a></li>
 																	@endif
                                                                 @endcan
-                                                                @can('ver_certificado_estudios_siu_alumnos')
-                                                                    @if (!$alumno->url_certificado_estudio_siu)
-																		<li><a class="dropdown-item dropdown-item-mas" href="{{route('certificados_estudios.show', ['id' => $alumno->id, 'tipo' => 'SIU'])}}">Cert. Estudios SIU</a></li>
-																	@else
-																		<li><a class="dropdown-item dropdown-item-mas" href="{{asset($alumno->url_certificado_estudio_siu)}}" target="_blank">Cert. Estudios SIU</a></li>
-																	@endif
-                                                                @endcan
                                                             </ul>
                                                         </div>
                                                     @endif
@@ -245,11 +236,12 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="12" class="text-center">
+                                                <td colspan="13" class="text-center">
                                                     <lord-icon src="https://cdn.lordicon.com/jtkfemwz.json" trigger="in" estado="morph-cross" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
                                                     <h5 class="mt-2">Sin resultados.</h5>
                                                     <p class="text-muted mb-0">No pudimos encontrar ningún alumno según tus parámetros de búsqueda.</p>
                                                 </td>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -264,9 +256,12 @@
 
                             <div class="row">
                                 @if ($alumnos->hasPages())
-                                    <nav class="justify-content-lg-end">
-                                        {{ $alumnos->links('pagination::bootstrap-5') }}
-                                    </nav>
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                        <span class="ac-contador">Mostrando {{ $alumnos->firstItem() }}–{{ $alumnos->lastItem() }} de {{ $alumnos->total() }} registros</span>
+                                        <nav class="justify-content-lg-end">
+                                            {{ $alumnos->links('pagination::bootstrap-5') }}
+                                        </nav>
+                                    </div>
                                 @else
                                     <p class="small text-muted">
                                         Mostrando <span class="fw-semibold">{{$alumnos->count()}}</span>

@@ -1,8 +1,9 @@
 @can('ver_extensiones_docentes_pantalla')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Extensión @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
     @endsection
     @section('content')
         @component('components.breadcrumb')
@@ -13,7 +14,7 @@
         @include('pantallas_docentes.extensiones.modals.show-modals')
 
         <div class="row">
-            <form>
+            <div>
                 @csrf
                 <div class="col-lg-12">
                     <div class="card">
@@ -134,31 +135,10 @@
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    @foreach ($extension->extensionUniversitariaDetalles as $key =>$detalle)
-                                        <div class="mb-2 fila" id="fila-{{$key}}">
-                                            <div class="row d-flex justify-content-center">
-                                                <div class="col-5 col-lg-2 mb-2 text-center" id="div-numero_documento-{{$key}}">
-                                                    @if ($key == 0) <label class="form-label label-numero_documento">N° Documento</label> @endif
-                                                    <input type="text" class="form-control text-center" id="numero_documento-{{$key}}" value="{{$detalle->alumno->numero_documento}}" readonly>
-                                                </div>
-                                                <div class="col-5 col-lg-3 mb-2 text-center" id="div-alumno-{{$key}}">
-                                                    @if ($key == 0) <label class="form-label label-alumno">Alumno</label> @endif
-                                                    <input type="text" class="form-control text-center" id="alumno-{{$key}}" value="{{$detalle->alumno->primer_nombre}} {{$detalle->alumno->primer_apellido}}" readonly>
-                                                </div>
-                                                <div class="col-3 col-lg-2 mb-2 text-center" id="div-cantidad_horas_alumno-{{$key}}">
-                                                    @if ($key == 0) <label class="form-label label-cantidad_horas_alumno">Cant. Horas</label> @endif
-                                                    @php
-                                                        if ($detalle->cantidad_horas != 1) {
-                                                            $texto_alumno = 'horas';
-                                                        } else {
-                                                            $texto_alumno = 'hora';
-                                                        }
-                                                    @endphp
-                                                    <input type="text" class="form-control text-center" id="cantidad_horas_alumno-{{$key}}" @if ($detalle->cantidad_horas) value="{{number_format($detalle->cantidad_horas, 2, ',', '.')}} {{$texto_alumno}}" @else value="0 {{$texto_alumno}}" @endif readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                    @if ($puede_gestionar_alumnos)
+                                        @include('extensiones_universitarias.partials.agregar-alumno')
+                                    @endif
+                                    @include('extensiones_universitarias.partials.participantes')
                                 </div>
                             </div>
                         </div>
@@ -169,12 +149,14 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     @endsection
     @section('script')
         <script src="{{ URL::asset('build/js/app.js') }}"></script>
         <script src="{{ URL::asset('build/libs/sweetalert2/sweetalert2.all.min.js') }}"></script>
+        <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
+        @include('extensiones_universitarias.partials.alumnos-scripts')
         @include('pantallas_docentes.extensiones.scripts.show-scripts')
     @endsection
 @endcan

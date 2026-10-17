@@ -41,19 +41,19 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-3 mb-3 text-center">
-                                    <label class="form-label" for="proveedor">Proveedor</span></label>
+                                    <label class="form-label" for="proveedor">Proveedor</label>
                                     <input type="text" class="form-control text-center" id="proveedor" value="{{$orden_compra->proveedor->razon_social}}" readonly>
                                 </div>
                                 <div class="col-lg-1 mb-3 text-center">
-                                    <label class="form-label" for="documento_proveedor">R.U.C.</span></label>
+                                    <label class="form-label" for="documento_proveedor">R.U.C.</label>
                                     <input type="text" class="form-control text-center" id="documento_proveedor" value="{{ $orden_compra->proveedor->ruc }}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3 text-center">
-                                    <label class="form-label" for="condicion_compra">Condición</span></label>
+                                    <label class="form-label" for="condicion_compra">Condición</label>
                                     <input type="text" class="form-control text-center" id="condicion_compra" @if ($orden_compra->condicion_compra == 'CO') value="CONTADO" @else value="CREDITO ({{$orden_compra->credito_a}} dias)" @endif readonly>
                                 </div>
                                 <div class="col-lg-1 mb-3 text-center">
-                                    <label class="form-label" for="moneda">Moneda</span></label>
+                                    <label class="form-label" for="moneda">Moneda</label>
                                     <input type="text" class="form-control text-center" id="moneda" value="{{ $orden_compra->moneda->codigo }}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3 text-center">
@@ -62,7 +62,7 @@
                                 </div>
                                 @if ($orden_compra->url_presupuesto)
                                     <div class="col-lg-1 mb-3 text-center">
-                                        <label class="form-label" for="presupuesto">Presupuesto</span></label>
+                                        <label class="form-label" for="presupuesto">Presupuesto</label>
                                         <div>
                                             <a type="button" class="btn btn-info" href="{{asset($orden_compra->url_presupuesto)}}" target="_blank">Visualizar</a>
                                         </div>

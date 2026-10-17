@@ -49,7 +49,6 @@ Auth::routes();
         Route::post('alumnos', 'AlumnoController@index');
         Route::get('alumnos/ver/{id}', 'AlumnoController@show')->name('alumnos.show');
         Route::get('alumnos/notas/{id}', 'AlumnoController@show_notas')->name('alumnos.show_notas');
-        Route::get('alumnos/notas_espejo/{id}', 'AlumnoController@show_notas_espejo')->name('alumnos.show_notas_espejo');
         Route::get('alumnos/asistencias/{id}', 'AlumnoController@show_asistencias')->name('alumnos.show_asistencias');
         Route::get('alumnos/extensiones/{id}', 'AlumnoController@show_extensiones')->name('alumnos.show_extensiones');
         Route::get('alumnos/reporte_extensiones/{id}', 'AlumnoController@reporte_extensiones')->name('alumnos.reporte_extensiones');
@@ -80,7 +79,6 @@ Auth::routes();
         Route::get('matriculaciones/eliminar/{id}', 'MatriculacionController@destroy')->name('matriculaciones.get_destroy');
         Route::delete('matriculaciones/eliminar/{id}', 'MatriculacionController@destroy')->name('matriculaciones.destroy');
         Route::get('matriculaciones/get_carrera/{id}', 'MatriculacionController@get_carrera')->name('matriculaciones.get_carrera');
-        Route::get('matriculaciones/validate_carrera_siu/{alumno}/{carrera}/{programa}', 'MatriculacionController@validate_carrera_siu')->name('matriculaciones.validate_carrera_siu');
         Route::get('matriculaciones/contrato/{id}', 'MatriculacionController@pdf_contrato')->name('matriculaciones.pdf_contrato');
         Route::get('matriculaciones/ver_horarios', 'MatriculacionController@show_horarios')->name('matriculaciones.show_horarios');
         Route::get('matriculaciones/horarios', 'MatriculacionController@pdf_horarios')->name('matriculaciones.pdf_horarios');
@@ -155,21 +153,15 @@ Auth::routes();
                 Route::get('materias_evaluaciones/actualizar/{id}', 'MateriaEvaluacionController@update')->name('materias_evaluaciones.update');
                 Route::post('materias_evaluaciones/actualizar/{id}', 'MateriaEvaluacionController@update');
             //Asistencias
-                Route::get('alumnos_asistencias', 'AlumnoAsistenciaController@index')->name('alumnos_asistencias.index');
-                Route::get('alumnos_asistencias/ver/{id}', 'AlumnoAsistenciaController@show')->name('alumnos_asistencias.show');
                 Route::get('alumnos_asistencias/agregar_administrativo/{materia}/{semestre}/{docente}', 'AlumnoAsistenciaController@create')->name('alumnos_asistencias.create');
                 Route::get('alumnos_asistencias/agregar_por_materia/{materia}/{semestre}/{carrera}', 'AlumnoAsistenciaController@create_materia')->name('alumnos_asistencias.create_materia');
                 Route::get('alumnos_asistencias/agregar_por_carrera/{materia}/{semestre}/{carrera}', 'AlumnoAsistenciaController@create_carrera')->name('alumnos_asistencias.create_carrera');
                 Route::post('alumnos_asistencias/agregar', 'AlumnoAsistenciaController@store')->name('alumnos_asistencias.store');
-                Route::get('alumnos_asistencias/editar/{id}', 'AlumnoAsistenciaController@edit')->name('alumnos_asistencias.edit');
                 Route::post('alumnos_asistencias/actualizar/{id}', 'AlumnoAsistenciaController@update')->name('alumnos_asistencias.update');
-                Route::get('alumnos_asistencias/editar_observacion/{id}', 'AlumnoAsistenciaController@edit_observacion')->name('alumnos_asistencias.edit_observacion');
                 Route::post('alumnos_asistencias/actualizar_observacion/{id}', 'AlumnoAsistenciaController@update_observacion')->name('alumnos_asistencias.update_observacion');
         //Actas
             Route::get('actas_evaluaciones', 'ActaEvaluacionController@index')->name('actas_evaluaciones.index');
             Route::get('actas_evaluaciones/ver/{id}', 'ActaEvaluacionController@show')->name('actas_evaluaciones.show');
-            Route::get('actas_evaluaciones/agregar', 'ActaEvaluacionController@create')->name('actas_evaluaciones.create');
-            Route::post('actas_evaluaciones/agregar', 'ActaEvaluacionController@store')->name('actas_evaluaciones.store');
             Route::get('actas_evaluaciones/eliminar/{id}', 'ActaEvaluacionController@destroy')->name('actas_evaluaciones.get_destroy');
             Route::delete('actas_evaluaciones/eliminar/{id}', 'ActaEvaluacionController@destroy')->name('actas_evaluaciones.destroy');
             Route::post('actas_evaluaciones/subir_acta/{id}', 'ActaEvaluacionController@subir_acta')->name('actas_evaluaciones.subir_acta');
@@ -242,7 +234,6 @@ Auth::routes();
             Route::post('convalidaciones_internas/agregar', 'ConvalidacionInternaController@store')->name('convalidaciones_internas.store');
             Route::get('convalidaciones_internas/editar/{id}', 'ConvalidacionInternaController@edit')->name('convalidaciones_internas.edit');
             Route::post('convalidaciones_internas/actualizar/{id}', 'ConvalidacionInternaController@update')->name('convalidaciones_internas.update');
-            Route::post('convalidaciones_internas/cambiar_certificado/{id}', 'ConvalidacionInternaController@change_certificado')->name('convalidaciones_internas.change_certificado');
             Route::post('convalidaciones_internas/dictaminar/{id}', 'ConvalidacionInternaController@dictaminar')->name('convalidaciones_internas.dictaminar');
             Route::post('convalidaciones_internas/aprobar/{id}', 'ConvalidacionInternaController@aprobar')->name('convalidaciones_internas.aprobar');
             Route::get('convalidaciones_internas/eliminar/{id}', 'ConvalidacionInternaController@destroy')->name('convalidaciones_internas.get_destroy');
@@ -277,8 +268,6 @@ Auth::routes();
                 Route::post('inscripciones_temas_tesis/anular_aprobacion_tutor/{id}', 'InscripcionTemaTesisController@anular_aprobacion_tutor')->name('inscripciones_temas_tesis.anular_aprobacion_tutor');
                 Route::post('inscripciones_temas_tesis/rechazar/{id}', 'InscripcionTemaTesisController@rechazar')->name('inscripciones_temas_tesis.rechazar');
                 Route::post('inscripciones_temas_tesis/anular_rechazo/{id}', 'InscripcionTemaTesisController@anular_rechazo')->name('inscripciones_temas_tesis.anular_rechazo');
-                Route::get('inscripciones_temas_tesis/eliminar/{id}', 'InscripcionTemaTesisController@destroy')->name('inscripciones_temas_tesis.get_destroy');
-                Route::delete('inscripciones_temas_tesis/eliminar/{id}', 'InscripcionTemaTesisController@destroy')->name('inscripciones_temas_tesis.destroy');
                 Route::get('acta_evaluacion_tesis/generar/{id}', 'InscripcionTemaTesisController@generate_acta')->name('inscripciones_temas_tesis.generate_acta');
             //Anteproyectos
                 Route::get('anteproyectos_tesis', 'AnteproyectoTesisController@index')->name('anteproyectos_tesis.index');
@@ -444,7 +433,6 @@ Auth::routes();
                     Route::post('tutorias_clases/agregar/{id}', 'TutoriaClaseController@store')->name('tutorias_clases.store');
                     Route::get('tutorias_clases/eliminar/{id}', 'TutoriaClaseController@destroy')->name('tutorias_clases.get_destroy');
                     Route::delete('tutorias_clases/eliminar/{id}', 'TutoriaClaseController@destroy')->name('tutorias_clases.destroy');
-                    Route::get('tutorias_clases/editar/{id}', 'TutoriaClaseController@edit')->name('tutorias_clases.edit');
                     Route::post('tutorias_clases/actualizar/{id}', 'TutoriaClaseController@update')->name('tutorias_clases.update');
                     Route::get('tutorias_clases/actualizar_observacion/{id}', 'TutoriaClaseController@update_observacion')->name('tutorias_clases.update_observacion');
                     Route::post('tutorias_clases/actualizar_observacion/{id}', 'TutoriaClaseController@update_observacion');
@@ -464,10 +452,6 @@ Auth::routes();
                 Route::post('tutorias_precios', 'TutoriaPrecioController@store')->name('tutorias_precios.store');
                 Route::get('tutorias_precios/{id}', 'TutoriaPrecioController@edit')->name('tutorias_precios.edit');
                 Route::post('tutorias_precios/{id}', 'TutoriaPrecioController@update')->name('tutorias_precios.update');
-                Route::get('tutorias_precios/inactivar/{id}', 'TutoriaPrecioController@get_unactivate')->name('tutorias_precios.get_unactivate');
-                Route::post('tutorias_precios/inactivar/{id}', 'TutoriaPrecioController@unactivate')->name('tutorias_precios.unactivate');
-                Route::get('tutorias_precios/activar/{id}', 'TutoriaPrecioController@get_activate')->name('tutorias_precios.get_activate');
-                Route::post('tutorias_precios/activar/{id}', 'TutoriaPrecioController@activate')->name('tutorias_precios.activate');
                 Route::get('tutorias_precios/eliminar/{id}', 'TutoriaPrecioController@get_destroy')->name('tutorias_precios.get_destroy');
                 Route::delete('tutorias_precios/eliminar/{id}', 'TutoriaPrecioController@destroy')->name('tutorias_precios.destroy');
                 Route::get('tutorias_precios/get_precio/{id}', 'TutoriaPrecioController@get_precio')->name('tutorias_precios.get_precio');
@@ -484,6 +468,10 @@ Auth::routes();
             Route::post('extensiones_universitarias/rechazar/{id}', 'ExtensionUniversitariaController@reject')->name('extensiones_universitarias.reject');
             Route::post('extensiones_universitarias/anular_rechazo/{id}', 'ExtensionUniversitariaController@unreject')->name('extensiones_universitarias.unreject');
             Route::post('extensiones_universitarias/desaprobar/{id}', 'ExtensionUniversitariaController@unapprove')->name('extensiones_universitarias.unapprove');
+            Route::post('extensiones_universitarias/postulaciones/aprobar/{id}', 'ExtensionUniversitariaController@aprobar_postulacion')->name('extensiones_universitarias.aprobar_postulacion');
+            Route::post('extensiones_universitarias/postulaciones/rechazar/{id}', 'ExtensionUniversitariaController@rechazar_postulacion')->name('extensiones_universitarias.rechazar_postulacion');
+            Route::post('extensiones_universitarias/{id}/agregar_alumno', 'ExtensionUniversitariaController@agregar_alumno')->name('extensiones_universitarias.agregar_alumno');
+            Route::delete('extensiones_universitarias/quitar_alumno/{id}', 'ExtensionUniversitariaController@quitar_alumno')->name('extensiones_universitarias.quitar_alumno');
             Route::post('extensiones_universitarias/finalizar/{id}', 'ExtensionUniversitariaController@finish')->name('extensiones_universitarias.finish');
             Route::get('extensiones_universitarias/cargar_informe/{id}', 'ExtensionUniversitariaController@cargar_informe')->name('extensiones_universitarias.cargar_informe');
             Route::post('extensiones_universitarias/cargar_informe/{id}', 'ExtensionUniversitariaController@cargar_informe');
@@ -560,15 +548,10 @@ Auth::routes();
             Route::post('facultades', 'FacultadController@store')->name('facultades.store');
             Route::get('facultades/{id}', 'FacultadController@edit')->name('facultades.edit');
             Route::post('facultades/{id}', 'FacultadController@update')->name('facultades.update');
-            Route::get('facultades/inactivar/{id}', 'FacultadController@get_unactivate')->name('facultades.get_unactivate');
-            Route::post('facultades/inactivar/{id}', 'FacultadController@unactivate')->name('facultades.unactivate');
-            Route::get('facultades/activar/{id}', 'FacultadController@get_activate')->name('facultades.get_activate');
-            Route::post('facultades/activar/{id}', 'FacultadController@activate')->name('facultades.activate');
             Route::get('facultades/eliminar/{id}', 'FacultadController@get_destroy')->name('facultades.get_destroy');
             Route::delete('facultades/eliminar/{id}', 'FacultadController@destroy')->name('facultades.destroy');
         //Carreras
             Route::get('carreras', 'CarreraController@index')->name('carreras.index');
-            Route::get('carreras/ver/{id}', 'CarreraController@show')->name('carreras.show');
             Route::get('carreras/agregar', 'CarreraController@create')->name('carreras.create');
             Route::post('carreras/agregar', 'CarreraController@store')->name('carreras.store');
             Route::get('carreras/editar/{id}', 'CarreraController@edit')->name('carreras.edit');
@@ -656,18 +639,6 @@ Auth::routes();
             Route::get('mallas/eliminar/{id}', 'MallaController@destroy')->name('mallas.get_destroy');
             Route::delete('mallas/eliminar/{id}', 'MallaController@destroy')->name('mallas.destroy');
             Route::get('mallas/imprimir/{id}', 'MallaController@pdf')->name('mallas.pdf');
-        //Mallas Espejo
-            Route::get('mallas_espejos', 'MallaEspejoController@index')->name('mallas_espejos.index');
-            Route::get('mallas_espejos/ver/{id}', 'MallaEspejoController@show')->name('mallas_espejos.show');
-            Route::get('mallas_espejos/agregar', 'MallaEspejoController@create')->name('mallas_espejos.create');
-            Route::post('mallas_espejos/agregar', 'MallaEspejoController@store')->name('mallas_espejos.store');
-            Route::get('mallas_espejos/editar/{id}', 'MallaEspejoController@edit')->name('mallas_espejos.edit');
-            Route::post('mallas_espejos/actualizar/{id}', 'MallaEspejoController@update')->name('mallas_espejos.update');
-            Route::post('mallas_espejos/inactivar/{id}', 'MallaEspejoController@unactivate')->name('mallas_espejos.unactivate');
-            Route::post('mallas_espejos/activar/{id}', 'MallaEspejoController@activate')->name('mallas_espejos.activate');
-            Route::get('mallas_espejos/eliminar/{id}', 'MallaEspejoController@destroy')->name('mallas_espejos.get_destroy');
-            Route::delete('mallas_espejos/eliminar/{id}', 'MallaEspejoController@destroy')->name('mallas_espejos.destroy');
-            Route::get('mallas_espejos/get_materias/{malla}', 'MallaEspejoController@get_materias')->name('mallas_espejos.get_materias');
         //Escalas
             Route::get('escalas', 'EscalaController@index')->name('escalas.index');
             Route::get('escalas/ver/{id}', 'EscalaController@show')->name('escalas.show');
@@ -718,7 +689,6 @@ Auth::routes();
             Route::delete('modalidades/eliminar/{id}', 'ModalidadController@destroy')->name('modalidades.destroy');
         //Tipos de Actividades - Extension Universitaria
             Route::get('tipos_extensiones_universitarias', 'TipoExtensionUniversitariaController@index')->name('tipos_extensiones_universitarias.index');
-            Route::get('tipos_extensiones_universitarias/ver/{id}', 'TipoExtensionUniversitariaController@show')->name('tipos_extensiones_universitarias.show');
             Route::get('tipos_extensiones_universitarias/agregar', 'TipoExtensionUniversitariaController@create')->name('tipos_extensiones_universitarias.create');
             Route::post('tipos_extensiones_universitarias/agregar', 'TipoExtensionUniversitariaController@store')->name('tipos_extensiones_universitarias.store');
             Route::get('tipos_extensiones_universitarias/editar/{id}', 'TipoExtensionUniversitariaController@edit')->name('tipos_extensiones_universitarias.edit');
@@ -733,6 +703,26 @@ Auth::routes();
             Route::post('requerimientos_extensiones_universitarias/agregar', 'RequerimientoExtensionUniversitariaController@store')->name('requerimientos_extensiones_universitarias.store');
             Route::get('requerimientos_extensiones_universitarias/editar/{id}', 'RequerimientoExtensionUniversitariaController@edit')->name('requerimientos_extensiones_universitarias.edit');
             Route::post('requerimientos_extensiones_universitarias/actualizar/{id}', 'RequerimientoExtensionUniversitariaController@update')->name('requerimientos_extensiones_universitarias.update');
+            Route::delete('requerimientos_extensiones_universitarias/eliminar/{id}', 'RequerimientoExtensionUniversitariaController@destroy')->name('requerimientos_extensiones_universitarias.destroy');
+
+            //Parámetros de Extensión (facultades y carreras simplificadas)
+            Route::get('parametros_extension', 'ParametrosExtensionController@index')->name('parametros_extension.index');
+            Route::post('parametros_extension/facultades', 'ParametrosExtensionController@storeFacultad')->name('parametros_extension.facultades.store');
+            Route::post('parametros_extension/facultades/{id}', 'ParametrosExtensionController@updateFacultad')->name('parametros_extension.facultades.update');
+            Route::post('parametros_extension/facultades/{id}/estado', 'ParametrosExtensionController@toggleFacultad')->name('parametros_extension.facultades.toggle');
+            Route::post('parametros_extension/carreras', 'ParametrosExtensionController@storeCarrera')->name('parametros_extension.carreras.store');
+            Route::post('parametros_extension/carreras/{id}', 'ParametrosExtensionController@updateCarrera')->name('parametros_extension.carreras.update');
+            Route::post('parametros_extension/carreras/{id}/estado', 'ParametrosExtensionController@toggleCarrera')->name('parametros_extension.carreras.toggle');
+
+            //Carga masiva de alumnos y docentes (CSV)
+            Route::get('importaciones', 'ImportacionMasivaController@index')->name('importaciones.index');
+            Route::get('importaciones/plantilla/{tipo}', 'ImportacionMasivaController@plantilla')->name('importaciones.plantilla');
+            Route::post('importaciones/revertir', 'ImportacionMasivaController@revertir')->name('importaciones.revertir');
+            Route::post('importaciones/{tipo}', 'ImportacionMasivaController@procesar')->name('importaciones.procesar');
+
+            //Reportes de gestión (extensiones y docentes)
+            Route::get('reportes_extension/extensiones', 'ReporteExtensionController@extensiones')->name('reportes_extension.extensiones');
+            Route::get('reportes_extension/docentes', 'ReporteExtensionController@docentes')->name('reportes_extension.docentes');
         //Formacion Academicas - Alumnos Formaciones
             Route::get('formaciones_academicas', 'AlumnoFormacionController@index')->name('alumnos_formaciones.index');
             Route::get('formaciones_academicas/all', 'AlumnoFormacionController@index_ajax')->name('alumnos_formaciones.index_ajax');
@@ -809,319 +799,6 @@ Auth::routes();
             Route::get('areas_conocimientos/eliminar/{id}', 'AreaConocimientoController@get_destroy')->name('areas_conocimientos.get_destroy');
             Route::delete('areas_conocimientos/eliminar/{id}', 'AreaConocimientoController@destroy')->name('areas_conocimientos.destroy');
 
-//Escuela de Negocios
-    //Alumnos
-        Route::get('alumnos_ubs', 'AlumnoUbsController@index')->name('alumnos_ubs.index');
-        Route::post('alumnos_ubs', 'AlumnoUbsController@index');
-        Route::get('alumnos_ubs/ver/{id}', 'AlumnoUbsController@show')->name('alumnos_ubs.show');
-        Route::get('alumnos_ubs/notas/{id}', 'AlumnoUbsController@show_notas')->name('alumnos_ubs.show_notas');
-        Route::get('alumnos_ubs/asistencias/{id}', 'AlumnoUbsController@show_asistencias')->name('alumnos_ubs.show_asistencias');
-        Route::get('alumnos_ubs/agregar', 'AlumnoUbsController@create')->name('alumnos_ubs.create');
-        Route::post('alumnos_ubs/agregar', 'AlumnoUbsController@store')->name('alumnos_ubs.store');
-        Route::get('alumnos_ubs/editar/{id}', 'AlumnoUbsController@edit')->name('alumnos_ubs.edit');
-        Route::post('alumnos_ubs/actualizar/{id}', 'AlumnoUbsController@update')->name('alumnos_ubs.update');
-        Route::post('alumnos_ubs/inactivar/{id}', 'AlumnoUbsController@unactivate')->name('alumnos_ubs.unactivate');
-        Route::post('alumnos_ubs/activar/{id}', 'AlumnoUbsController@activate')->name('alumnos_ubs.activate');
-        Route::get('alumnos_ubs/eliminar/{id}', 'AlumnoUbsController@destroy')->name('alumnos_ubs.get_destroy');
-        Route::delete('alumnos_ubs/eliminar/{id}', 'AlumnoUbsController@destroy')->name('alumnos_ubs.destroy');
-        Route::get('alumnos_ubs/ver_legajo/{id}', 'AlumnoUbsController@ver_legajo')->name('alumnos_ubs.ver_legajo');
-        Route::post('alumnos_ubs/subir_legajo/{id}', 'AlumnoUbsController@subir_legajo')->name('alumnos_ubs.subir_legajo');
-        Route::get('alumnos_ubs/eliminar_legajo/{id}', 'AlumnoUbsController@eliminar_legajo')->name('alumnos_ubs.get_eliminar_legajo');
-        Route::delete('alumnos_ubs/eliminar_legajo/{id}', 'AlumnoUbsController@eliminar_legajo')->name('alumnos_ubs.eliminar_legajo');
-        Route::get('alumnos_ubs/get_cedula/{cedula}', 'AlumnoUbsController@get_cedula')->name('alumnos_ubs.get_cedula');
-    //Inscripciones
-        Route::get('inscripciones_ubs', 'InscripcionUbsController@index')->name('inscripciones_ubs.index');
-        Route::post('inscripciones_ubs', 'InscripcionUbsController@index');
-        Route::get('inscripciones_ubs/ver/{id}', 'InscripcionUbsController@show')->name('inscripciones_ubs.show');
-        Route::get('inscripciones_ubs/agregar', 'InscripcionUbsController@create')->name('inscripciones_ubs.create');
-        Route::post('inscripciones_ubs/agregar', 'InscripcionUbsController@store')->name('inscripciones_ubs.store');
-        Route::post('inscripciones_ubs/inactivar/{id}', 'InscripcionUbsController@unactivate')->name('inscripciones_ubs.unactivate');
-        Route::post('inscripciones_ubs/activar/{id}', 'InscripcionUbsController@activate')->name('inscripciones_ubs.activate');
-        Route::get('inscripciones_ubs/eliminar/{id}', 'InscripcionUbsController@destroy')->name('inscripciones_ubs.get_destroy');
-        Route::delete('inscripciones_ubs/eliminar/{id}', 'InscripcionUbsController@destroy')->name('inscripciones_ubs.destroy');
-        Route::get('inscripciones_ubs/contrato/{id}', 'InscripcionUbsController@pdf_contrato')->name('inscripciones_ubs.pdf_contrato');
-        Route::post('inscripciones_ubs/agregar_convenio/{id}', 'InscripcionUbsController@agregar_convenio')->name('inscripciones_ubs.agregar_convenio');
-        Route::post('inscripciones_ubs/eliminar_convenio/{id}', 'InscripcionUbsController@eliminar_convenio')->name('inscripciones_ubs.eliminar_convenio');
-    //Cursos
-        //Lista de Cursos
-            Route::get('cursos', 'CursoController@index')->name('cursos.index');
-            Route::get('cursos/ver/{id}', 'CursoController@show')->name('cursos.show');
-            Route::get('cursos/agregar', 'CursoController@create')->name('cursos.create');
-            Route::post('cursos/agregar', 'CursoController@store')->name('cursos.store');
-            Route::get('cursos/editar/{id}', 'CursoController@edit')->name('cursos.edit');
-            Route::post('cursos/actualizar/{id}', 'CursoController@update')->name('cursos.update');
-            Route::post('cursos/inactivar/{id}', 'CursoController@unactivate')->name('cursos.unactivate');
-            Route::post('cursos/activar/{id}', 'CursoController@activate')->name('cursos.activate');
-            Route::get('cursos/eliminar/{id}', 'CursoController@destroy')->name('cursos.get_destroy');
-            Route::delete('cursos/eliminar/{id}', 'CursoController@destroy')->name('cursos.destroy');
-            Route::get('cursos/editar_modulos/{id}', 'CursoModuloController@edit')->name('cursos.edit_modulos');
-            Route::post('cursos/editar_modulos/{id}', 'CursoModuloController@update')->name('cursos.update_modulos');
-            Route::get('cursos/certificados_generados/{id}', 'CursoController@certificados_generados')->name('cursos.certificados_generados');
-            Route::get('cursos/certificados_generados/regenerar/{id}', 'CursoController@regenerate_certificados')->name('cursos.regenerate_certificados');
-            Route::post('cursos/certificados_generados/editar/{id}', 'CursoController@update_certificados_generados')->name('cursos.update_certificados_generados');
-            //Modulos
-                Route::get('modulos', 'ModuloController@index')->name('modulos.index');
-                Route::get('modulos/all', 'ModuloController@index_ajax')->name('modulos.index_ajax');
-                Route::get('modulos/show/{id}', 'ModuloController@show')->name('modulos.show');
-                Route::post('modulos', 'ModuloController@store')->name('modulos.store');
-                Route::get('modulos/{id}', 'ModuloController@edit')->name('modulos.edit');
-                Route::post('modulos/{id}', 'ModuloController@update')->name('modulos.update');
-                Route::get('modulos/inactivar/{id}', 'ModuloController@get_unactivate')->name('modulos.get_unactivate');
-                Route::post('modulos/inactivar/{id}', 'ModuloController@unactivate')->name('modulos.unactivate');
-                Route::get('modulos/activar/{id}', 'ModuloController@get_activate')->name('modulos.get_activate');
-                Route::post('modulos/activar/{id}', 'ModuloController@activate')->name('modulos.activate');
-                Route::get('modulos/eliminar/{id}', 'ModuloController@get_destroy')->name('modulos.get_destroy');
-                Route::delete('modulos/eliminar/{id}', 'ModuloController@destroy')->name('modulos.destroy');
-            //Alumnos Asistencias
-                Route::get('cursos_asistencias/ver/{curso}', 'AlumnoAsistenciaUbsController@show')->name('alumnos_asistencias_ubs.show');
-                Route::get('cursos_asistencias/agregar/{curso}/{modulo}', 'AlumnoAsistenciaUbsController@create')->name('alumnos_asistencias_ubs.create');
-                Route::post('cursos_asistencias/guardar/{curso}/{modulo}/{docente}', 'AlumnoAsistenciaUbsController@store')->name('alumnos_asistencias_ubs.store');
-                Route::get('cursos_asistencias/agregar/{curso}/{modulo}', 'AlumnoAsistenciaUbsController@create');
-                Route::get('cursos_asistencias/editar/{id}', 'AlumnoAsistenciaUbsController@edit')->name('alumnos_asistencias_ubs.edit');
-                Route::post('cursos_asistencias/actualizar/{id}', 'AlumnoAsistenciaUbsController@update')->name('alumnos_asistencias_ubs.update');
-                Route::get('cursos_asistencias/editar_observacion/{id}', 'AlumnoAsistenciaUbsController@edit_observacion')->name('alumnos_asistencias_ubs.edit_observacion');
-                Route::post('cursos_asistencias/actualizar_observacion/{id}', 'AlumnoAsistenciaUbsController@update_observacion')->name('alumnos_asistencias_ubs.update_observacion');
-            //Alumnos Notas
-                Route::get('cursos_notas/ver/{curso}', 'CursoNotaController@show')->name('cursos_notas_ubs.show');
-                Route::get('cursos_notas/agregar/{curso}', 'CursoNotaController@create')->name('cursos_notas_ubs.create');
-                Route::post('cursos_notas/guardar/{curso}', 'CursoNotaController@store')->name('cursos_notas_ubs.store');
-                Route::get('cursos_notas/actualizar/{id}', 'CursoNotaController@update')->name('cursos_notas_ubs.update');
-                Route::post('cursos_notas/actualizar/{id}', 'CursoNotaController@update');
-            //Certificados
-                Route::get('cursos_certificados/ver/{curso}', 'CursoCertificadoController@show')->name('cursos_certificados.show');
-                Route::get('cursos_certificados/generar/{curso}', 'CursoCertificadoController@generate')->name('cursos_certificados.generate');
-        //Tipos de Cursos
-            Route::get('tipos_cursos', 'TipoCursoController@index')->name('tipos_cursos.index');
-            Route::get('tipos_cursos/all', 'TipoCursoController@index_ajax')->name('tipos_cursos.index_ajax');
-            Route::get('tipos_cursos/show/{id}', 'TipoCursoController@show')->name('tipos_cursos.show');
-            Route::post('tipos_cursos', 'TipoCursoController@store')->name('tipos_cursos.store');
-            Route::get('tipos_cursos/{id}', 'TipoCursoController@edit')->name('tipos_cursos.edit');
-            Route::post('tipos_cursos/{id}', 'TipoCursoController@update')->name('tipos_cursos.update');
-            Route::get('tipos_cursos/inactivar/{id}', 'TipoCursoController@get_unactivate')->name('tipos_cursos.get_unactivate');
-            Route::post('tipos_cursos/inactivar/{id}', 'TipoCursoController@unactivate')->name('tipos_cursos.unactivate');
-            Route::get('tipos_cursos/activar/{id}', 'TipoCursoController@get_activate')->name('tipos_cursos.get_activate');
-            Route::post('tipos_cursos/activar/{id}', 'TipoCursoController@activate')->name('tipos_cursos.activate');
-            Route::get('tipos_cursos/eliminar/{id}', 'TipoCursoController@get_destroy')->name('tipos_cursos.get_destroy');
-            Route::delete('tipos_cursos/eliminar/{id}', 'TipoCursoController@destroy')->name('tipos_cursos.destroy');
-    //Maestrías
-        //Lista de Maestrías
-            Route::get('maestrias', 'MaestriaController@index')->name('maestrias.index');
-            Route::get('maestrias/ver/{id}', 'MaestriaController@show')->name('maestrias.show');
-            Route::get('maestrias/agregar', 'MaestriaController@create')->name('maestrias.create');
-            Route::post('maestrias/agregar', 'MaestriaController@store')->name('maestrias.store');
-            Route::get('maestrias/editar/{id}', 'MaestriaController@edit')->name('maestrias.edit');
-            Route::post('maestrias/actualizar/{id}', 'MaestriaController@update')->name('maestrias.update');
-            Route::post('maestrias/inactivar/{id}', 'MaestriaController@unactivate')->name('maestrias.unactivate');
-            Route::post('maestrias/activar/{id}', 'MaestriaController@activate')->name('maestrias.activate');
-            Route::get('maestrias/eliminar/{id}', 'MaestriaController@destroy')->name('maestrias.get_destroy');
-            Route::delete('maestrias/eliminar/{id}', 'MaestriaController@destroy')->name('maestrias.destroy');
-            Route::get('maestrias/editar_modulos/{id}', 'MaestriaModuloController@edit')->name('maestrias.edit_modulos');
-            Route::post('maestrias/editar_modulos/{id}', 'MaestriaModuloController@update')->name('maestrias.update_modulos');
-            //Alumnos Asistencias
-                Route::get('maestrias_asistencias/ver/{curso}', 'AlumnoAsistenciaMaestriaController@show')->name('alumnos_asistencias_maestrias.show');
-                Route::get('maestrias_asistencias/agregar/{curso}/{modulo}', 'AlumnoAsistenciaMaestriaController@create')->name('alumnos_asistencias_maestrias.create');
-                Route::post('maestrias_asistencias/guardar/{curso}/{modulo}/{docente}', 'AlumnoAsistenciaMaestriaController@store')->name('alumnos_asistencias_maestrias.store');
-                Route::get('maestrias_asistencias/agregar/{curso}/{modulo}', 'AlumnoAsistenciaMaestriaController@create');
-                Route::get('maestrias_asistencias/editar/{id}', 'AlumnoAsistenciaMaestriaController@edit')->name('alumnos_asistencias_maestrias.edit');
-                Route::post('maestrias_asistencias/actualizar/{id}', 'AlumnoAsistenciaMaestriaController@update')->name('alumnos_asistencias_maestrias.update');
-                Route::get('maestrias_asistencias/editar_observacion/{id}', 'AlumnoAsistenciaMaestriaController@edit_observacion')->name('alumnos_asistencias_maestrias.edit_observacion');
-                Route::post('maestrias_asistencias/actualizar_observacion/{id}', 'AlumnoAsistenciaMaestriaController@update_observacion')->name('alumnos_asistencias_maestrias.update_observacion');
-            //Alumnos Notas
-                Route::get('maestrias_notas/ver/{curso}', 'AlumnoNotaUbsController@show')->name('alumnos_notas_ubs.show');
-                Route::get('maestrias_notas/agregar/{curso}/{modulo}/{evaluacion}', 'AlumnoNotaUbsController@create')->name('alumnos_notas_ubs.create');
-                Route::post('maestrias_notas/guardar/{curso}/{modulo}/{evaluacion}', 'AlumnoNotaUbsController@store')->name('alumnos_notas_ubs.store');
-                Route::get('maestrias_notas/get_evaluaciones/{curso}/{modulo}', 'AlumnoNotaUbsController@get_evaluaciones')->name('alumnos_notas_ubs.get_evaluaciones');
-            //Actas
-                Route::get('maestrias_actas_evaluaciones/{curso}', 'ActaEvaluacionUbsController@index')->name('actas_evaluaciones_ubs.index');
-                Route::get('maestrias_actas_evaluaciones/ver/{id}', 'ActaEvaluacionUbsController@show')->name('actas_evaluaciones_ubs.show');
-                Route::get('maestrias_actas_evaluaciones/agregar/{curso}/{modulo}', 'ActaEvaluacionUbsController@create')->name('actas_evaluaciones_ubs.create');
-                Route::post('maestrias_actas_evaluaciones/agregar', 'ActaEvaluacionUbsController@store')->name('actas_evaluaciones_ubs.store');
-                Route::get('maestrias_actas_evaluaciones/eliminar/{id}', 'ActaEvaluacionUbsController@destroy')->name('actas_evaluaciones_ubs.get_destroy');
-                Route::delete('maestrias_actas_evaluaciones/eliminar/{id}', 'ActaEvaluacionUbsController@destroy')->name('actas_evaluaciones_ubs.destroy');
-                Route::post('maestrias_actas_evaluaciones/subir_acta/{id}', 'ActaEvaluacionUbsController@subir_acta')->name('actas_evaluaciones_ubs.subir_acta');
-                Route::get('maestrias_actas_evaluaciones/eliminar_acta/{id}', 'ActaEvaluacionUbsController@eliminar_acta')->name('actas_evaluaciones_ubs.eliminar_acta');
-                Route::delete('maestrias_actas_evaluaciones/eliminar_acta/{id}', 'ActaEvaluacionUbsController@eliminar_acta');
-                Route::get('maestrias_actas_evaluaciones/ver_actas/{curso}/{modulo}', 'ActaEvaluacionUbsController@show_actas')->name('actas_evaluaciones_ubs.show_actas');
-                Route::get('maestrias_actas_evaluaciones/generar_acta/{curso}/{modulo}/{tipo}', 'ActaEvaluacionUbsController@generar_actas')->name('actas_evaluaciones_ubs.generar_actas');
-            //Certificados de Estudios
-                Route::get('maestrias/certificado_estudios/{maestria}/{alumno}', 'CertificadoEstudioUbsController@show')->name('certificados_estudios_ubs.show');
-                Route::get('maestrias/certificado_estudios/generar/{maestria}/{alumno}', 'CertificadoEstudioUbsController@generar')->name('certificados_estudios_ubs.generar');
-                Route::get('maestrias_get_alumnos/{id}', 'CertificadoEstudioUbsController@get_alumnos')->name('certificados_estudios_ubs.get_alumnos');
-            //Modulos
-                Route::get('modulos_maestrias', 'ModuloMaestriaController@index')->name('modulos_maestrias.index');
-                Route::get('modulos_maestrias/all', 'ModuloMaestriaController@index_ajax')->name('modulos_maestrias.index_ajax');
-                Route::get('modulos_maestrias/show/{id}', 'ModuloMaestriaController@show')->name('modulos_maestrias.show');
-                Route::post('modulos_maestrias', 'ModuloMaestriaController@store')->name('modulos_maestrias.store');
-                Route::get('modulos_maestrias/{id}', 'ModuloMaestriaController@edit')->name('modulos_maestrias.edit');
-                Route::post('modulos_maestrias/{id}', 'ModuloMaestriaController@update')->name('modulos_maestrias.update');
-                Route::get('modulos_maestrias/inactivar/{id}', 'ModuloMaestriaController@get_unactivate')->name('modulos_maestrias.get_unactivate');
-                Route::post('modulos_maestrias/inactivar/{id}', 'ModuloMaestriaController@unactivate')->name('modulos_maestrias.unactivate');
-                Route::get('modulos_maestrias/activar/{id}', 'ModuloMaestriaController@get_activate')->name('modulos_maestrias.get_activate');
-                Route::post('modulos_maestrias/activar/{id}', 'ModuloMaestriaController@activate')->name('modulos_maestrias.activate');
-                Route::get('modulos_maestrias/eliminar/{id}', 'ModuloMaestriaController@get_destroy')->name('modulos_maestrias.get_destroy');
-                Route::delete('modulos_maestrias/eliminar/{id}', 'ModuloMaestriaController@destroy')->name('modulos_maestrias.destroy');
-                //Correlatividades
-                    Route::get('modulos_correlatividades/ver/{id}', 'ModuloCorrelatividadController@show')->name('modulos_correlatividades.show');
-                    Route::get('modulos_correlatividades/editar/{id}', 'ModuloCorrelatividadController@edit')->name('modulos_correlatividades.edit');
-                    Route::post('modulos_correlatividades/actualizar/{id}', 'ModuloCorrelatividadController@update')->name('modulos_correlatividades.update');
-                    Route::get('modulos_correlatividades/eliminar/{id}', 'ModuloCorrelatividadController@destroy')->name('modulos_correlatividades.get_destroy');
-                    Route::delete('modulos_correlatividades/eliminar/{id}', 'ModuloCorrelatividadController@destroy')->name('modulos_correlatividades.destroy');
-            //Clases
-                Route::get('clases_maestrias/{curso}', 'ClaseMaestriaController@index')->name('clases_maestrias.index');
-                Route::get('clases_maestrias/ver/{id}', 'ClaseMaestriaController@show')->name('clases_maestrias.show');
-                Route::get('clases_maestrias/agregar/{curso}/{modulo}', 'ClaseMaestriaController@create')->name('clases_maestrias.create');
-                Route::post('clases_maestrias/guardar/{curso}/{modulo}/{docente}', 'ClaseMaestriaController@store')->name('clases_maestrias.store');
-                Route::get('clases_maestrias/eliminar/{id}', 'ClaseMaestriaController@destroy')->name('clases_maestrias.get_destroy');
-                Route::delete('clases_maestrias/eliminar/{id}', 'ClaseMaestriaController@destroy')->name('clases_maestrias.destroy');
-        //Extensiones Universitarias
-            //Lista de Extensiones Universtiarias
-                Route::get('extensiones_universitarias_ubs', 'ExtensionUniversitariaUbsController@index')->name('extensiones_universitarias_ubs.index');
-                Route::get('extensiones_universitarias_ubs/ver/{id}', 'ExtensionUniversitariaUbsController@show')->name('extensiones_universitarias_ubs.show');
-                Route::get('extensiones_universitarias_ubs/agregar', 'ExtensionUniversitariaUbsController@create')->name('extensiones_universitarias_ubs.create');
-                Route::post('extensiones_universitarias_ubs/agregar', 'ExtensionUniversitariaUbsController@store')->name('extensiones_universitarias_ubs.store');
-                Route::get('extensiones_universitarias_ubs/editar/{id}', 'ExtensionUniversitariaUbsController@edit')->name('extensiones_universitarias_ubs.edit');
-                Route::post('extensiones_universitarias_ubs/actualizar/{id}', 'ExtensionUniversitariaUbsController@update')->name('extensiones_universitarias_ubs.update');
-                Route::get('extensiones_universitarias_ubs/guardar_horas/{id}', 'ExtensionUniversitariaUbsController@update_hours')->name('extensiones_universitarias_ubs.update_hours');
-                Route::post('extensiones_universitarias_ubs/guardar_horas/{id}', 'ExtensionUniversitariaUbsController@update_hours');
-                Route::post('extensiones_universitarias_ubs/aprobar/{id}', 'ExtensionUniversitariaUbsController@approve')->name('extensiones_universitarias_ubs.approve');
-                Route::post('extensiones_universitarias_ubs/rechazar/{id}', 'ExtensionUniversitariaUbsController@reject')->name('extensiones_universitarias_ubs.reject');
-                Route::post('extensiones_universitarias_ubs/anular_rechazo/{id}', 'ExtensionUniversitariaUbsController@unreject')->name('extensiones_universitarias_ubs.unreject');
-                Route::post('extensiones_universitarias_ubs/desaprobar/{id}', 'ExtensionUniversitariaUbsController@unapprove')->name('extensiones_universitarias_ubs.unapprove');
-                Route::post('extensiones_universitarias_ubs/finalizar/{id}', 'ExtensionUniversitariaUbsController@finish')->name('extensiones_universitarias_ubs.finish');
-                Route::get('extensiones_universitarias_ubs/cargar_informe/{id}', 'ExtensionUniversitariaUbsController@cargar_informe')->name('extensiones_universitarias_ubs.cargar_informe');
-                Route::post('extensiones_universitarias_ubs/cargar_informe/{id}', 'ExtensionUniversitariaUbsController@cargar_informe');
-                Route::get('extensiones_universitarias_ubs/cambiar_adjuntos/{id}', 'ExtensionUniversitariaUbsController@change_adjuntos')->name('extensiones_universitarias_ubs.change_adjuntos');
-                Route::post('extensiones_universitarias_ubs/cambiar_adjuntos/{id}', 'ExtensionUniversitariaUbsController@change_adjuntos');
-                Route::get('extensiones_universitarias_ubs/eliminar/{id}', 'ExtensionUniversitariaUbsController@destroy')->name('extensiones_universitarias_ubs.get_destroy');
-                Route::delete('extensiones_universitarias_ubs/eliminar/{id}', 'ExtensionUniversitariaUbsController@destroy')->name('extensiones_universitarias_ubs.destroy');
-            //Tipos de Actividades - Extension Universitaria
-                Route::get('tipos_extensiones_universitarias_ubs', 'TipoExtensionUniversitariaUbsController@index')->name('tipos_extensiones_universitarias_ubs.index');
-                Route::get('tipos_extensiones_universitarias_ubs/ver/{id}', 'TipoExtensionUniversitariaUbsController@show')->name('tipos_extensiones_universitarias_ubs.show');
-                Route::get('tipos_extensiones_universitarias_ubs/agregar', 'TipoExtensionUniversitariaUbsController@create')->name('tipos_extensiones_universitarias_ubs.create');
-                Route::post('tipos_extensiones_universitarias_ubs/agregar', 'TipoExtensionUniversitariaUbsController@store')->name('tipos_extensiones_universitarias_ubs.store');
-                Route::get('tipos_extensiones_universitarias_ubs/editar/{id}', 'TipoExtensionUniversitariaUbsController@edit')->name('tipos_extensiones_universitarias_ubs.edit');
-                Route::post('tipos_extensiones_universitarias_ubs/actualizar/{id}', 'TipoExtensionUniversitariaUbsController@update')->name('tipos_extensiones_universitarias_ubs.update');
-                Route::post('tipos_extensiones_universitarias_ubs/inactivar/{id}', 'TipoExtensionUniversitariaUbsController@unactivate')->name('tipos_extensiones_universitarias_ubs.unactivate');
-                Route::post('tipos_extensiones_universitarias_ubs/activar/{id}', 'TipoExtensionUniversitariaUbsController@activate')->name('tipos_extensiones_universitarias_ubs.activate');
-                Route::get('tipos_extensiones_universitarias_ubs/eliminar/{id}', 'TipoExtensionUniversitariaUbsController@destroy')->name('tipos_extensiones_universitarias_ubs.get_destroy');
-                Route::delete('tipos_extensiones_universitarias_ubs/eliminar/{id}', 'TipoExtensionUniversitariaUbsController@destroy')->name('tipos_extensiones_universitarias_ubs.destroy');
-            //Requerimientos - Extension Universitaria
-            Route::get('requerimientos_extensiones_universitarias_ubs', 'RequerimientoExtensionUniversitariaUbsController@show')->name('requerimientos_extensiones_universitarias_ubs.show');
-            Route::get('requerimientos_extensiones_universitarias_ubs/agregar', 'RequerimientoExtensionUniversitariaUbsController@create')->name('requerimientos_extensiones_universitarias_ubs.create');
-            Route::post('requerimientos_extensiones_universitarias_ubs/agregar', 'RequerimientoExtensionUniversitariaUbsController@store')->name('requerimientos_extensiones_universitarias_ubs.store');
-            Route::get('requerimientos_extensiones_universitarias_ubs/editar/{id}', 'RequerimientoExtensionUniversitariaUbsController@edit')->name('requerimientos_extensiones_universitarias_ubs.edit');
-            Route::post('requerimientos_extensiones_universitarias_ubs/actualizar/{id}', 'RequerimientoExtensionUniversitariaUbsController@update')->name('requerimientos_extensiones_universitarias_ubs.update');
-    //Tesis
-        //Lista de Tesis
-            Route::get('tesis_ubs', 'TesisUbsController@index')->name('tesis_ubs.index');
-            Route::get('tesis_ubs/ver/{id}', 'TesisUbsController@show')->name('tesis_ubs.show');
-            Route::get('tesis_ubs/agregar', 'TesisUbsController@create')->name('tesis_ubs.create');
-            Route::post('tesis_ubs/agregar', 'TesisUbsController@store')->name('tesis_ubs.store');
-            Route::get('tesis_ubs/get_maestrias/{alumno}', 'TesisUbsController@get_maestrias')->name('tesis_ubs.get_maestrias');
-            Route::get('tesis_ubs/editar/{id}', 'TesisUbsController@edit')->name('tesis_ubs.edit');
-            Route::post('tesis_ubs/actualizar/{id}', 'TesisUbsController@update')->name('tesis_ubs.update');
-            Route::get('tesis_ubs/generar_acta/{id}', 'TesisUbsController@generate_acta')->name('tesis_ubs.generate_acta');
-            Route::post('tesis_ubs/asignar_fecha_defensa/{id}', 'TesisUbsController@asignar_fecha_defensa')->name('tesis_ubs.asignar_fecha_defensa');
-            Route::post('tesis_ubs/puntuar_defensa/{id}', 'TesisUbsController@puntuar_defensa')->name('tesis_ubs.puntuar_defensa');
-            //Inscripciones Temas Tesis
-                Route::post('tesis_ubs/aprobar_calidad/{id}', 'InscripcionTemaTesisUbsController@aprobar_calidad')->name('tesis_ubs.aprobar_calidad');
-                Route::post('tesis_ubs/aprobar_tutor/{id}', 'InscripcionTemaTesisUbsController@aprobar_tutor')->name('tesis_ubs.aprobar_tutor');
-                Route::post('tesis_ubs/anular_aprobacion_calidad/{id}', 'InscripcionTemaTesisUbsController@anular_aprobacion_calidad')->name('tesis_ubs.anular_aprobacion_calidad');
-                Route::post('tesis_ubs/anular_aprobacion_tutor/{id}', 'InscripcionTemaTesisUbsController@anular_aprobacion_tutor')->name('tesis_ubs.anular_aprobacion_tutor');
-                Route::post('tesis_ubs/rechazar/{id}', 'InscripcionTemaTesisUbsController@rechazar')->name('tesis_ubs.rechazar');
-                Route::post('tesis_ubs/anular_rechazo/{id}', 'InscripcionTemaTesisUbsController@anular_rechazo')->name('tesis_ubs.anular_rechazo');
-                //Anteproyectos
-                    Route::get('tesis_ubs/anteproyecto/ver/{id}', 'AnteproyectoTesisUbsController@show')->name('tesis_ubs.show_anteproyecto');
-                    Route::get('tesis_ubs/anteproyecto/generar/{id}', 'AnteproyectoTesisUbsController@create')->name('tesis_ubs.create_anteproyecto');
-                    Route::post('tesis_ubs/anteproyecto/guardar/{id}', 'AnteproyectoTesisUbsController@store')->name('tesis_ubs.store_anteproyecto');
-                    Route::post('tesis_ubs/anteproyecto/aprobar_tutor/{id}', 'AnteproyectoTesisUbsController@aprobar_tutor')->name('tesis_ubs.aprobar_tutor_anteproyecto');
-                    Route::get('tesis_ubs/anteproyecto/aprobar_calidad/{id}', 'AnteproyectoTesisUbsController@aprobar_calidad')->name('tesis_ubs.aprobar_calidad_anteproyecto');
-                    Route::post('tesis_ubs/anteproyecto/aprobar_calidad/{id}', 'AnteproyectoTesisUbsController@aprobar_calidad');
-                    Route::post('tesis_ubs/anteproyecto/anular_aprobacion_tutor/{id}', 'AnteproyectoTesisUbsController@anular_aprobacion_tutor')->name('tesis_ubs.anular_aprobacion_tutor_anteproyecto');
-                    Route::post('tesis_ubs/anteproyecto/anular_aprobacion_calidad/{id}', 'AnteproyectoTesisUbsController@anular_aprobacion_calidad')->name('tesis_ubs.anular_aprobacion_calidad_anteproyecto');
-                    Route::get('tesis_ubs/anteproyecto/ver_entregas/{id}', 'AnteproyectoTesisUbsController@show_entregas')->name('tesis_ubs.show_entregas_anteproyecto');
-                    Route::post('tesis_ubs/anteproyecto/save_entrega/{id}', 'AnteproyectoTesisUbsController@save_entrega')->name('tesis_ubs.save_entrega_anteproyecto');
-                    Route::post('tesis_ubs/anteproyecto/save_correccion/{id}', 'AnteproyectoTesisUbsController@save_correccion')->name('tesis_ubs.save_correccion_anteproyecto');
-                    Route::post('tesis_ubs/anteproyecto/delete_entrega/{id}', 'AnteproyectoTesisUbsController@delete_entrega')->name('tesis_ubs.delete_entrega_anteproyecto');
-                //Borradores
-                    Route::get('tesis_ubs/borrador/ver/{id}', 'BorradorTesisUbsController@show')->name('tesis_ubs.show_borrador');
-                    Route::get('tesis_ubs/borrador/generar/{id}', 'BorradorTesisUbsController@create')->name('tesis_ubs.create_borrador');
-                    Route::post('tesis_ubs/borrador/guardar/{id}', 'BorradorTesisUbsController@store')->name('tesis_ubs.store_borrador');
-                    Route::post('tesis_ubs/borrador/aprobar_tutor/{id}', 'BorradorTesisUbsController@aprobar_tutor')->name('tesis_ubs.aprobar_tutor_borrador');
-                    Route::post('tesis_ubs/borrador/aprobar_calidad/{id}', 'BorradorTesisUbsController@aprobar_calidad')->name('tesis_ubs.aprobar_calidad_borrador');
-                    Route::post('tesis_ubs/borrador/anular_aprobacion_tutor/{id}', 'BorradorTesisUbsController@anular_aprobacion_tutor')->name('tesis_ubs.anular_aprobacion_tutor_borrador');
-                    Route::post('tesis_ubs/borrador/anular_aprobacion_calidad/{id}', 'BorradorTesisUbsController@anular_aprobacion_calidad')->name('tesis_ubs.anular_aprobacion_calidad_borrador');
-                    Route::get('tesis_ubs/borrador/ver_entregas/{id}', 'BorradorTesisUbsController@show_entregas')->name('tesis_ubs.show_entregas_borrador');
-                    Route::post('tesis_ubs/borrador/save_entrega/{id}', 'BorradorTesisUbsController@save_entrega')->name('tesis_ubs.save_entrega_borrador');
-                    Route::post('tesis_ubs/borrador/save_correccion/{id}', 'BorradorTesisUbsController@save_correccion')->name('tesis_ubs.save_correccion_borrador');
-                    Route::post('tesis_ubs/borrador/delete_entrega/{id}', 'BorradorTesisUbsController@delete_entrega')->name('tesis_ubs.delete_entrega_borrador');
-        //Parametros
-            Route::get('tesis_ubs/parametros', 'TesisUbsController@parametros_index')->name('tesis_parametros_ubs.index');
-            //Fechas de Defensa
-                Route::get('tesis_ubs/parametros/fechas_defensas', 'FechaDefensaTesisUbsController@index')->name('tesis_parametros_ubs.fechas_defensas_index');
-                Route::get('tesis_ubs/parametros/fechas_defensas/ver/{id}', 'FechaDefensaTesisUbsController@show')->name('tesis_parametros_ubs.fechas_defensas_show');
-                Route::get('tesis_ubs/parametros/fechas_defensas/agregar', 'FechaDefensaTesisUbsController@create')->name('tesis_parametros_ubs.fechas_defensas_create');
-                Route::post('tesis_ubs/parametros/fechas_defensas/agregar', 'FechaDefensaTesisUbsController@store')->name('tesis_parametros_ubs.fechas_defensas_store');
-                Route::get('tesis_ubs/parametros/fechas_defensas/editar/{id}', 'FechaDefensaTesisUbsController@edit')->name('tesis_parametros_ubs.fechas_defensas_edit');
-                Route::post('tesis_ubs/parametros/fechas_defensas/actualizar/{id}', 'FechaDefensaTesisUbsController@update')->name('tesis_parametros_ubs.fechas_defensas_update');
-                Route::get('tesis_ubs/parametros/fechas_defensas/eliminar/{id}', 'FechaDefensaTesisUbsController@destroy')->name('tesis_parametros_ubs.fechas_defensas_get_destroy');
-                Route::delete('tesis_ubs/parametros/fechas_defensas/eliminar/{id}', 'FechaDefensaTesisUbsController@destroy')->name('tesis_parametros_ubs.fechas_defensas_destroy');
-            //Lineas de Tesis
-                Route::get('tesis_ubs/parametros/lineas', 'LineaTesisUbsController@index')->name('tesis_parametros_ubs.lineas_index');
-                Route::get('tesis_ubs/parametros/lineas/all', 'LineaTesisUbsController@index_ajax')->name('tesis_parametros_ubs.lineas_index_ajax');
-                Route::get('tesis_ubs/parametros/lineas/show/{id}', 'LineaTesisUbsController@show')->name('tesis_parametros_ubs.lineas_show');
-                Route::post('tesis_ubs/parametros/lineas', 'LineaTesisUbsController@store')->name('tesis_parametros_ubs.lineas_store');
-                Route::get('tesis_ubs/parametros/lineas/{id}', 'LineaTesisUbsController@edit')->name('tesis_parametros_ubs.lineas_edit');
-                Route::post('tesis_ubs/parametros/lineas/{id}', 'LineaTesisUbsController@update')->name('tesis_parametros_ubs.lineas_update');
-                Route::get('tesis_ubs/parametros/lineas/inactivar/{id}', 'LineaTesisUbsController@get_unactivate')->name('tesis_parametros_ubs.lineas_get_unactivate');
-                Route::post('tesis_ubs/parametros/lineas/inactivar/{id}', 'LineaTesisUbsController@unactivate')->name('tesis_parametros_ubs.lineas_unactivate');
-                Route::get('tesis_ubs/parametros/lineas/activar/{id}', 'LineaTesisUbsController@get_activate')->name('tesis_parametros_ubs.lineas_get_activate');
-                Route::post('tesis_ubs/parametros/lineas/activar/{id}', 'LineaTesisUbsController@activate')->name('tesis_parametros_ubs.lineas_activate');
-                Route::get('tesis_ubs/parametros/lineas/eliminar/{id}', 'LineaTesisUbsController@get_destroy')->name('tesis_parametros_ubs.lineas_get_destroy');
-                Route::delete('tesis_ubs/parametros/lineas/eliminar/{id}', 'LineaTesisUbsController@destroy')->name('tesis_parametros_ubs.lineas_destroy');
-            //Bloques Anteproyectos
-                Route::get('tesis_ubs/parametros/bloques_anteproyectos', 'BloqueAnteproyectoTesisUbsController@index')->name('tesis_parametros_ubs.bloques_anteproyectos_index');
-                Route::get('tesis_ubs/parametros/bloques_anteproyectos/all', 'BloqueAnteproyectoTesisUbsController@index_ajax')->name('tesis_parametros_ubs.bloques_anteproyectos_index_ajax');
-                Route::get('tesis_ubs/parametros/bloques_anteproyectos/show/{id}', 'BloqueAnteproyectoTesisUbsController@show')->name('tesis_parametros_ubs.bloques_anteproyectos_show');
-                Route::post('tesis_ubs/parametros/bloques_anteproyectos', 'BloqueAnteproyectoTesisUbsController@store')->name('tesis_parametros_ubs.bloques_anteproyectos_store');
-                Route::get('tesis_ubs/parametros/bloques_anteproyectos/{id}', 'BloqueAnteproyectoTesisUbsController@edit')->name('tesis_parametros_ubs.bloques_anteproyectos_edit');
-                Route::post('tesis_ubs/parametros/bloques_anteproyectos/{id}', 'BloqueAnteproyectoTesisUbsController@update')->name('tesis_parametros_ubs.bloques_anteproyectos_update');
-                Route::get('tesis_ubs/parametros/bloques_anteproyectos/inactivar/{id}', 'BloqueAnteproyectoTesisUbsController@get_unactivate')->name('tesis_parametros_ubs.bloques_anteproyectos_get_unactivate');
-                Route::post('tesis_ubs/parametros/bloques_anteproyectos/inactivar/{id}', 'BloqueAnteproyectoTesisUbsController@unactivate')->name('tesis_parametros_ubs.bloques_anteproyectos_unactivate');
-                Route::get('tesis_ubs/parametros/bloques_anteproyectos/activar/{id}', 'BloqueAnteproyectoTesisUbsController@get_activate')->name('tesis_parametros_ubs.bloques_anteproyectos_get_activate');
-                Route::post('tesis_ubs/parametros/bloques_anteproyectos/activar/{id}', 'BloqueAnteproyectoTesisUbsController@activate')->name('tesis_parametros_ubs.bloques_anteproyectos_activate');
-                Route::get('tesis_ubs/parametros/bloques_anteproyectos/eliminar/{id}', 'BloqueAnteproyectoTesisUbsController@get_destroy')->name('tesis_parametros_ubs.bloques_anteproyectos_get_destroy');
-                Route::delete('tesis_ubs/parametros/bloques_anteproyectos/eliminar/{id}', 'BloqueAnteproyectoTesisUbsController@destroy')->name('tesis_parametros_ubs.bloques_anteproyectos_destroy');
-            //Bloques Borradores
-                Route::get('tesis_ubs/parametros/bloques_borradores', 'BloqueBorradorTesisUbsController@index')->name('tesis_parametros_ubs.bloques_borradores_index');
-                Route::get('tesis_ubs/parametros/bloques_borradores/all', 'BloqueBorradorTesisUbsController@index_ajax')->name('tesis_parametros_ubs.bloques_borradores_index_ajax');
-                Route::get('tesis_ubs/parametros/bloques_borradores/show/{id}', 'BloqueBorradorTesisUbsController@show')->name('tesis_parametros_ubs.bloques_borradores_show');
-                Route::post('tesis_ubs/parametros/bloques_borradores', 'BloqueBorradorTesisUbsController@store')->name('tesis_parametros_ubs.bloques_borradores_store');
-                Route::get('tesis_ubs/parametros/bloques_borradores/{id}', 'BloqueBorradorTesisUbsController@edit')->name('tesis_parametros_ubs.bloques_borradores_edit');
-                Route::post('tesis_ubs/parametros/bloques_borradores/{id}', 'BloqueBorradorTesisUbsController@update')->name('tesis_parametros_ubs.bloques_borradores_update');
-                Route::get('tesis_ubs/parametros/bloques_borradores/inactivar/{id}', 'BloqueBorradorTesisUbsController@get_unactivate')->name('tesis_parametros_ubs.bloques_borradores_get_unactivate');
-                Route::post('tesis_ubs/parametros/bloques_borradores/inactivar/{id}', 'BloqueBorradorTesisUbsController@unactivate')->name('tesis_parametros_ubs.bloques_borradores_unactivate');
-                Route::get('tesis_ubs/parametros/bloques_borradores/activar/{id}', 'BloqueBorradorTesisUbsController@get_activate')->name('tesis_parametros_ubs.bloques_borradores_get_activate');
-                Route::post('tesis_ubs/parametros/bloques_borradores/activar/{id}', 'BloqueBorradorTesisUbsController@activate')->name('tesis_parametros_ubs.bloques_borradores_activate');
-                Route::get('tesis_ubs/parametros/bloques_borradores/eliminar/{id}', 'BloqueBorradorTesisUbsController@get_destroy')->name('tesis_parametros_ubs.bloques_borradores_get_destroy');
-                Route::delete('tesis_ubs/parametros/bloques_borradores/eliminar/{id}', 'BloqueBorradorTesisUbsController@destroy')->name('tesis_parametros_ubs.bloques_borradores_destroy');
-    //Docentes
-        Route::get('docentes_ubs', 'DocenteUbsController@index')->name('docentes_ubs.index');
-        Route::post('docentes_ubs', 'DocenteUbsController@index');
-        Route::get('docentes_ubs/ver/{id}', 'DocenteUbsController@show')->name('docentes_ubs.show');
-        Route::get('docentes_ubs/agregar', 'DocenteUbsController@create')->name('docentes_ubs.create');
-        Route::post('docentes_ubs/agregar', 'DocenteUbsController@store')->name('docentes_ubs.store');
-        Route::get('docentes_ubs/editar/{id}', 'DocenteUbsController@edit')->name('docentes_ubs.edit');
-        Route::post('docentes_ubs/actualizar/{id}', 'DocenteUbsController@update')->name('docentes_ubs.update');
-        Route::post('docentes_ubs/inactivar/{id}', 'DocenteUbsController@unactivate')->name('docentes_ubs.unactivate');
-        Route::post('docentes_ubs/activar/{id}', 'DocenteUbsController@activate')->name('docentes_ubs.activate');
-        Route::get('docentes_ubs/eliminar/{id}', 'DocenteUbsController@destroy')->name('docentes_ubs.get_destroy');
-        Route::delete('docentes_ubs/eliminar/{id}', 'DocenteUbsController@destroy')->name('docentes_ubs.destroy');
-        Route::get('docentes_ubs/ver_legajo/{id}', 'DocenteUbsController@ver_legajo')->name('docentes_ubs.ver_legajo');
-        Route::post('docentes_ubs/subir_legajo/{id}', 'DocenteUbsController@subir_legajo')->name('docentes_ubs.subir_legajo');
-        Route::get('docentes_ubs/eliminar_legajo/{id}', 'DocenteUbsController@eliminar_legajo')->name('docentes_ubs.get_eliminar_legajo');
-        Route::delete('docentes_ubs/eliminar_legajo/{id}', 'DocenteUbsController@eliminar_legajo')->name('docentes_ubs.eliminar_legajo');
-
 //Ventas
     //Lista de Ventas
         Route::get('ventas', 'VentaController@index')->name('ventas.index');
@@ -1129,7 +806,6 @@ Auth::routes();
         Route::get('ventas/agregar', 'VentaController@create')->name('ventas.create');
         Route::post('ventas/agregar', 'VentaController@store')->name('ventas.store');
         Route::post('ventas/inactivar/{id}', 'VentaController@unactivate')->name('ventas.unactivate');
-        Route::post('ventas/activar/{id}', 'VentaController@activate')->name('ventas.activate');
         Route::get('ventas/eliminar/{id}', 'VentaController@destroy')->name('ventas.get_destroy');
         Route::delete('ventas/eliminar/{id}', 'VentaController@destroy')->name('ventas.destroy');
         Route::get('ventas/get_subunidades_negocios/{id}', 'VentaController@get_subunidades_negocios')->name('ventas.get_subunidades_negocios');
@@ -1142,7 +818,6 @@ Auth::routes();
         Route::get('recibos/agregar_unico/{id}', 'ReciboController@create_unique')->name('recibos.create_unique');
         Route::post('recibos/agregar', 'ReciboController@store')->name('recibos.store');
         Route::post('recibos/inactivar/{id}', 'ReciboController@unactivate')->name('recibos.unactivate');
-        Route::post('recibos/activar/{id}', 'ReciboController@activate')->name('recibos.activate');
         Route::get('recibos/eliminar/{id}', 'ReciboController@destroy')->name('recibos.get_destroy');
         Route::delete('recibos/eliminar/{id}', 'ReciboController@destroy')->name('recibos.destroy');
         Route::get('recibos/get_ventas/{id}', 'ReciboController@get_ventas')->name('recibos.get_ventas');
@@ -1150,12 +825,9 @@ Auth::routes();
         Route::get('cobros', 'CobroController@index')->name('cobros.index');
     //Notas de Creditos
         Route::get('notas_creditos', 'NotaCreditoController@index')->name('notas_creditos.index');
-        Route::get('notas_creditos/ver/{id}', 'NotaCreditoController@show')->name('notas_creditos.show');
         Route::get('notas_creditos/agregar', 'NotaCreditoController@create')->name('notas_creditos.create');
-        Route::get('notas_creditos/agregar_unico/{id}', 'NotaCreditoController@create_unique')->name('notas_creditos.create_unique');
         Route::post('notas_creditos/agregar', 'NotaCreditoController@store')->name('notas_creditos.store');
         Route::post('notas_creditos/inactivar/{id}', 'NotaCreditoController@unactivate')->name('notas_creditos.unactivate');
-        Route::post('notas_creditos/activar/{id}', 'NotaCreditoController@activate')->name('notas_creditos.activate');
         Route::get('notas_creditos/eliminar/{id}', 'NotaCreditoController@destroy')->name('notas_creditos.get_destroy');
         Route::delete('notas_creditos/eliminar/{id}', 'NotaCreditoController@destroy')->name('notas_creditos.destroy');
         Route::get('notas_creditos/get_ventas/{id}', 'NotaCreditoController@get_ventas')->name('notas_creditos.get_ventas');
@@ -1182,8 +854,6 @@ Auth::routes();
         Route::get('compras/ver/{id}', 'CompraController@show')->name('compras.show');
         Route::get('compras/agregar', 'CompraController@create')->name('compras.create');
         Route::post('compras/agregar', 'CompraController@store')->name('compras.store');
-        Route::get('compras/editar/{id}', 'CompraController@edit')->name('compras.edit');
-        Route::post('compras/actualizar/{id}', 'CompraController@update')->name('compras.update');
         Route::post('compras/inactivar/{id}', 'CompraController@unactivate')->name('compras.unactivate');
         Route::get('compras/eliminar/{id}', 'CompraController@destroy')->name('compras.destroy');
         Route::delete('compras/eliminar/{id}', 'CompraController@destroy');
@@ -1207,7 +877,6 @@ Auth::routes();
         Route::get('ordenes_pagos/eliminar/{id}', 'OrdenPagoController@destroy')->name('ordenes_pagos.destroy');
         Route::delete('ordenes_pagos/eliminar/{id}', 'OrdenPagoController@destroy');
         Route::get('ordenes_pagos/imprimir/{id}/{tipo}', 'OrdenPagoController@imprimir')->name('ordenes_pagos.imprimir');
-        Route::get('ordenes_pagos/agregar_desde_compra/{id}', 'OrdenPagoController@create_from_compra')->name('compras.create_from_compra');
         Route::get('ordenes_pagos/get_compra/{id}', 'OrdenPagoController@get_compra')->name('ordenes_pagos.get_compra');
         Route::get('ordenes_pagos/get_subunidades_negocios/{id}', 'OrdenPagoController@get_subunidades_negocios')->name('ordenes_pagos.get_subunidades_negocios');
     //Pagos
@@ -1357,7 +1026,6 @@ Auth::routes();
     //Movimientos
         //Movimientos de Cajas
             Route::get('movimientos_cajas', 'MovimientoCajaController@index')->name('movimientos_cajas.index');
-            Route::get('movimientos_cajas/ver/{id}', 'MovimientoCajaController@show')->name('movimientos_cajas.show');
             Route::get('movimientos_cajas/agregar', 'MovimientoCajaController@create')->name('movimientos_cajas.create');
             Route::post('movimientos_cajas/agregar', 'MovimientoCajaController@store')->name('movimientos_cajas.store');
             Route::get('movimientos_cajas/editar/{id}', 'MovimientoCajaController@edit')->name('movimientos_cajas.edit');
@@ -1370,7 +1038,6 @@ Auth::routes();
             Route::delete('movimientos_cajas/eliminar/{id}', 'MovimientoCajaController@destroy')->name('movimientos_cajas.destroy');
         //Movimientos de Bancos
             Route::get('movimientos_bancos', 'MovimientoBancoController@index')->name('movimientos_bancos.index');
-            Route::get('movimientos_bancos/ver/{id}', 'MovimientoBancoController@show')->name('movimientos_bancos.show');
             Route::get('movimientos_bancos/agregar', 'MovimientoBancoController@create')->name('movimientos_bancos.create');
             Route::post('movimientos_bancos/agregar', 'MovimientoBancoController@store')->name('movimientos_bancos.store');
             Route::get('movimientos_bancos/editar/{id}', 'MovimientoBancoController@edit')->name('movimientos_bancos.edit');
@@ -1383,7 +1050,6 @@ Auth::routes();
             Route::delete('movimientos_bancos/eliminar/{id}', 'MovimientoBancoController@destroy')->name('movimientos_bancos.destroy');
         //Movimientos entre Cajas y Bancos
             Route::get('movimientos_cajas_bancos', 'MovimientoCajaBancoController@index')->name('movimientos_cajas_bancos.index');
-            Route::get('movimientos_cajas_bancos/ver/{id}', 'MovimientoCajaBancoController@show')->name('movimientos_cajas_bancos.show');
             Route::get('movimientos_cajas_bancos/agregar', 'MovimientoCajaBancoController@create')->name('movimientos_cajas_bancos.create');
             Route::post('movimientos_cajas_bancos/agregar', 'MovimientoCajaBancoController@store')->name('movimientos_cajas_bancos.store');
             Route::get('movimientos_cajas_bancos/editar/{id}', 'MovimientoCajaBancoController@edit')->name('movimientos_cajas_bancos.edit');
@@ -1414,10 +1080,6 @@ Auth::routes();
         Route::post('cotizaciones', 'CotizacionController@store')->name('cotizaciones.store');
         Route::get('cotizaciones/{id}', 'CotizacionController@edit')->name('cotizaciones.edit');
         Route::post('cotizaciones/{id}', 'CotizacionController@update')->name('cotizaciones.update');
-        Route::get('cotizaciones/inactivar/{id}', 'CotizacionController@get_unactivate')->name('cotizaciones.get_unactivate');
-        Route::post('cotizaciones/inactivar/{id}', 'CotizacionController@unactivate')->name('cotizaciones.unactivate');
-        Route::get('cotizaciones/activar/{id}', 'CotizacionController@get_activate')->name('cotizaciones.get_activate');
-        Route::post('cotizaciones/activar/{id}', 'CotizacionController@activate')->name('cotizaciones.activate');
         Route::get('cotizaciones/eliminar/{id}', 'CotizacionController@get_destroy')->name('cotizaciones.get_destroy');
         Route::delete('cotizaciones/eliminar/{id}', 'CotizacionController@destroy')->name('cotizaciones.destroy');
     //Convenios
@@ -1484,6 +1146,9 @@ Auth::routes();
             Route::delete('roles/eliminar/{id}', 'RoleController@destroy')->name('roles.destroy');
         //Permisos
             Route::get('permisos', 'PermissionController@index')->name('permisos.index');
+    //Auditoría
+        Route::get('auditoria', 'AuditoriaController@index')->name('auditoria.index');
+        Route::get('auditoria/ver/{id}', 'AuditoriaController@show')->name('auditoria.show');
 
 //Parametros
     //Empresa
@@ -1577,17 +1242,13 @@ Auth::routes();
         Route::post('tipos_movimientos/activar/{id}', 'TipoMovimientoController@activate')->name('tipos_movimientos.activate');
         Route::get('tipos_movimientos/eliminar/{id}', 'TipoMovimientoController@get_destroy')->name('tipos_movimientos.get_destroy');
         Route::delete('tipos_movimientos/eliminar/{id}', 'TipoMovimientoController@destroy')->name('tipos_movimientos.destroy');
-    //Formas de Conocer USIL
+    //Formas de Conocer la Universidad
         Route::get('formas_conocimientos', 'FormaConocimientoController@index')->name('formas_conocimientos.index');
         Route::get('formas_conocimientos/all', 'FormaConocimientoController@index_ajax')->name('formas_conocimientos.index_ajax');
         Route::get('formas_conocimientos/ver/{id}', 'FormaConocimientoController@show')->name('formas_conocimientos.show');
         Route::post('formas_conocimientos', 'FormaConocimientoController@store')->name('formas_conocimientos.store');
         Route::get('formas_conocimientos/{id}', 'FormaConocimientoController@edit')->name('formas_conocimientos.edit');
         Route::post('formas_conocimientos/{id}', 'FormaConocimientoController@update')->name('formas_conocimientos.update');
-        Route::get('formas_conocimientos/inactivar/{id}', 'FormaConocimientoController@get_unactivate')->name('formas_conocimientos.get_unactivate');
-        Route::post('formas_conocimientos/inactivar/{id}', 'FormaConocimientoController@unactivate')->name('formas_conocimientos.unactivate');
-        Route::get('formas_conocimientos/activar/{id}', 'FormaConocimientoController@get_activate')->name('formas_conocimientos.get_activate');
-        Route::post('formas_conocimientos/activar/{id}', 'FormaConocimientoController@activate')->name('formas_conocimientos.activate');
         Route::get('formas_conocimientos/eliminar/{id}', 'FormaConocimientoController@get_destroy')->name('formas_conocimientos.get_destroy');
         Route::delete('formas_conocimientos/eliminar/{id}', 'FormaConocimientoController@destroy')->name('formas_conocimientos.destroy');
 
@@ -1622,6 +1283,9 @@ Auth::routes();
     Route::post('extension_universitaria/adjuntar_certificado/{id}', 'PantallaAlumnoController@adjuntar_certificado_extensiones_universitarias')->name('pantallas_alumnos.adjuntar_certificado_extensiones_universitarias');
     Route::get('extension_universitaria/eliminar_certificado/{id}', 'PantallaAlumnoController@eliminar_certificado_extensiones_universitarias')->name('pantallas_alumnos.get_eliminar_certificado_extensiones_universitarias');
     Route::delete('extension_universitaria/eliminar_certificado/{id}', 'PantallaAlumnoController@eliminar_certificado_extensiones_universitarias')->name('pantallas_alumnos.eliminar_certificado_extensiones_universitarias');
+    Route::get('extension_universitaria/catalogo/{id}', 'PantallaAlumnoController@catalogo_extensiones_universitarias')->name('pantallas_alumnos.catalogo_extensiones_universitarias');
+    Route::post('extension_universitaria/postular/{id}/{idExtension}', 'PantallaAlumnoController@postular_extension_universitaria')->name('pantallas_alumnos.postular_extension_universitaria');
+    Route::delete('extension_universitaria/cancelar_postulacion/{id}/{idDetalle}', 'PantallaAlumnoController@cancelar_postulacion_extension_universitaria')->name('pantallas_alumnos.cancelar_postulacion_extension_universitaria');
     Route::get('inscripcion_tfg/agregar/{id}', 'PantallaAlumnoController@create_inscripciones_tesis')->name('pantallas_alumnos.create_inscripciones_tesis');
     Route::get('inscripciones_tfg/{id}', 'PantallaAlumnoController@inscripciones_tesis')->name('pantallas_alumnos.inscripciones_tesis');
     Route::get('inscripcion_tfg/ver/{id}', 'PantallaAlumnoController@show_inscripciones_tesis')->name('pantallas_alumnos.show_inscripciones_tesis');

@@ -1,5 +1,5 @@
 @can('ver_legajos_docentes')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Legajo @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -51,15 +51,15 @@
                             </div>
                             <div class="col-lg-2 mb-3">
                                 <label class="form-label" for="sexo">Sexo</label>
-                                <input type="text" class="form-control" id="sexo" value="{{$docente->sexo->nombre}}" readonly>
+                                <input type="text" class="form-control" id="sexo" value="{{optional($docente->sexo)->nombre}}" readonly>
                             </div>
                             <div class="col-lg-2 mb-3">
                                 <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
-                                <input type="text" class="form-control" id="fecha_nacimiento" value="{{\Carbon\Carbon::parse($docente->fecha_nacimiento)->format('d/m/Y')}}" readonly>
+                                <input type="text" class="form-control" id="fecha_nacimiento" value="{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->format('d/m/Y') : 'Sin dato'}}" readonly>
                             </div>
                             <div class="col-lg-2 mb-3">
                                 <label class="form-label" for="edad">Edad</label>
-                                <input type="text" class="form-control" id="edad" value="{{\Carbon\Carbon::createFromDate($docente->fecha_nacimiento)->age}} años" readonly>
+                                <input type="text" class="form-control" id="edad" value="{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->age . ' años' : 'Sin dato'}}" readonly>
                             </div>
                         </div>
                         <div class="row">
@@ -99,9 +99,9 @@
                                                 <div class="card card-body text-center">
                                                     <div class="mx-auto mb-3">
                                                         @if ($legajo->extension == 'pdf')
-                                                            <img src="{{asset('storage/pdf.png')}}" alt="pdf_icon" style="width:50px; heigth:50px">
+                                                            <img src="{{asset('images/placeholders/pdf.svg')}}" alt="pdf_icon" style="width:50px; heigth:50px">
                                                         @else
-                                                            <img src="{{asset('storage/img.png')}}" alt="image_icon" style="width:50px; heigth:50px">
+                                                            <img src="{{asset('images/placeholders/img.svg')}}" alt="image_icon" style="width:50px; heigth:50px">
                                                         @endif
                                                         @can('eliminar_legajos_docentes')
                                                             <button type="button" class="btn btn-danger position-absolute translate-middle badge bg-danger delete-legajo-btn" data-id="{{$legajo->id}}" data-tipo="{{$legajo->tipoLegajo->nombre}}">Eliminar</button>

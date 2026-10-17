@@ -18,12 +18,12 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-6 mb-3">
-                                    <label class="form-label" for="nombre">Nombre</span></label>
+                                    <label class="form-label" for="nombre">Nombre</label>
                                     <input type="text" class="form-control" id="nombre" value="{{$convenio->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3 text-center">
                                     <div>
-                                        <label class="form-label">Tipo</span></label>
+                                        <label class="form-label">Tipo</label>
                                     </div>
                                     <div class="btn-group" role="group">
                                         <input type="radio" class="btn-check tipo1" id="tipo1" @if ($convenio->tipo == 'CO') checked @endif disabled>

@@ -109,8 +109,8 @@
     })
 
     $('#save-btn').click(function () {
-        var nombre = ($('#primer_nombre_docente').val()).toUpperCase();
-        var apellido = ($('#primer_apellido_docente').val()).toUpperCase();
+        var nombre = ($('#nombres_docente').val()).toUpperCase();
+        var apellido = ($('#apellidos_docente').val()).toUpperCase();
         const swalWithBootstrapButtons = Swal.mixin({
             customClass: {
                 confirmButton: 'btn btn-success me-2',
@@ -210,5 +210,22 @@
                 $(this).val(valor.slice(0, -1));
             }
         });
+    });
+
+    // Si el servidor rechazó el formulario, se vuelven a elegir departamento,
+    // ciudad y barrio (los arma este mismo script, así que old() no alcanza).
+    $(function () {
+        var viejoDepartamento = @json(old('departamento'));
+        var viejaCiudad = @json(old('ciudad'));
+        var viejoBarrio = @json(old('barrio'));
+        if (viejoDepartamento) {
+            $('#departamento').val(viejoDepartamento).selectpicker('refresh').trigger('change');
+            if (viejaCiudad) {
+                $('#ciudad').val(viejaCiudad).selectpicker('refresh').trigger('change');
+                if (viejoBarrio) {
+                    $('#barrio').val(viejoBarrio).selectpicker('refresh');
+                }
+            }
+        }
     });
 </script>

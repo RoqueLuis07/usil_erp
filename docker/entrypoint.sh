@@ -36,4 +36,8 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# El servidor integrado de PHP atiende una petición por vez; con varios procesos las pantallas con tablas grandes
+# (Extensión, Alumnos) no bloquean a los demás usuarios. Se puede ajustar con la variable PHP_CLI_SERVER_WORKERS.
+export PHP_CLI_SERVER_WORKERS="${PHP_CLI_SERVER_WORKERS:-4}"
+
 exec php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"

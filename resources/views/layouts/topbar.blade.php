@@ -6,19 +6,19 @@
                 <div class="navbar-brand-box horizontal-logo">
                     <a href="{{route('root')}}" class="logo logo-dark">
                         <span class="logo-sm">
-                            <img src="{{asset('storage/logo-sm.png')}}" alt="" height="22">
+                            <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="30">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{asset('storage/logo-dark.png')}}" alt="" height="22">
+                            <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="30">
                         </span>
                     </a>
 
                     <a href="{{route('root')}}" class="logo logo-light">
                         <span class="logo-sm">
-                            <img src="{{asset('storage/logo-sm.png')}}" alt="" height="22">
+                            <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="30">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{asset('storage/logo-light.png')}}" alt="" height="22">
+                            <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="30">
                         </span>
                     </a>
                 </div>

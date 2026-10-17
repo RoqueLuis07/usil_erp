@@ -1,5 +1,5 @@
 @can('ver_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Alumno @endsection
     @section('content')
         @component('components.breadcrumb')
@@ -31,15 +31,15 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="sexo">Sexo</label>
-                                    <input type="text" class="form-control" id="sexo" value="{{$alumno->sexo->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="sexo" value="{{optional($alumno->sexo)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
-                                    <input type="text" class="form-control" id="fecha_nacimiento" value="{{\Carbon\Carbon::parse($alumno->fecha_nacimiento)->format('d/m/Y')}}" readonly>
+                                    <input type="text" class="form-control" id="fecha_nacimiento" value="{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->format('d/m/Y') : 'Sin dato'}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="edad">Edad</label>
-                                    <input type="text" class="form-control" id="edad" value="{{\Carbon\Carbon::createFromDate($alumno->fecha_nacimiento)->age}} años" readonly>
+                                    <input type="text" class="form-control" id="edad" value="{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->age . ' años' : 'Sin dato'}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -66,19 +66,26 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-4 mb-3">
-                                    <label class="form-label" for="usuario">Usuario Asignado</label>
-                                    <input class="form-control" type="text" id="usuario" @if ($alumno->usuario_id) value="{{$alumno->usuario->name}} - {{$alumno->usuario->rol->name}}" @endif readonly>
+                                    <label class="form-label">Carrera</label>
+                                    <input type="text" class="form-control" value="{{ optional($alumno->Carrera)->nombre_fantasia ?? 'Sin carrera cargada' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label">Facultad</label>
+                                    <input type="text" class="form-control" value="{{ optional(optional($alumno->Carrera)->Facultad)->nombre }}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <div>
-                                        <label class="form-label" for="ubs">Alumno UBS</label>
-                                    </div>
-                                    <div class="btn-group" role="group">
-                                        <input type="radio" class="btn-check ubs1" id="ubs1" name="ubs" value="false" @if (old('ubs') == 'false' || $alumno->ubs == false) checked @endif disabled>
-                                        <label class="btn btn-outline-danger" for="ubs1">No</label>
-                                        <input type="radio" class="btn-check ubs2" id="ubs2" name="ubs" value="true" @if (old('ubs') == 'true' || $alumno->ubs == true) checked @endif disabled>
-                                        <label class="btn btn-outline-success" for="ubs2">Si</label>
-                                    </div>
+                                    <label class="form-label">Ingreso</label>
+                                    <input type="text" class="form-control text-center" value="{{ $alumno->ingreso_texto }}" readonly>
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label">Semestre actual</label>
+                                    <input type="text" class="form-control text-center fw-bold" value="{{ $alumno->semestre_actual ? $alumno->semestre_actual . '.º semestre' : '' }}" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 mb-3">
+                                    <label class="form-label" for="usuario">Usuario Asignado</label>
+                                    <input class="form-control" type="text" id="usuario" @if ($alumno->usuario_id) value="{{$alumno->usuario->name}} - {{$alumno->usuario->rol->name}}" @endif readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -249,13 +256,13 @@
                         <div class="col-lg-6 mb-3">
                             <label class="form-label" for="cargado_por">Cargado por:</label>
                             <br>
-                            {{$alumno->cargadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->created_at)->format('d/m/Y H:i:s')}}
+                            {{optional($alumno->cargadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->created_at)->format('d/m/Y H:i:s')}}
                         </div>
                         @if ($alumno->actualizado_por_id)
                             <div class="col-lg-6 mb-3">
                                 <label class="form-label" for="cargado_por">Última actualización hecha por:</label>
                                 <br>
-                                {{$alumno->actualizadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->updated_at)->format('d/m/Y H:i:s')}}
+                                {{optional($alumno->actualizadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($alumno->updated_at)->format('d/m/Y H:i:s')}}
                             </div>
                         @endif
                     </div>

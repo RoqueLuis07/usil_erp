@@ -1,5 +1,5 @@
 {{-- @can('generar_reportes_extensiones_universitarias') --}}
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Reporte de Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -68,6 +68,15 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="table-responsive table-card mt-3 mb-1">
+                                        @php
+                                            $total_horas = collect($extensiones)->sum('cantidad_horas');
+                                            $total_cumplidas = $alumno != '' ? collect($extensiones)->sum(function ($e) use ($alumno) {
+                                                return $e->extensionUniversitariaDetalles->where('alumno_id', $alumno->id)->sum('cantidad_horas');
+                                            }) : 0;
+                                            $total_alumnos = collect($extensiones)->sum(function ($e) {
+                                                return $e->extensionUniversitariaDetalles->count();
+                                            });
+                                        @endphp
                                         <table class="table align-middle text-center">
                                             <thead class="table-light">
                                                 <tr>
@@ -89,7 +98,7 @@
                                                     <tr>
                                                         <td>{{$extension->nombre}}</td>
                                                         <td>{{$extension->tipoExtension->nombre}}</td>
-                                                        <td>{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}} - {{$extension->docente->numero_documento}}</td>
+                                                        <td>{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido . ' - ' . $extension->docente->numero_documento : 'Sin asignar'}}</td>
                                                         <td>{{number_format($extension->cantidad_horas, 2, ',', '.')}}
                                                             @if ($extension->cantidad_horas == 1)
                                                                 hora
@@ -120,6 +129,19 @@
                                                     </tr>
                                                 @endforeach
                                             </tbody>
+                                            <tfoot>
+                                                <tr class="fw-bold">
+                                                    <td colspan="3" class="text-end" style="font-weight:bold;">TOTAL</td>
+                                                    <td class="text-center" style="font-weight:bold;">{{number_format($total_horas, 2, ',', '.')}} {{ $total_horas == 1 ? 'hora' : 'horas' }}</td>
+                                                    @if ($alumno != '')
+                                                        <td class="text-center" style="font-weight:bold;">{{number_format($total_cumplidas, 2, ',', '.')}} {{ $total_cumplidas == 1 ? 'hora' : 'horas' }}</td>
+                                                    @endif
+                                                    <td></td>
+                                                    @if ($alumno == '')
+                                                        <td class="text-center" style="font-weight:bold;">{{ $total_alumnos }} {{ $total_alumnos == 1 ? 'alumno' : 'alumnos' }}</td>
+                                                    @endif
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>

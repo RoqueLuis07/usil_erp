@@ -156,7 +156,7 @@
                                         <strong>El estudiante deberá cumplir los siguientes requerimientos para inscripción y aprobación de tema de Trabajo Final de Grado:</strong>
                                         <ol>
                                             <li>Documento de Admisión al día.</li>
-                                            <li>Tutor habilitado por la Coordinación de Trabajo Final de Grado USIL.</li>
+                                            <li>Tutor habilitado por la Coordinación de Trabajo Final de Grado.</li>
                                         </ol>
                                         <h6 class="text-info">Importante:</h6>
                                         <ol>

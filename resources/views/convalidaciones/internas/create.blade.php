@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="universidad_origen">Universidad Origen</label>
-                                    <input type="text" class="form-control" id="universidad_origen" value="{{$usil}}">
+                                    <input type="text" class="form-control" id="universidad_origen" value="{{$universidad}}">
                                     <input type="hidden" name="universidad_origen" value="434">
                                 </div>
                                 <div class="col-lg-2 mb-3">

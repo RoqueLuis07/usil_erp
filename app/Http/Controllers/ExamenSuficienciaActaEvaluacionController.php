@@ -151,7 +151,7 @@ class ExamenSuficienciaActaEvaluacionController extends Controller
             $existe_acta = ExamenSuficienciaActaEvaluacion::where('materia_id', $materia->id)->where('carrera_id', $carrera->id)->where('semestre_id', $semestre->id)->first();
 
             if ($existe_acta) {
-                return redirect()->route('examenes_suficiencia_.show_acta', $existe_acta->id)->with('error-message', 'El acta ya existe, no se puede vovler a generar, aquí te lo mostramos.');
+                return redirect()->route('examenes_suficiencia.show_acta', $existe_acta->id)->with('error-message', 'El acta ya existe, no se puede vovler a generar, aquí te lo mostramos.');
             }
 
             $acta = new ExamenSuficienciaActaEvaluacion();

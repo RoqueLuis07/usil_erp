@@ -1,5 +1,5 @@
 @can('crear_usuarios')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Agregar Usuario @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">

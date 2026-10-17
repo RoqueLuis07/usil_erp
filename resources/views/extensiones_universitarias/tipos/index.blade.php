@@ -1,5 +1,5 @@
 @can('ver_tipos_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Tipos de Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -37,7 +37,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive table-card mt-3 mb-1">
+                            <div class="table-responsive ac-tabla-fija table-card mt-3 mb-1">
                                 <table class="table align-middle table-nowrap" id="tipos_extensiones-list">
                                     <thead class="table-light">
                                         <tr>

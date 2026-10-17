@@ -1,8 +1,9 @@
 @can('ver_extensiones_universitarias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Extensión Universitaria @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
     @endsection
     @section('content')
         @component('components.breadcrumb')
@@ -14,7 +15,7 @@
         @include('extensiones_universitarias.modals.show-modals')
 
         <div class="row">
-            <form>
+            <div>
                 @csrf
                 <div class="col-lg-12">
                     <div class="card">
@@ -32,7 +33,7 @@
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="docente">Responsable</label>
-                                    <input type="text" class="form-control" id="docente" value="{{$extension->docente->primer_nombre}} {{$extension->docente->primer_apellido}}" readonly>
+                                    <input type="text" class="form-control" id="docente" value="{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -85,7 +86,11 @@
                                     <label class="form-label" for="proyecto">Proyecto</label>
                                     <div class="text-center">
                                         @can('ver_adjunto_proyectos_extensiones_universitarias')
-                                            <a type="button" class="btn btn-warning" href="{{asset($extension->ubicacion_proyecto)}}" target="_blank">Ver</a>
+                                            @if ($extension->ubicacion_proyecto && $extension->ubicacion_proyecto !== 'importado-sin-archivo')
+                                                <a type="button" class="btn btn-warning" href="{{asset($extension->ubicacion_proyecto)}}" target="_blank">Ver</a>
+                                            @else
+                                                <span class="text-muted" style="font-size:12px;">Sin archivo</span>
+                                            @endif
                                         @endcan
                                         @if ($extension->estado == 'PE')
                                             @can('cambiar_adjunto_proyectos_extensiones_universitarias')
@@ -119,6 +124,38 @@
                                     @endif
                                 @endif
                             </div>
+                            <div class="row">
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="linea_extension">Línea de Extensión</label>
+                                    <input type="text" class="form-control" id="linea_extension" value="{{ $extension->linea_extension ?? 'Sin línea' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="problematica">Problemática</label>
+                                    <input type="text" class="form-control" id="problematica" value="{{ $extension->problematica ? $extension->problematica . ' - ' . $extension->problematica_nombre : 'Sin definir' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="presupuesto">Presupuesto</label>
+                                    <input type="text" class="form-control text-end" id="presupuesto" value="{{ !is_null($extension->presupuesto) ? 'Gs. ' . number_format($extension->presupuesto, 0, ',', '.') : '—' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="cantidad_beneficiados">N° de Beneficiados</label>
+                                    <input type="text" class="form-control text-center" id="cantidad_beneficiados" value="{{ !is_null($extension->cantidad_beneficiados) ? number_format($extension->cantidad_beneficiados, 0, ',', '.') : '—' }}" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="periodo_actividad">Período de la Actividad</label>
+                                    <input type="text" class="form-control text-center" id="periodo_actividad" value="{{ $extension->periodo ?? '—' }}" readonly>
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="materia">Materia</label>
+                                    <input type="text" class="form-control" id="materia" value="{{ optional($extension->materia)->nombre_fantasia ?? 'Sin materia asociada' }}" readonly>
+                                </div>
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="encuesta_satisfaccion">Encuesta de satisfacción</label>
+                                    <input type="text" class="form-control text-center" id="encuesta_satisfaccion" value="{{ is_null($extension->encuesta_satisfaccion) ? '—' : ($extension->encuesta_satisfaccion ? 'Sí' : 'No') }}" readonly>
+                                </div>
+                            </div>
 							<div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_inicio">Fecha de Inicio</label>
@@ -127,6 +164,14 @@
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_fin">Fecha de Fin</label>
                                     <input type="text" class="form-control" id="fecha_fin" value="{{\Carbon\Carbon::parse($extension->fecha_fin)->format('d/m/Y')}}" readonly>
+                                </div>
+                                <div class="col-lg-2 mb-3">
+                                    <label class="form-label" for="cupo_maximo">Cupo</label>
+                                    <input type="text" class="form-control text-center" id="cupo_maximo" value="{{$extension->cupo_maximo ? $extension->cuposDisponibles() . ' / ' . $extension->cupo_maximo . ' disponibles' : 'Sin límite'}}" readonly>
+                                </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label class="form-label" for="carreras_habilitadas">Carreras Habilitadas</label>
+                                    <input type="text" class="form-control" id="carreras_habilitadas" value="{{$extension->carreras->isEmpty() ? 'Todas las carreras' : $extension->carreras->pluck('nombre_fantasia')->implode(', ')}}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -149,45 +194,10 @@
                                     @endcan
                                 </div>
                                 <div class="card-body">
-                                    @foreach ($extension->extensionUniversitariaDetalles as $key =>$detalle)
-                                        <div class="mb-2 fila" id="fila-{{$key}}">
-                                            <div class="row d-flex justify-content-center">
-                                                <div class="col-5 col-lg-2 mb-2 text-center" id="div-numero_documento-{{$key}}">
-                                                    @if ($key == 0) <label class="form-label label-numero_documento">N° Documento</label> @endif
-                                                    <input type="text" class="form-control text-center" id="numero_documento-{{$key}}" value="{{$detalle->alumno->numero_documento}}">
-                                                </div>
-                                                <div class="col-5 col-lg-3 mb-2 text-center" id="div-alumno-{{$key}}">
-                                                    @if ($key == 0) <label class="form-label label-alumno">Alumno</label> @endif
-                                                    <input type="text" class="form-control text-center" id="alumno-{{$key}}" value="{{$detalle->alumno->primer_nombre}} {{$detalle->alumno->primer_apellido}}">
-                                                </div>
-                                                <div class="col-3 col-lg-2 mb-2 text-center" id="div-cantidad_horas_alumno-{{$key}}">
-                                                    @if ($key == 0) <label class="form-label label-cantidad_horas_alumno">Cant. Horas</label> @endif
-                                                    @php
-                                                        if ($detalle->cantidad_horas != 1) {
-                                                            $texto_alumno = 'horas';
-                                                        } else {
-                                                            $texto_alumno = 'hora';
-                                                        }
-                                                    @endphp
-                                                    <input type="text" class="form-control text-center" id="cantidad_horas_alumno-{{$key}}" @if ($detalle->cantidad_horas) value="{{number_format($detalle->cantidad_horas, 2, ',', '.')}} {{$texto_alumno}}" @else value="0 {{$texto_alumno}}" @endif readonly>
-                                                </div>
-                                                @if ($extension->estado == 'IN' && $extension->tiene_certificado)
-                                                    <div class="col-lg-2 mb-2 text-center">
-                                                        @if ($key == 0)
-                                                            <div>
-                                                                <label class="form-label" for="show_certificado-{{$key}}">Certificado</label>
-                                                            </div>
-                                                        @endif
-                                                        @if ($detalle->url_certificado)
-                                                            <a type="button" class="btn btn-sm btn-info" href="{{asset($detalle->url_certificado)}}" target="_blank" id="show_certificado-{{$key}}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Visualizar"><i class="ri-eye-fill"></i></a>
-                                                        @else
-                                                            <button type="button" class="btn btn-sm btn-danger" id="show_certificado-{{$key}}" disabled><i class="ri-close-fill"></i></button>
-                                                        @endif
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                    @if ($puede_gestionar_alumnos)
+                                        @include('extensiones_universitarias.partials.agregar-alumno')
+                                    @endif
+                                    @include('extensiones_universitarias.partials.participantes')
                                 </div>
                             </div>
                         </div>
@@ -212,12 +222,14 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     @endsection
     @section('script')
         <script src="{{ URL::asset('build/js/app.js') }}"></script>
         <script src="{{ URL::asset('build/libs/sweetalert2/sweetalert2.all.min.js') }}"></script>
+        <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
+        @include('extensiones_universitarias.partials.alumnos-scripts')
         @include('extensiones_universitarias.scripts.show-scripts')
     @endsection
 @endcan

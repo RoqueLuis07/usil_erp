@@ -142,23 +142,7 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3 text-center @if ($articulo->compra_venta == 'COMPRA') d-none @endif" id="div-carrera_curso">
-                                    <div>
-                                        <label class="form-label" for="carrera_curso">Carrera / Curso</label>
-                                    </div>
-                                    <div class="btn-group @error('carrera_curso') is-invalid @enderror" role="group">
-                                        <input type="radio" class="btn-check carrera_curso1" id="carrera_curso1" name="carrera_curso" value="carrera" @if (old('carrera_curso') == 'carrera' || $articulo->carrera_curso == 'CARRERA') checked @endif>
-                                        <label class="btn btn-outline-info" for="carrera_curso1">Carrera</label>
-                                        <input type="radio" class="btn-check carrera_curso2" id="carrera_curso2" name="carrera_curso" value="curso" @if (old('carrera_curso') == 'curso' || $articulo->carrera_curso == 'CURSO') checked @endif>
-                                        <label class="btn btn-outline-info" for="carrera_curso2">Curso</label>
-                                    </div>
-                                    @error('carrera_curso')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-3 mb-3 @if(old('carrera_curso') != 'carrera' && !$articulo->carrera) d-none @endif" id="div-carrera">
+                                <div class="col-lg-3 mb-3 @if (old('compra_venta') != 'venta' && $articulo->compra_venta != 'VENTA') d-none @endif" id="div-carrera">
                                     <label class="form-label" for="carrera">Carrera <span class="text-danger">(*)</span></label>
                                     <select class="form-control selectpicker @error('carrera') is-invalid @enderror" id="carrera" name="carrera" data-live-search="true">
                                         <option value="" selected disabled>Seleccionar...</option>
@@ -171,24 +155,6 @@
                                         @endforeach
                                     </select>
                                     @error('carrera')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-3 mb-3 @if(old('carrera_curso') != 'curso' && !$articulo->curso) d-none @endif" id="div-curso">
-                                    <label class="form-label" for="curso">Curso <span class="text-danger">(*)</span></label>
-                                    <select class="form-control selectpicker @error('curso') is-invalid @enderror" id="curso" name="curso" data-live-search="true">
-                                        <option value="" selected disabled>Seleccionar...</option>
-                                        @foreach ($cursos as $curso)
-                                            @if ($articulo->curso)
-                                                <option value="{{$curso->id}}" @if (old('curso') == strval($curso->id) || $articulo->curso->id) selected @endif data-subtext="{{$curso->tipoCurso->nombre}}">{{$curso->nombre_fantasia}}</option>
-                                            @else
-                                                <option value="{{$curso->id}}" @if (old('curso') == strval($curso->id)) selected @endif data-subtext="{{$curso->tipoCurso->nombre}}">{{$curso->nombre_fantasia}}</option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                    @error('curso')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
                                         </span>

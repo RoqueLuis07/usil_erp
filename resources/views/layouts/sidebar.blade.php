@@ -4,18 +4,18 @@
     <div class="navbar-brand-box">
         <a href="{{route('root')}}" class="logo logo-dark">
             <span class="logo-sm">
-                <img src="{{asset('storage/logos/logo-dark-sm.png')}}" alt="" height="50">
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="40">
             </span>
             <span class="logo-lg">
-                <img src="{{asset('storage/logos/logo-dark.png')}}" alt="" height="50">
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="40">
             </span>
         </a>
         <a href="{{route('root')}}" class="logo logo-light">
             <span class="logo-sm">
-                <img src="{{asset('storage/logos/logo-light-sm.png')}}" alt="" height="50">
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="40">
             </span>
             <span class="logo-lg">
-                <img src="{{asset('storage/logos/logo-light.png')}}" alt="" height="50">
+                <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" alt="{{ config('institucion.nombre') }}" height="40">
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-3xl header-item float-end btn-vertical-sm-hover shadow-none" id="vertical-hover">
@@ -27,7 +27,7 @@
             <div id="two-column-menu">
             </div>
             <ul class="navbar-nav" id="navbar-nav">
-                @unless(Auth::user()->hasAnyRole(['ALUMNO', 'DOCENTE']))
+                @unless(Auth::user()->hasAnyRole(['ALUMNO', 'DOCENTE', 'ENCARGADO_DOCENTE']))
                     <li class="menu-title"><span data-key="t-menu">Menú Principal</span></li>
                     @if (Auth::user()->can('crear_ventas_cajero') || Auth::user()->can('ver_arqueos_cajero') || Auth::user()->can('crear_arqueos_cajas_cajero'))
                         <li class="nav-item">
@@ -65,7 +65,7 @@
                             <a class="nav-link menu-link collapsed" href="#sidebarAcademico" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAcademico">
                                 <i class="bi bi-mortarboard"></i> <span data-key="t-academico">Académico</span>
                             </a>
-                            <div class="menu-dropdown collapse {{ request()->routeIs('alumnos.*', 'certificados_estudios.*', 'matriculaciones.*', 'inscripciones.*', 'docentes.*', 'examenes_suficiencia.*', 'materias_semestres.*', 'materias_evaluaciones.*', 'actas_evaluaciones.*', 'clases_materias.*', 'alumnos_asistencias.*', 'docentes_salarios.*', 'convalidaciones.*', 'convalidaciones_externas.*', 'convalidaciones_internas.*', 'tesis.*', 'inscripciones_temas_tesis.*', 'anteproyectos_tesis.*', 'proyectos_tesis.*', 'borradores_tesis.*', 'fechas_defensas_tesis.*', 'tipos_tesis.*', 'areas_tesis.*', 'lineas_tesis.*', 'requerimientos_entregas_tesis.*', 'bloques_anteproyectos_tesis.*', 'bloques_proyectos_tesis.*', 'bloques_borradores_tesis.*', 'rubricas_tesis.*', 'tutorias.*', 'tutorias_clases.*', 'tutorias_evaluaciones.*', 'tutorias_precios.*', 'extensiones_universitarias.*', 'solicitudes.*', 'encuestas.*', 'reportes_academicos.*', 'parametros_academicos.*', 'programas.*', 'facultades.*', 'carreras.*', 'tipos_carreras.*', 'mallas.*', 'materias.*',  'semestres.*', 'semestre_mallas.*', 'semestres_mallas_materias.*', 'semestres_mallas_materias_horarios.*', 'modalidades.*', 'mallas_espejos.*', 'escalas.*', 'evaluaciones.*', 'tipos_evaluaciones.*', 'tipos_extensiones_universitarias.*', 'requerimientos_extensiones_universitarias.*', 'alumnos_formaciones.*', 'instituciones_educativas.*', 'tipos_solicitudes.*') ? 'show' : '' }}" id="sidebarAcademico">
+                            <div class="menu-dropdown collapse {{ request()->routeIs('alumnos.*', 'certificados_estudios.*', 'matriculaciones.*', 'inscripciones.*', 'docentes.*', 'examenes_suficiencia.*', 'materias_semestres.*', 'materias_evaluaciones.*', 'actas_evaluaciones.*', 'clases_materias.*', 'alumnos_asistencias.*', 'docentes_salarios.*', 'convalidaciones.*', 'convalidaciones_externas.*', 'convalidaciones_internas.*', 'tesis.*', 'inscripciones_temas_tesis.*', 'anteproyectos_tesis.*', 'proyectos_tesis.*', 'borradores_tesis.*', 'fechas_defensas_tesis.*', 'tipos_tesis.*', 'areas_tesis.*', 'lineas_tesis.*', 'requerimientos_entregas_tesis.*', 'bloques_anteproyectos_tesis.*', 'bloques_proyectos_tesis.*', 'bloques_borradores_tesis.*', 'rubricas_tesis.*', 'tutorias.*', 'tutorias_clases.*', 'tutorias_evaluaciones.*', 'tutorias_precios.*', 'extensiones_universitarias.*', 'solicitudes.*', 'encuestas.*', 'reportes_academicos.*', 'parametros_academicos.*', 'programas.*', 'facultades.*', 'carreras.*', 'tipos_carreras.*', 'mallas.*', 'materias.*',  'semestres.*', 'semestre_mallas.*', 'semestres_mallas_materias.*', 'semestres_mallas_materias_horarios.*', 'modalidades.*', 'escalas.*', 'evaluaciones.*', 'tipos_evaluaciones.*', 'tipos_extensiones_universitarias.*', 'requerimientos_extensiones_universitarias.*', 'alumnos_formaciones.*', 'instituciones_educativas.*', 'tipos_solicitudes.*') ? 'show' : '' }}" id="sidebarAcademico">
                                 <ul class="nav nav-sm flex-column">
                                     @can('ver_alumnos')
                                         <li class="nav-item">
@@ -173,9 +173,32 @@
                                         </li>
                                     @endif
                                     @can('ver_extensiones_universitarias')
-                                        <li class="nav-item">
-                                            <a href="{{route('extensiones_universitarias.index')}}" class="nav-link {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-extensiones-universitarias">Extensiones Univ.</a>
-                                        </li>
+                                        @if (Auth::user()->can('ver_tipos_extensiones_universitarias') || Auth::user()->can('ver_requerimientos_extensiones_universitarias'))
+                                            <li class="nav-item">
+                                                <a class="nav-link menu-link collapsed" href="#sidebarExtensionesUniversitarias" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarExtensionesUniversitarias" data-key="t-extensiones-universitarias">Extensiones Univ.</a>
+                                                <div class="menu-dropdown collapse {{ request()->routeIs('extensiones_universitarias.*', 'tipos_extensiones_universitarias.*', 'requerimientos_extensiones_universitarias.*') ? 'show' : '' }}" id="sidebarExtensionesUniversitarias">
+                                                    <ul class="nav nav-sm flex-column">
+                                                        <li class="nav-item">
+                                                            <a href="{{route('extensiones_universitarias.index')}}" class="nav-link {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-extensiones-universitarias-actividades">Actividades</a>
+                                                        </li>
+                                                        @can('ver_tipos_extensiones_universitarias')
+                                                            <li class="nav-item">
+                                                                <a href="{{route('tipos_extensiones_universitarias.index')}}" class="nav-link {{ request()->routeIs('tipos_extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-tipos-extensiones-universitarias">Tipos de Actividad</a>
+                                                            </li>
+                                                        @endcan
+                                                        @can('ver_requerimientos_extensiones_universitarias')
+                                                            <li class="nav-item">
+                                                                <a href="{{route('requerimientos_extensiones_universitarias.show')}}" class="nav-link {{ request()->routeIs('requerimientos_extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-requerimientos-extensiones-universitarias">Requerimientos</a>
+                                                            </li>
+                                                        @endcan
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        @else
+                                            <li class="nav-item">
+                                                <a href="{{route('extensiones_universitarias.index')}}" class="nav-link {{ request()->routeIs('extensiones_universitarias.*') ? 'active' : '' }}" data-key="t-extensiones-universitarias">Extensiones Univ.</a>
+                                            </li>
+                                        @endif
                                     @endcan
                                     @can('ver_solicitudes')
                                         <li class="nav-item">
@@ -213,118 +236,7 @@
                                     @endif
                                     @can('ver_parametros_academicos')
                                         <li class="nav-item">
-                                            <a href="{{route('parametros_academicos.index')}}" class="nav-link {{ request()->routeIs('parametros_academicos.*', 'programas.*', 'facultades.*', 'carreras.*', 'tipos_carreras.*', 'mallas.*', 'materias.*', 'correlatividades.*', 'semestres.*', 'modalidades.*', 'mallas_espejos.*', 'escalas.*', 'evaluaciones.*', 'tipos_evaluaciones.*', 'tipos_extensiones_universitarias.*', 'requerimientos_extensiones_universitarias.*', 'alumnos_formaciones.*', 'instituciones_educativas.*', 'tipos_solicitudes.*') ? 'active' : '' }}" data-key="t-parametros-academicos">Parámetros</a>
-                                        </li>
-                                    @endcan
-                                </ul>
-                            </div>
-                        </li>
-                    @endif
-                    @if (Auth::user()->can('ver_alumnos_ubs') || Auth::user()->can('ver_inscripciones_ubs') || Auth::user()->can('ver_cursos_ubs') || Auth::user()->can('ver_maestrias_ubs') || Auth::user()->can('ver_docentes_ubs'))
-                        <li class="nav-item">
-                            <a class="nav-link menu-link collapsed" href="#sidebarUBS" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUBS">
-                                <i class="ri-group-line"></i> <span data-key="t-ubs">Escuela de Negocios</span>
-                            </a>
-                            <div class="menu-dropdown collapse {{ request()->routeIs('alumnos_ubs.*', 'certificados_estudios_ubs.*', 'inscripciones_ubs.*', 'cursos.*', 'modulos.*', 'alumnos_asistencias_ubs.*', 'cursos_certificados.*', 'tipos_cursos.*', 'maestrias.*', 'modulos_maestrias.*', 'alumnos_notas_ubs.*', 'actas_evaluaciones_ubs.*', 'extensiones_universitarias_ubs.*', 'tipos_extensiones_universitarias_ubs.*', 'requerimientos_extensiones_universitarias_ubs.*', 'tesis_ubs.*', 'tesis_parametros_ubs.*', 'docentes_ubs.*') ? 'show' : '' }}" id="sidebarUBS">
-                                <ul class="nav nav-sm flex-column">
-                                    @can('ver_alumnos_ubs')
-                                        <li class="nav-item">
-                                            <a href="{{route('alumnos_ubs.index')}}" class="nav-link {{ request()->routeIs('alumnos_ubs.*', 'certificados_estudios_ubs.*') ? 'active' : '' }}" data-key="t-alumnos-ubs">Alumnos</a>
-                                        </li>
-                                    @endcan
-                                    @can('ver_inscripciones_ubs')
-                                        <li class="nav-item">
-                                            <a href="{{route('inscripciones_ubs.index')}}" class="nav-link {{ request()->routeIs('inscripciones_ubs.*') ? 'active' : '' }}" data-key="t-inscripciones-ubs">Inscripciones</a>
-                                        </li>
-                                    @endcan
-                                    @if (Auth::user()->can('ver_cursos_ubs') || Auth::user()->can('ver_modulos_ubs') || Auth::user()->can('ver_tipos_cursos_ubs'))
-                                        <li class="nav-item">
-                                            <a href="#sidebarCursos" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarCursos" data-key="t-cursos">Cursos</a>
-                                            <div class="collapse menu-dropdown {{ request()->routeIs('cursos.*', 'alumnos_asistencias_ubs.*', 'cursos_certificados.*', 'modulos.*', 'tipos_cursos.*') ? 'show' : '' }}" id="sidebarCursos">
-                                                <ul class="nav nav-sm flex-column">
-                                                    @can('ver_cursos_ubs')
-                                                        <li class="nav-item">
-                                                            <a href="{{route('cursos.index')}}" class="nav-link {{ request()->routeIs('cursos.*', 'alumnos_asistencias_ubs.*', 'cursos_certificados.*') ? 'active' : '' }}" data-key="t-cursos">Lista de Cursos</a>
-                                                        </li>
-                                                    @endcan
-                                                    @can('ver_modulos_ubs')
-                                                        <li class="nav-item">
-                                                            <a href="{{route('modulos.index')}}" class="nav-link {{ request()->routeIs('modulos.*') ? 'active' : '' }}" data-key="t-modulos">Módulos</a>
-                                                        </li>
-                                                    @endcan
-                                                    @can('ver_tipos_cursos_ubs')
-                                                        <li class="nav-item">
-                                                            <a href="{{route('tipos_cursos.index')}}" class="nav-link {{ request()->routeIs('tipos_cursos.*') ? 'active' : '' }}" data-key="t-tipos-cursos">Tipos de Cursos</a>
-                                                        </li>
-                                                    @endcan
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    @endif
-                                    @if (Auth::user()->can('ver_maestrias_ubs') || Auth::user()->can('ver_modulos_maestrias_ubs') || Auth::user()->can('ver_extensiones_ubs') || Auth::user()->can('ver_tesis_ubs'))
-                                        <li class="nav-item">
-                                            <a href="#sidebarMaestrias" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarMaestrias" data-key="t-maestrias">Maestrías</a>
-                                            <div class="collapse menu-dropdown {{ request()->routeIs('maestrias.*', 'modulos_maestrias.*', 'alumnos_notas_ubs.*', 'actas_evaluaciones_ubs.*', 'extensiones_universitarias_ubs.*', 'tipos_extensiones_universitarias_ubs.*', 'requerimientos_extensiones_universitarias_ubs.*', 'tesis_ubs.*', 'tesis_parametros_ubs.*') ? 'show' : '' }}" id="sidebarMaestrias">
-                                                <ul class="nav nav-sm flex-column">
-                                                    @can('ver maestrias_ubs')
-                                                        <li class="nav-item">
-                                                            <a href="{{route('maestrias.index')}}" class="nav-link {{ request()->routeIs('maestrias.*', 'alumnos_notas_ubs.*', 'actas_evaluaciones_ubs.*') ? 'active' : '' }}" data-key="t-maestrias">Lista de Maestrías</a>
-                                                        </li>
-                                                    @endcan
-                                                    @can('ver_modulos_maestrias_ubs')
-                                                        <li class="nav-item">
-                                                            <a href="{{route('modulos_maestrias.index')}}" class="nav-link {{ request()->routeIs('modulos_maestrias.*') ? 'active' : '' }}" data-key="t-modulos-maestrias">Módulos</a>
-                                                        </li>
-                                                    @endcan
-                                                    @if (Auth::user()->can('ver_extensiones_ubs') || Auth::user()->can('ver_tipos_extensiones_ubs') || Auth::user()->can('ver_requerimientos_extensiones_ubs'))
-                                                        <li class="nav-item">
-                                                            <a href="#sidebarExtensionesUniversitariasUbs" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarExtensionesUniversitariasUbs" data-key="t-extensiones-universitarias-ubs">Extensiones Univ.</a>
-                                                            <div class="collapse menu-dropdown {{ request()->routeIs('extensiones_universitarias_ubs.*', 'tipos_extensiones_universitarias_ubs.*', 'requerimientos_extensiones_universitarias_ubs.*') ? 'show' : '' }}" id="sidebarExtensionesUniversitariasUbs">
-                                                                <ul class="nav nav-sm flex-column">
-                                                                    @can('ver_extensiones_ubs')
-                                                                        <li class="nav-item">
-                                                                            <a href="{{route('extensiones_universitarias_ubs.index')}}" class="nav-link {{ request()->routeIs('extensiones_universitarias_ubs.*') ? 'active' : '' }}" data-key="t-extensiones-universitarias-ubs">Lista de Ext. Univ.</a>
-                                                                        </li>
-                                                                    @endcan
-                                                                    @can('ver_tipos_extensiones_ubs')
-                                                                        <li class="nav-item">
-                                                                            <a href="{{route('tipos_extensiones_universitarias_ubs.index')}}" class="nav-link {{ request()->routeIs('tipos_extensiones_universitarias_ubs.*') ? 'active' : '' }}" data-key="t-tipos-extensiones-universitarias-ubs">Tipos de Activ.</a>
-                                                                        </li>
-                                                                    @endcan
-                                                                    @can('ver_requerimientos_extensiones_ubs')
-                                                                        <li class="nav-item">
-                                                                            <a href="{{route('requerimientos_extensiones_universitarias_ubs.show')}}" class="nav-link {{ request()->routeIs('requerimientos_extensiones_universitarias_ubs.*') ? 'active' : '' }}" data-key="t-requerimientos-extensiones-universitarias-ubs">Requerimientos</a>
-                                                                        </li>
-                                                                    @endcan
-                                                                </ul>
-                                                            </div>
-                                                        </li>
-                                                    @endif
-                                                    @if (Auth::user()->can('ver_tesis_ubs') || Auth::user()->can('ver_parametros_tesis_ubs'))
-                                                        <li class="nav-item">
-                                                            <a href="#sidebarTesisUbs" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarTesisUbs" data-key="t-tesis-ubs">Tesis</a>
-                                                            <div class="collapse menu-dropdown {{ request()->routeIs('tesis_ubs.*', 'tesis_parametros_ubs.*') ? 'show' : '' }}" id="sidebarTesisUbs">
-                                                                <ul class="nav nav-sm flex-column">
-                                                                    @can('ver_tesis_ubs')
-                                                                        <li class="nav-item">
-                                                                            <a href="{{route('tesis_ubs.index')}}" class="nav-link {{ request()->routeIs('tesis_ubs.*') ? 'active' : '' }}" data-key="t-lista-tesis-ubs">Lista de Tesis</a>                                                                </li>
-                                                                    @endcan
-                                                                    @can('ver_parametros_tesis_ubs')
-                                                                        <li class="nav-item">
-                                                                            <a href="{{route('tesis_parametros_ubs.index')}}" class="nav-link {{ request()->routeIs('tesis_parametros_ubs.*') ? 'active' : '' }}" data-key="t-tesis-parametros-ubs">Parámetros</a>
-                                                                        </li>
-                                                                    @endcan
-                                                                </ul>
-                                                            </div>
-                                                        </li>
-                                                    @endif
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    @endif
-                                    @can('ver_docentes_ubs')
-                                        <li class="nav-item">
-                                            <a href="{{route('docentes_ubs.index')}}" class="nav-link {{ request()->routeIs('docentes_ubs.*') ? 'active' : '' }}" data-key="t-docentes-ubs">Docentes</a>
+                                            <a href="{{route('parametros_academicos.index')}}" class="nav-link {{ request()->routeIs('parametros_academicos.*', 'programas.*', 'facultades.*', 'carreras.*', 'tipos_carreras.*', 'mallas.*', 'materias.*', 'correlatividades.*', 'semestres.*', 'modalidades.*', 'escalas.*', 'evaluaciones.*', 'tipos_evaluaciones.*', 'tipos_extensiones_universitarias.*', 'requerimientos_extensiones_universitarias.*', 'alumnos_formaciones.*', 'instituciones_educativas.*', 'tipos_solicitudes.*') ? 'active' : '' }}" data-key="t-parametros-academicos">Parámetros</a>
                                         </li>
                                     @endcan
                                 </ul>
@@ -650,7 +562,7 @@
                                     @endcan
                                     @can('ver_formas_conocimientos')
                                         <li class="nav-item">
-                                            <a href="{{route('formas_conocimientos.index')}}" class="nav-link {{ request()->routeIs('formas_conocimientos.*') ? 'active' : '' }}" data-key="t-formas-conocimientos">Formas de Conocer USIL</a>
+                                            <a href="{{route('formas_conocimientos.index')}}" class="nav-link {{ request()->routeIs('formas_conocimientos.*') ? 'active' : '' }}" data-key="t-formas-conocimientos">Formas de Conocer la Institución</a>
                                         </li>
                                     @endcan
                                 </ul>
@@ -793,7 +705,7 @@
                         </li>
                     @endcan
                 @endhasanyrole
-                @hasanyrole(['DOCENTE', 'SUPERADMIN'])
+                @hasanyrole(['DOCENTE', 'ENCARGADO_DOCENTE', 'SUPERADMIN'])
                     <li class="menu-title"><span data-key="t-menu-alumnos">Menú Docentes</span></li>
                     @can('ver_dashboard_docentes_pantalla')
                         <li class="nav-item">

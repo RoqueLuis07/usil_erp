@@ -59,7 +59,7 @@ class MatriculacionController extends Controller
                             ->orderBy('id', 'asc')
                             ->first();
 
-            if (!$request->filtro_periodo && ($request->filtro_fecha || $request->filtro_alumno || $request->filtro_ingreso || $request->filtro_programa || $request->filtro_carrera || $request->filtro_carrera_siu)) {
+            if (!$request->filtro_periodo && ($request->filtro_fecha || $request->filtro_alumno || $request->filtro_ingreso || $request->filtro_programa || $request->filtro_carrera)) {
                 $filtro_periodo = null;
             } else {
                 $filtro_periodo = $semestre->id;
@@ -71,11 +71,10 @@ class MatriculacionController extends Controller
             $filtro_ingreso = $request->filtro_ingreso;
             $filtro_programa = $request->filtro_programa;
             $filtro_carrera = $request->filtro_carrera;
-            $filtro_carrera_siu = $request->filtro_carrera_siu;
 
             $query = Matriculacion::select('matriculaciones.*')
                         ->join('alumnos', 'matriculaciones.alumno_id', '=', 'alumnos.id')
-                        ->with(['alumno', 'semestre', 'programa', 'carrera', 'carreraSiu']);
+                        ->with(['alumno', 'semestre', 'programa', 'carrera']);
 
             if (!(blank($filtro_periodo))) {
                 $query->where('semestre_id', $filtro_periodo);
@@ -110,9 +109,6 @@ class MatriculacionController extends Controller
                 $query->where('carrera_id', $filtro_carrera);
             }
 
-            if (!(blank($filtro_carrera_siu))) {
-                $query->where('carrera_siu_id', $filtro_carrera_siu);
-            }
 
             if (!(blank($buscar))) {
 				$query->where(function($q) use ($buscar) {
@@ -131,9 +127,6 @@ class MatriculacionController extends Controller
                             $query->where('nombre', 'LIKE', '%' . str_replace(' ', '%', $buscar) . '%');
                         })
                         ->orWhereHas('carrera', function ($query) use ($buscar) {
-                            $query->where('nombre_fantasia', 'LIKE', '%' . str_replace(' ', '%', $buscar) . '%');
-                        })
-                        ->orWhereHas('carreraSiu', function ($query) use ($buscar) {
                             $query->where('nombre_fantasia', 'LIKE', '%' . str_replace(' ', '%', $buscar) . '%');
                         });
                 });
@@ -157,17 +150,14 @@ class MatriculacionController extends Controller
             }
 
             $semestres = Semestre::orderBy('id', 'desc')->get();
-            $alumnos = Alumno::where('ubs', false)->where('estado', 'AC')->get();
+            $alumnos = Alumno::where('estado', 'AC')->get();
             $programas = Programa::whereIn('id', [1, 2, 3, 8])->where('estado', 'AC')->get();
             $carreras = Carrera::whereHas('programa', function ($query) {
                 $query->whereIn('id', [1, 2, 3, 8]);
             })->where('estado', 'AC')->get();
 
-            $carreras_siu = Carrera::whereHas('programa', function ($query) {
-                $query->where('id', 4);
-            })->where('estado', 'AC')->get();
 
-            return view('matriculaciones/index')->with(compact('matriculaciones', 'semestres', 'alumnos', 'programas', 'carreras', 'carreras_siu', 'buscar', 'filtro_periodo', 'filtro_fecha', 'filtro_alumno', 'filtro_ingreso', 'filtro_programa', 'filtro_carrera', 'filtro_carrera_siu'));
+            return view('matriculaciones/index')->with(compact('matriculaciones', 'semestres', 'alumnos', 'programas', 'carreras', 'buscar', 'filtro_periodo', 'filtro_fecha', 'filtro_alumno', 'filtro_ingreso', 'filtro_programa', 'filtro_carrera'));
         } catch (\Exception $e) {
             return redirect()->route('matriculaciones.index')->with('error-message', $e->getMessage());
         }
@@ -235,8 +225,6 @@ class MatriculacionController extends Controller
                 ->where('alumno_id', $request->alumno)
                 ->where('estado', 'AC'))],
             //El de arriba verifica que el conjunto de alumno, semestre, programa y carrera no existan,
-            'validacion' => ['required', 'numeric'],
-            'carrera_siu' => ['nullable', 'numeric', 'required_if:validacion,1'],
             'tipo_pago' => 'required',
             'convenio' => ['nullable', 'numeric'],
         ]);
@@ -250,7 +238,6 @@ class MatriculacionController extends Controller
             $matriculacion->semestre_id = $request->semestre;
             $matriculacion->programa_id = $request->programa;
             $matriculacion->carrera_id = $request->carrera;
-            $matriculacion->carrera_siu_id = $request->carrera_siu;
             $matriculacion->tipo_pago = $request->tipo_pago;
             $matriculacion->convenio_id = $request->convenio;
             $matriculacion->cargado_por_id = Auth::id();
@@ -346,43 +333,6 @@ class MatriculacionController extends Controller
             //     return back()->with('error-message', 'Se debe cargar el artículo con sus precios en contabilidad antes de realizar la matriculación del alumno.');
             // }
 
-            if ($matriculacion->carrera_siu_id) {
-                $carrera_siu = Carrera::find($matriculacion->carrera_siu_id)->first();
-                if (!$carrera_siu) {
-                    return back()->with('error-message', 'Hubo un problema al realizar la matriculación. No se puede obtener la carrera SIU.');
-                } else {
-                    $alumno_puntajes = AlumnoPuntaje::where('alumno_id', $matriculacion->alumno_id)->where('carrera_id', $carrera_siu->id)->get();
-                    $malla_auxiliar_siu = Malla::whereHas('carrera', function ($query) {
-                        $query->where('nombre_real', 'LIKE', '%SIU AUXILIAR%');
-                    })->first();
-                    $malla_siu = Malla::where('carrera_id', $carrera_siu->id)->first();
-                    $materias_nuevas = $malla_siu->mallaDetalles->pluck('materia_id', 'materia.nombre_real');
-
-                    $alumno_puntajes = AlumnoPuntaje::where('alumno_id', $matriculacion->alumno_id)->get();
-                    foreach ($alumno_puntajes as $alumno_puntaje) {
-                        $nombre_real = $alumno_puntaje->materia->nombre_real;
-                        if ($alumno_puntaje->carrera_id != $carrera_siu->id) {
-                            if (isset($materias_nuevas[$nombre_real])) {
-                                $alumno_puntaje->materia_id = $materias_nuevas[$nombre_real];
-                                $alumno_puntaje->carrera_id = $carrera_siu->id;
-                                $alumno_puntaje->save();
-                            }
-                        }
-                    }
-
-                    $alumno_notas = AlumnoNota::where('alumno_id', $matriculacion->alumno_id)->get();
-                    foreach ($alumno_notas as $alumno_nota) {
-                        $nombre_real = $alumno_nota->materia->nombre_real;
-                        if ($alumno_nota->carrera_id != $carrera_siu->id) {
-                            if (isset($materias_nuevas[$nombre_real])) {
-                                $alumno_nota->materia_id = $materias_nuevas[$nombre_real];
-                                $alumno_nota->carrera_id = $carrera_siu->id;
-                                $alumno_nota->save();
-                            }
-                        }
-                    }
-                }
-            }
 
             DB::commit();
 
@@ -543,53 +493,24 @@ class MatriculacionController extends Controller
             if ($matriculaciones->count() != 0) {
                 $programas = collect();
                 $carreras = collect();
-                $carreras_siu = collect();
 
                 foreach ($matriculaciones as $matriculacion) {
                     $programas->push($matriculacion->programa);
                     $carreras->push($matriculacion->carrera);
-                    $carreras_siu->push($matriculacion->carreraSiu);
                 }
 
                 $programas = $programas->unique('id');
                 $carreras = $carreras->unique('id');
-                $carreras_siu = $carreras_siu->unique('id');
 
                 return response()->json([
                     'programas' => $programas,
                     'carreras' => $carreras,
-                    'carreras_siu' => $carreras_siu,
                 ]);
             } else {
                 return response()->json([
                     'validacion' => 0,
                 ]);
             }
-        } catch (\Exception $e) {
-            return redirect()->route('matriculaciones.index')->with('error-message', $e->getMessage());
-        }
-    }
-
-    public function validate_carrera_siu($alumno, $carrera, $programa)
-    {
-        $this->authorize('crear_matriculaciones');
-
-        DB::beginTransaction();
-
-        try {
-            $validacion = 0;
-            if ($programa == 1) {
-                $matriculaciones = Matriculacion::where('alumno_id', $alumno)->where('carrera_id', $carrera)->count();
-                $carrera_siu = Matriculacion::where('alumno_id', $alumno)->where('carrera_id', $carrera)->orderBy('id', 'desc')->first()->carrera_siu_id;
-                if ($matriculaciones > 3) {
-                    $validacion = 1;
-                }
-            }
-
-            return response()->json([
-                'carrera_siu' => $carrera_siu,
-                'validacion' => $validacion,
-            ]);
         } catch (\Exception $e) {
             return redirect()->route('matriculaciones.index')->with('error-message', $e->getMessage());
         }

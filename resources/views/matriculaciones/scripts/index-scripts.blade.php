@@ -148,13 +148,5 @@
         $('#buscar_form').submit();
     });
 
-    $('#delete-carrera_siu-filter-btn').on('click', function () {
-        $('#filtro_carrera_siu').selectpicker('val', '');
-        $('#filtro_carrera_siu').trigger('change');
-    })
 
-    $('#filtro_carrera_siu').change(function () {
-        $('#filtro_carrera_siu_input').val($(this).val());
-        $('#buscar_form').submit();
-    });
 </script>

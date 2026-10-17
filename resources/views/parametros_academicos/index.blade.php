@@ -121,19 +121,6 @@
                                 </div>
                             </div>
                         @endcan
-                        @can('ver_mallas_espejo')
-                            <div class="col-lg-2 col-xxl-2">
-                                <div class="card card-body text-center">
-                                    <div class="avatar-sm mx-auto mb-3">
-                                        <div class="avatar-title bg-info-subtle text-info fs-x1 rounded">
-                                            <i class="bi bi-calendar-date"></i>
-                                        </div>
-                                    </div>
-                                    <h4 class="card-title">Mallas Espejo</h4>
-                                    <a type="button" href="{{route('mallas_espejos.index')}}" class="btn btn-info">Visualizar</a>
-                                </div>
-                            </div>
-                        @endcan
                         @can('ver_escalas')
                             <div class="col-lg-2 col-xxl-2">
                                 <div class="card card-body text-center">

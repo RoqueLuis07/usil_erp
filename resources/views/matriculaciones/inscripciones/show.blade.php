@@ -55,12 +55,6 @@
                                         <label class="form-label" for="carrera">Carrera</label>
                                         <input type="text" class="form-control" id="carrera" value="{{$matriculacion->carrera->nombre_fantasia}}" readonly>
                                     </div>
-                                    @if ($matriculacion->programa_id == 1)
-										<div class="col-lg-3 mb-3">
-											<label class="form-label" for="carrera">Carrera SIU</label>
-											<input type="text" class="form-control" id="carrera" @if ($matriculacion->carrera_siu_id) value="{{$matriculacion->carreraSiu->nombre_fantasia}}" @endif readonly>
-										</div>
-									@endif
                                 </div>
                             </div>
                         </div>
@@ -110,9 +104,6 @@
                                                         @elseif ($detalle->estado == 'CO')
                                                             text-success text-uppercase"
                                                             value="Convalidado"
-                                                        @elseif ($detalle->estado == 'ES')
-                                                            text-success text-uppercase"
-                                                            value="Espejo"
                                                         @elseif ($detalle->estado == 'SU')
                                                             text-success text-uppercase"
                                                             value="Suficiencia"

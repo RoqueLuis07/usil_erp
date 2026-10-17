@@ -69,7 +69,7 @@ class RubricaAlumnoTesisController extends Controller
             $rubrica = RubricaTesis::with('detalles')->where('tipo_id', $inscripcion->tipo_id)->where('estado', 'AC')->first();
             return view('tesis/cargar_rubricas/proceso/create')->with(compact('inscripcion', 'rubrica'));
         } catch (\Exception $e) {
-            return redirect()->route('inscripcion_temas_tesis.show', $id)->with('error-message', $e->getMessage());
+            return redirect()->route('inscripciones_temas_tesis.show', $id)->with('error-message', $e->getMessage());
         }
     }
 
@@ -206,7 +206,7 @@ class RubricaAlumnoTesisController extends Controller
 
             return view('tesis/cargar_rubricas/defensa/create')->with(compact('inscripcion', 'total_posible'));
         } catch (\Exception $e) {
-            return redirect()->route('inscripcion_temas_tesis.show', $id)->with('error-message', $e->getMessage());
+            return redirect()->route('inscripciones_temas_tesis.show', $id)->with('error-message', $e->getMessage());
         }
     }
 

@@ -1,5 +1,5 @@
 @can('ver_docentes')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Docentes @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -116,7 +116,7 @@
                                                 <td>{{$docente->primer_nombre}} {{$docente->segundo_nombre}} {{$docente->tercer_nombre}} {{$docente->primer_apellido}} {{$docente->segundo_apellido}}</td>
                                                 <td>{{$docente->numero_documento}}</td>
                                                 <td>{{$docente->celular}} @if ($docente->telefono) - {{$docente->telefono}} @endif</td>
-                                                <td>{{\Carbon\Carbon::createFromDate($docente->fecha_nacimiento)->age}} años</td>
+                                                <td>{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->age . ' años' : 'Sin dato'}}</td>
                                                 <td class="text-center">@if ($docente->area_conocimiento_id) {{$docente->areaConocimiento->abreviatura}} @endif</td>
                                                 <td class="text-center">
                                                     <span
@@ -179,6 +179,7 @@
                                                     <h5 class="mt-2">Sin resultados.</h5>
                                                     <p class="text-muted mb-0">No pudimos encontrar ningún docente según tus parámetros de búsqueda.</p>
                                                 </td>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>

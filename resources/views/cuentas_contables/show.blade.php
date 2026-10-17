@@ -38,7 +38,7 @@
                                 </div>
                                 <div class="col-lg-1 mb-3 text-center">
                                     <div>
-                                        <label class="form-label" for="imputable">Imputable ?</span></label>
+                                        <label class="form-label" for="imputable">Imputable ?</label>
                                     </div>
                                     <div class="btn-group @error('imputable') is-invalid @enderror" role="group">
                                         <input type="radio" class="btn-check imputable1" id="imputable1" @if ($cuenta_contable->imputable == false) checked @endif disabled>

@@ -5,7 +5,7 @@
                 if (input.files[0].type == 'application/pdf') {
                     $('#vista-imagen').css('width', '100px');
                     $('#vista-imagen').css('height', '100px');
-                    $('#vista-imagen').prop('src', '{{asset('storage/pdf.png')}}');
+                    $('#vista-imagen').prop('src', '{{asset('images/placeholders/pdf.svg')}}');
                 } else {
                     reader.onload = function (e) {
                         $('#vista-imagen').prop('src', e.target.result);
@@ -129,7 +129,7 @@
             $('#acta').val('');
             $('#vista-imagen').css('width', '200px');
             $('#vista-imagen').css('height', '200px');
-            $('#vista-imagen').prop('src', '{{asset('storage/no_image.png')}}');
+            $('#vista-imagen').prop('src', '{{asset('images/placeholders/no_image.svg')}}');
             $(this).prop('disabled', true);
         }
         });
@@ -160,7 +160,7 @@
                 $('#acta').val('');
                 $('#vista-imagen').css('width', '200px');
                 $('#vista-imagen').css('height', '200px');
-                $('#vista-imagen').prop('src', '{{asset('storage/no_image.png')}}');
+                $('#vista-imagen').prop('src', '{{asset('images/placeholders/no_image.svg')}}');
                 $('#subirActaModal').modal('hide');
             }
         })
@@ -209,7 +209,7 @@
             $('#acta').val('');
             $('#vista-imagen').css('width', '200px');
             $('#vista-imagen').css('height', '200px');
-            $('#vista-imagen').prop('src', '{{asset('storage/no_image.png')}}');
+            $('#vista-imagen').prop('src', '{{asset('images/placeholders/no_image.svg')}}');
             window.localStorage.setItem('message', response.message);
             window.localStorage.setItem('type', type);
             var url = "{{route('tutorias_evaluaciones.show_acta', ":id")}}"

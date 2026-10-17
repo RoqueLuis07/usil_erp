@@ -155,7 +155,7 @@
                                         <label class="form-label" for="imagen">Logo (JPG o PNG)</label>
                                         <div class="col-lg-12" id="vista-imagen-div">
                                             <img id="vista-imagen" class="hidden img-fluid img-circle"
-                                                    src="{{asset('storage/empresa/no_image.png')}}"
+                                                    src="{{asset('images/placeholders/no_image.svg')}}"
                                                     alt="Logo"
                                                     style="width: 154px; height: 154px">
 

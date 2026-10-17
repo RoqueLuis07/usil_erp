@@ -139,7 +139,7 @@
                 if (result.isConfirmed) {
                     $('#logo').val('');
                     $('#logo_delete').val('logo-borrado');
-                    $('#vista-imagen-div').html('<img id="vista-imagen" class="hidden img-fluid img-circle" src="{{asset('storage/empresa/no_image.png')}}" alt="Logo" style="width: 154px; height: 154px">');
+                    $('#vista-imagen-div').html('<img id="vista-imagen" class="hidden img-fluid img-circle" src="{{asset('images/placeholders/no_image.svg')}}" alt="Logo" style="width: 154px; height: 154px">');
                 }
                 });
         });
@@ -201,7 +201,7 @@
             if (result.isConfirmed) {
                 $('form :input').val('');
                 $('.selectpicker').selectpicker('val', '');
-                $('#vista-imagen-div').html('<img id="vista-imagen" class="hidden img-fluid img-circle" src="{{asset('storage/empresa/no_image.png')}}" alt="Logo" style="width: 154px; height: 154px">');
+                $('#vista-imagen-div').html('<img id="vista-imagen" class="hidden img-fluid img-circle" src="{{asset('images/placeholders/no_image.svg')}}" alt="Logo" style="width: 154px; height: 154px">');
             }
         })
     })

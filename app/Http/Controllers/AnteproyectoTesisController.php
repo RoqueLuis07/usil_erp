@@ -212,7 +212,7 @@ class AnteproyectoTesisController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            if (Auth::user()->hasRole('DOCENTE')) {
+            if (Auth::user()->hasAnyRole(['DOCENTE', 'ENCARGADO_DOCENTE'])) {
                 return redirect()->route('pantallas_docentes.index', Auth::id())->with('error-message', $e->getMessage());
             } else {
                 return redirect()->route('anteproyectos_tesis.show_entregas', $id)->with('error-message', $e->getMessage());

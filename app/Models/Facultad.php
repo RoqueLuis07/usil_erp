@@ -12,6 +12,10 @@ class Facultad extends Model implements Auditable
 
     protected $table = "facultades";// <-- El nombre personalizado
 
+    public function carreras(){
+        return $this->hasMany(Carrera::class, 'facultad_id');
+    }
+
     public function CargadoPor(){
         return $this->belongsTo(User::class);
     }

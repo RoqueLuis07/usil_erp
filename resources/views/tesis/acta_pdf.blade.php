@@ -42,7 +42,7 @@
         <div class="col-12">
             <p class="parrafos mt-5">
                 En la ciudad de Asunción capital de la República del Paraguay a los {{$inscripcion->fecha_defensa->format('d')}} días del mes de
-                {{$inscripcion->fecha_defensa->translatedFormat('F')}} de {{$inscripcion->fecha_defensa->format('Y')}}, en la Universidad San Ignacio de Loyola
+                {{$inscripcion->fecha_defensa->translatedFormat('F')}} de {{$inscripcion->fecha_defensa->format('Y')}}, en la {{ config('institucion.nombre') }}
                 se reúnen los miembros de la mesa examinadora nominado según Resolución N° ______________ del Consejo Directivo para evaluar el Trabajo Final de Grado
                 titulado “{{Str::title($inscripcion->tema)}}”, {{$inscripcion->del_alumno}} estudiante {{Str::title($inscripcion->nombre_alumno)}}.
             </p>

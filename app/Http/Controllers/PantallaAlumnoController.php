@@ -28,11 +28,11 @@ use App\Models\SemestreMallaMateriaHorario;
 use App\Models\Evaluacion;
 use App\Models\Malla;
 use App\Models\MallaDetalle;
-use App\Models\MallaEspejoDetalle;
 use App\Models\ActaEvaluacion;
 use App\Models\ActaEvaluacionAlumno;
 use App\Models\ExtensionUniversitariaDetalle;
 use App\Models\RequerimientoExtensionUniversitaria;
+use App\Support\ResumenExtensionAlumno;
 use App\Models\TipoExtensionUniversitaria;
 use App\Models\ClaseMateria;
 use App\Models\DiaSemana;
@@ -54,9 +54,12 @@ use App\Models\TutoriaPrecio;
 use App\Models\ExamenSuficiencia;
 use App\Models\ExamenSuficienciaFechaSolicitud;
 use App\Models\FechaDesmatriculacion;
+use App\Traits\ResuelveCarreraSemestreAlumno;
 
 class PantallaAlumnoController extends Controller
 {
+    use ResuelveCarreraSemestreAlumno;
+
     /**
      * Create a new controller instance.
      *
@@ -161,19 +164,6 @@ class PantallaAlumnoController extends Controller
                     $semestre_malla_materias_ambos->push($smm);
                 }
 
-                if ($matriculacion->carrera_siu_id) {
-                    $malla_siu = Malla::where('carrera_id', $matriculacion->carrera_siu_id)->first();
-                    $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_siu->id)->first();
-                    if ($semestre_malla_siu) {
-                        $semestre_malla_materias_siu = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla_siu->id)->get();
-                    } else {
-                        $semestre_malla_materias_siu = collect();
-                    }
-
-                    foreach ($semestre_malla_materias_siu as $smms) {
-                        $semestre_malla_materias_ambos->push($smms);
-                    }
-                }
 
                 if ($matriculacion->programa_id == 1) {
                     $horarios_clases->push(Carbon::createFromTime(8, 0),
@@ -468,13 +458,6 @@ class PantallaAlumnoController extends Controller
                                             ->orderBy('created_at', 'desc')
                                             ->get();
 
-            $puntajes_siu = AlumnoPuntaje::where('alumno_id', $alumno->id)
-                                            ->whereHas('carrera', function ($query) {
-                                                $query->where('programa_id', 4);
-                                            })
-                                            ->whereIn('evaluacion_id', [1, 2, 3])
-                                            ->orderBy('created_at', 'desc')
-                                            ->get();
 
 
             $hoy = Carbon::today();
@@ -486,7 +469,7 @@ class PantallaAlumnoController extends Controller
             $periodo_activo = $semestre ? $semestre->id : null;
             $evaluaciones = Evaluacion::whereIn('id', [1, 2, 3])->where('estado', 'AC')->get();
 
-            return view('pantallas_alumnos/puntajes')->with(compact('alumno', 'puntajes_nacionales', 'puntajes_siu', 'periodo_activo', 'evaluaciones'));
+            return view('pantallas_alumnos/puntajes')->with(compact('alumno', 'puntajes_nacionales', 'periodo_activo', 'evaluaciones'));
 
         } catch (\Exception $e) {
             return redirect()->route('pantallas_alumnos.index', Auth::id())->with('error-message', $e->getMessage());
@@ -502,13 +485,9 @@ class PantallaAlumnoController extends Controller
 			$total_notas_nacional = 0;
             $total_materias_nacional = 0;
 			$promedio_nacional = 0;
-            $total_notas_siu = 0;
-            $total_materias_siu = 0;
-			$promedio_siu = 0;
 
             $matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderBy('id', 'desc')->first();
             $alumno->carrera_paraguay = $matriculacion->carrera->nombre_fantasia;
-            $alumno->carrera_siu = $matriculacion->carreraSiu->nombre_fantasia;
             $alumno->programa_id = $matriculacion->programa_id;
 
             $alumno_notas_nacional = AlumnoNota::where('alumno_id', $alumno->id)
@@ -518,12 +497,6 @@ class PantallaAlumnoController extends Controller
                                     })
                                 ->get();
 
-            $alumno_notas_siu = AlumnoNota::where('alumno_id', $alumno->id)
-                                ->whereIn('evaluacion', ['ORDINARIO', 'COMPLEMENTARIO', 'EXTRAORDINARIO'])
-                                ->whereHas('carrera', function ($query) {
-                                        $query->where('programa_id', 4);
-                                    })
-                                ->get();
 
             foreach ($alumno_notas_nacional as $nota) {
                 $tipo = Str::substr($nota->evaluacion, 0, 1);
@@ -552,171 +525,7 @@ class PantallaAlumnoController extends Controller
 
             $alumno_notas_nacional = $alumno_notas_nacional->sortBy('semestre_materia');
 
-            foreach ($alumno_notas_siu as $nota) {
-                $tipo = Str::substr($nota->evaluacion, 0, 1);
-                $acta = ActaEvaluacion::whereHas('alumnos', function ($query) use ($nota) {
-                    $query->where('alumno_id', $nota->alumno_id);
-                })->where('tipo', $tipo)->where('carrera_id', $nota->carrera_id)->where('materia_id', $nota->materia_id)->where('semestre_id', $nota->semestre_id)->first();
-                if ($acta) {
-                    $nota->semestre_materia = $acta->materia_semestre;
-                    $nota->numero_acta = $acta->numero_acta;
-                    $nota->fecha_evaluacion = Carbon::parse($acta->fecha_evaluacion)->format('d/m/Y');
-                    $acta_detalle = ActaEvaluacionAlumno::where('acta_evaluacion_id', $acta->id)->where('alumno_id', $nota->alumno_id)->first();
-                    if ($acta_detalle) {
-                        $nota->puntos_examen = $acta_detalle->puntos_examen;
-                    }
 
-                    if (is_numeric(trim($nota->calificacion))) {
-                        $total_notas_siu += $nota->calificacion;
-                        $total_materias_siu += 1;
-                    }
-                }
-            }
-
-            $alumno_notas_siu = $alumno_notas_siu->sortBy('semestre_materia');
-
-            $matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderBy('id', 'desc')->first();
-            if (!$matriculacion->carrera_siu_id) {
-                return back()->with('error-message', 'El alumno no se encuentra inscripto en SIU.');
-            }
-
-            $alumno->carrera_paraguay = $matriculacion->carrera->nombre_fantasia;
-            $alumno->carrera_siu = $matriculacion->carreraSiu->nombre_fantasia;
-
-            $malla_paraguay = Malla::with(['mallaDetalles' => function ($query) {
-                $query->orderBy('semestre', 'asc')
-                    ->with(['materia' => function ($q) {
-                        $q->orderBy('nombre_fantasia', 'asc');
-                    }]);
-            }])->where('carrera_id', $matriculacion->carrera_id)->where('estado', 'AC')->orderBy('id', 'asc')->first();
-            $malla_siu = Malla::with(['mallaDetalles' => function ($query) {
-                $query->orderBy('semestre', 'asc')
-                    ->with(['materia' => function ($q) {
-                        $q->orderBy('nombre_fantasia', 'asc');
-                    }]);
-            }])->where('carrera_id', $matriculacion->carrera_siu_id)->where('estado', 'AC')->orderBy('id', 'asc')->first();
-
-            $cantidad_materias_paraguay = $malla_paraguay->mallaDetalles->count();
-            $cantidad_materias_siu = $malla_siu->mallaDetalles->count();
-
-            $espejos_siu_ids = [];
-            foreach ($malla_paraguay->mallaDetalles as $malla_paraguay_detalle) {
-                $espejo = MallaEspejoDetalle::whereHas('mallaEspejo', function ($query) use ($malla_paraguay, $malla_siu) {
-                    $query->where('malla_paraguay_id', $malla_paraguay->id)
-                        ->where('malla_siu_id', $malla_siu->id)
-                        ->where('estado', 'AC');
-                })->where('materia_paraguay_id', $malla_paraguay_detalle->materia_id)->first();
-
-                if ($espejo) {
-                    $malla_paraguay_detalle->semestre_materia_siu = $espejo->mallaEspejo->mallaSiu->mallaDetalles()->where('materia_id', $espejo->materia_siu_id)->first()->semestre;
-                    $malla_paraguay_detalle->materia_siu_id = $espejo->materia_siu_id;
-                    $malla_paraguay_detalle->materia_siu = $espejo->materiaSiu->nombre_fantasia;
-                    $malla_paraguay_detalle->espejo = true;
-                    $espejos_siu_ids[] = $espejo->materia_siu_id;
-                }
-            }
-
-            $equivalencias = collect();
-            $paraguay_sin_espejo = collect();
-            $siu_sin_espejo = collect();
-
-            foreach ($malla_paraguay->mallaDetalles as $malla_detalle) {
-                $nota_paraguay = $alumno->alumnoNotas->where('materia_id', $malla_detalle->materia_id)->first();
-                $nota_siu = $alumno->alumnoNotas->where('materia_id', $malla_detalle->materia_siu_id)->first();
-
-                $periodo = '---';
-                if ($nota_paraguay) {
-                    $periodo = $nota_paraguay->semestre->nombre;
-                }
-                if ($nota_siu) {
-                    $periodo = $nota_siu->semestre->nombre;
-                }
-
-                $semestre_orden = $malla_detalle->semestre ? $malla_detalle->semestre : ($malla_detalle->semestre_materia_siu ? $malla_detalle->semestre_materia_siu : 999);
-
-                $datos = [
-                    'semestre_materia_paraguay' => $malla_detalle->semestre ? $malla_detalle->semestre : '---',
-                    'materia_paraguay' => $malla_detalle->materia->nombre_real ? $malla_detalle->materia->nombre_real : '---',
-                    'nota_paraguay' => $nota_paraguay ? $nota_paraguay->calificacion : '---',
-                    'semestre_materia_siu' => $malla_detalle->semestre_materia_siu ? $malla_detalle->semestre_materia_siu : '---',
-                    'materia_siu' => $malla_detalle->materia_siu ? $malla_detalle->materia_siu : '---',
-                    'nota_siu' => $nota_siu ? $nota_siu->calificacion : '---',
-                    'periodo' => $periodo,
-                    'estado' => $malla_detalle->espejo,
-                    'semestre_orden' => $semestre_orden
-                ];
-
-                if ($malla_detalle->espejo) {
-                    $equivalencias->push($datos);
-                } else {
-                    $paraguay_sin_espejo->push($datos);
-                }
-            }
-
-            foreach ($malla_siu->mallaDetalles as $malla_siu_detalle) {
-                if (!in_array($malla_siu_detalle->materia_id, $espejos_siu_ids)) {
-                    $nota_siu = $alumno->alumnoNotas->where('materia_id', $malla_siu_detalle->materia_id)->first();
-                    $periodo = $nota_siu ? $nota_siu->semestre->nombre : '---';
-                    $semestre_orden = $malla_siu_detalle->semestre ? $malla_siu_detalle->semestre : 999;
-
-                    $datos = [
-                        'semestre_materia_paraguay' => '---',
-                        'materia_paraguay' => '---',
-                        'nota_paraguay' => '---',
-                        'semestre_materia_siu' => $malla_siu_detalle->semestre ? $malla_siu_detalle->semestre : '---',
-                        'materia_siu' => $malla_siu_detalle->materia->nombre_fantasia ? $malla_siu_detalle->materia->nombre_fantasia : '---',
-                        'nota_siu' => $nota_siu ? $nota_siu->calificacion : '---',
-                        'periodo' => $periodo,
-                        'estado' => false,
-                        'semestre_orden' => $semestre_orden
-                    ];
-
-                    $siu_sin_espejo->push($datos);
-                }
-            }
-
-            // Combinamos equivalencias primero
-            $espejos = $equivalencias;
-
-            // Emparejamos Paraguay sin espejo con SIU sin espejo
-            $max_sin_espejo = max($paraguay_sin_espejo->count(), $siu_sin_espejo->count());
-            for ($i = 0; $i < $max_sin_espejo; $i++) {
-                $p = $paraguay_sin_espejo->get($i, [
-                    'semestre_materia_paraguay' => '---',
-                    'materia_paraguay' => '---',
-                    'nota_paraguay' => '---',
-                    'semestre_orden' => 999
-                ]);
-                $s = $siu_sin_espejo->get($i, [
-                    'semestre_materia_siu' => '---',
-                    'materia_siu' => '---',
-                    'nota_siu' => '---',
-                    'periodo' => '---',
-                    'semestre_orden' => 999
-                ]);
-
-                $periodo_combinado = $p['periodo'] ?? '---';
-                if ($s['periodo'] !== '---') {
-                    $periodo_combinado = $s['periodo'];
-                }
-
-                $datos = [
-                    'semestre_materia_paraguay' => $p['semestre_materia_paraguay'],
-                    'materia_paraguay' => $p['materia_paraguay'],
-                    'nota_paraguay' => $p['nota_paraguay'],
-                    'semestre_materia_siu' => $s['semestre_materia_siu'],
-                    'materia_siu' => $s['materia_siu'],
-                    'nota_siu' => $s['nota_siu'],
-                    'periodo' => $periodo_combinado,
-                    'estado' => false,
-                    'semestre_orden' => min($p['semestre_orden'], $s['semestre_orden'])
-                ];
-
-                $espejos->push($datos);
-            }
-
-            //Ordenamos por semestre
-            $espejos = $espejos->sortBy('semestre_orden')->values();
 
             $hoy = Carbon::today();
             $semestre = Semestre::whereDate('fecha_inicio', '<=', $hoy)
@@ -726,7 +535,7 @@ class PantallaAlumnoController extends Controller
                             ->first();
             $periodo_activo = $semestre ? $semestre->id : null;
 
-            return view('pantallas_alumnos/calificaciones')->with(compact('alumno', 'alumno_notas_nacional', 'alumno_notas_siu', 'espejos', 'cantidad_materias_paraguay', 'cantidad_materias_siu', 'periodo_activo', 'promedio_nacional'));
+            return view('pantallas_alumnos/calificaciones')->with(compact('alumno', 'alumno_notas_nacional', 'periodo_activo', 'promedio_nacional'));
 
         } catch (\Exception $e) {
             return redirect()->route('pantallas_alumnos.index', Auth::id())->with('error-message', $e->getMessage());
@@ -738,88 +547,41 @@ class PantallaAlumnoController extends Controller
         $this->authorize('ver_extensiones_alumnos_pantalla');
 
         try {
-            $alumno = Alumno::where('usuario_id', Auth::id())->first();
-            $extensiones = ExtensionUniversitariaDetalle::where('alumno_id', $alumno->id)->get();
-            $horas_requeridas = RequerimientoExtensionUniversitaria::first()->horas_requeridas;
-            $actividades_requeridas = RequerimientoExtensionUniversitaria::first()->actividades_requeridas;
-            $tipos_actividades = TipoExtensionUniversitaria::where('estado', 'AC')->get();
+            $alumno = Alumno::where('usuario_id', Auth::id())->firstOrFail();
+            // El progreso de horas/actividades solo cuenta postulaciones ya
+            // aceptadas; las pendientes/rechazadas se muestran aparte en
+            // "Mis Postulaciones" (variable $postulaciones más abajo).
+            $extensiones = ExtensionUniversitariaDetalle::with('extensionUniversitaria.tipoExtension')->where('alumno_id', $alumno->id)->where('estado', 'AC')->get();
+            $postulaciones = ExtensionUniversitariaDetalle::with('extensionUniversitaria.tipoExtension')->where('alumno_id', $alumno->id)->orderByDesc('fecha_postulacion')->get();
 
-            $cantidad_realizada_1 = 0;
-            $cantidad_realizada_2 = 0;
-            $cantidad_realizada_3 = 0;
-            $cantidad_realizada_4 = 0;
-            $horas_realizadas_1 = 0;
-            $horas_realizadas_2 = 0;
-            $horas_realizadas_3 = 0;
-            $horas_realizadas_4 = 0;
-            $horas_acreditadas = 0;
-            $horas_acreditadas_1 = 0;
-            $horas_acreditadas_2 = 0;
-            $horas_acreditadas_3 = 0;
-            $horas_acreditadas_4 = 0;
+            // El requerimiento de graduación puede estar definido por carrera;
+            // si la carrera del alumno (según su matriculación más reciente) no
+            // tiene uno propio, se usa el general (carrera_id null) como
+            // respaldo.
+            $matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderByDesc('fecha')->first();
+            $requerimiento = null;
+            $carreraRequisito = $alumno->carrera_id ?: ($matriculacion->carrera_id ?? null);
+            if ($carreraRequisito) {
+                $requerimiento = RequerimientoExtensionUniversitaria::where('carrera_id', $carreraRequisito)->first();
+            }
+            if (!$requerimiento) {
+                $requerimiento = RequerimientoExtensionUniversitaria::whereNull('carrera_id')->first();
+            }
+            $horas_requeridas = $requerimiento->horas_requeridas ?? 0;
+            $actividades_requeridas = $requerimiento->actividades_requeridas ?? 0;
+            $tipos_actividades = TipoExtensionUniversitaria::where('estado', 'AC')->get();
 
             foreach ($extensiones as $extension) {
                 $fecha = Carbon::parse($extension->extensionUniversitaria->fecha_inicio);
-                $anho = $fecha->year;
-                if ($fecha->month <= 7) {
-                    $extension->periodo = $anho . '-1';
-                } else {
-                    $extension->periodo = $anho . '-2';
-                }
-
-                if ($extension->extensionUniversitaria->estado == 'FI') {
-                    $tipo_extension_id = $extension->extensionUniversitaria->tipo_extension_id;
-                    $maxima_cantidad_horas = $extension->extensionUniversitaria->tipoExtension->maxima_cantidad_horas;
-
-                    // Dependiendo del tipo de extensión, incrementar las horas y cantidades
-                    switch ($tipo_extension_id) {
-                        case 1:
-                            $cantidad_realizada_1++;
-                            $horas_realizadas_1 += $extension->cantidad_horas;
-                            if ($horas_realizadas_1 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_1 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_1 = $horas_realizadas_1;
-                            }
-                            break;
-
-                        case 2:
-                            $cantidad_realizada_2++;
-                            $horas_realizadas_2 += $extension->cantidad_horas;
-                            if ($horas_realizadas_2 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_2 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_2 = $horas_realizadas_2;
-                            }
-                            break;
-
-                        case 3:
-                            $cantidad_realizada_3++;
-                            $horas_realizadas_3 += $extension->cantidad_horas;
-                            if ($horas_realizadas_3 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_3 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_3 = $horas_realizadas_3;
-                            }
-                            break;
-
-                        case 4:
-                            $cantidad_realizada_4++;
-                            $horas_realizadas_4 += $extension->cantidad_horas;
-                            if ($horas_realizadas_4 > $maxima_cantidad_horas) {
-                                $horas_acreditadas_4 = $maxima_cantidad_horas;
-                            } else {
-                                $horas_acreditadas_4 = $horas_realizadas_4;
-                            }
-                            break;
-                    }
-                }
+                $extension->periodo = $fecha->year . '-' . ($fecha->month <= 7 ? 1 : 2);
             }
 
-            $horas_acreditadas = $horas_acreditadas_1 + $horas_acreditadas_2 + $horas_acreditadas_3 + $horas_acreditadas_4;
-            $actividades_realizadas = $cantidad_realizada_1 + $cantidad_realizada_2 + $cantidad_realizada_3 + $cantidad_realizada_4;
+            // Avance por tipo de actividad (cualquier cantidad de tipos).
+            $resumen = ResumenExtensionAlumno::para(collect([$alumno]))[$alumno->id];
+            $horas_acreditadas = $resumen['horas_acreditadas'];
+            $actividades_realizadas = $resumen['actividades_realizadas'];
 
-            return view('pantallas_alumnos/extensiones_universitarias')->with(compact('alumno', 'extensiones', 'horas_requeridas', 'horas_acreditadas', 'actividades_requeridas', 'tipos_actividades', 'horas_realizadas_1', 'horas_realizadas_2', 'horas_realizadas_3', 'horas_realizadas_4', 'horas_acreditadas_1', 'horas_acreditadas_2', 'horas_acreditadas_3', 'horas_acreditadas_4', 'cantidad_realizada_1', 'cantidad_realizada_2', 'cantidad_realizada_3', 'cantidad_realizada_4', 'actividades_realizadas'));
+            return view('pantallas_alumnos/extensiones_universitarias')->with(compact('alumno', 'extensiones', 'postulaciones', 'horas_requeridas', 'horas_acreditadas', 'actividades_requeridas', 'tipos_actividades', 'resumen', 'actividades_realizadas'));
 
         } catch (\Exception $e) {
             return redirect()->route('pantallas_alumnos.index', Auth::id())->with('error-message', $e->getMessage());
@@ -888,6 +650,122 @@ class PantallaAlumnoController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->route('pantallas_alumnos.index', Auth::id())->with('error-message', $e->getMessage());
+        }
+    }
+
+    /**
+     * Catálogo de proyectos de extensión abiertos a postulación: aprobados,
+     * dentro de la fecha, abiertos a la carrera del alumno (o sin
+     * restricción de carrera) y a los que el alumno todavía no se postuló.
+     */
+    public function catalogo_extensiones_universitarias($id)
+    {
+        $this->authorize('ver_catalogo_extensiones_alumnos_pantalla');
+
+        try {
+            $alumno = Alumno::where('usuario_id', Auth::id())->firstOrFail();
+            $matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderByDesc('fecha')->first();
+            $carreraAlumnoId = $alumno->carrera_id ?: ($matriculacion->carrera_id ?? null);
+
+            $yaPostuladoIds = ExtensionUniversitariaDetalle::where('alumno_id', $alumno->id)->pluck('extension_universitaria_id');
+
+            $proyectos = \App\Models\ExtensionUniversitaria::with(['tipoExtension', 'docente', 'carreras'])
+                ->where('estado', 'AP')
+                ->where(function ($query) {
+                    $query->whereNull('fecha_fin')->orWhereDate('fecha_fin', '>=', now()->toDateString());
+                })
+                ->whereNotIn('id', $yaPostuladoIds)
+                ->get()
+                ->filter(function ($proyecto) use ($carreraAlumnoId) {
+                    if ($proyecto->carreras->isEmpty()) {
+                        return true; // sin restricción de carrera = abierto a todas
+                    }
+                    return $carreraAlumnoId && $proyecto->carreras->contains('id', $carreraAlumnoId);
+                })
+                ->values();
+
+            return view('pantallas_alumnos/catalogo_extensiones_universitarias')->with(compact('alumno', 'proyectos'));
+        } catch (\Exception $e) {
+            return redirect()->route('pantallas_alumnos.index', Auth::id())->with('error-message', $e->getMessage());
+        }
+    }
+
+    public function postular_extension_universitaria($idUsuario, $idExtension)
+    {
+        $this->authorize('postular_extensiones_alumnos_pantalla');
+
+        DB::beginTransaction();
+
+        try {
+            $alumno = Alumno::where('usuario_id', Auth::id())->firstOrFail();
+            $extension = \App\Models\ExtensionUniversitaria::with('carreras')->findOrFail($idExtension);
+
+            if (!$alumno->tieneDatosParaExtension()) {
+                throw new \Exception('Tu perfil todavía no tiene la carrera y el año de ingreso cargados. Pedile al encargado de Extensión que los complete para poder postularte.');
+            }
+
+            if (!$extension->estaAbiertaParaPostulacion()) {
+                throw new \Exception('Este proyecto ya no está abierto a postulaciones.');
+            }
+
+            $yaPostulado = ExtensionUniversitariaDetalle::where('extension_universitaria_id', $extension->id)->where('alumno_id', $alumno->id)->exists();
+            if ($yaPostulado) {
+                throw new \Exception('Ya te postulaste a este proyecto.');
+            }
+
+            $cupos = $extension->cuposDisponibles();
+            if ($cupos !== null && $cupos <= 0) {
+                throw new \Exception('No quedan cupos disponibles en este proyecto.');
+            }
+
+            $matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderByDesc('fecha')->first();
+            $carreraPropia = $alumno->carrera_id ?: ($matriculacion->carrera_id ?? null);
+            if (!$extension->carreras->isEmpty() && (!$carreraPropia || !$extension->carreras->contains("id", $carreraPropia))) {
+                throw new \Exception('Este proyecto no está habilitado para tu carrera.');
+            }
+
+            $carreraSemestre = $this->resolverCarreraSemestreAlumno($alumno->id, $extension->fecha_inicio);
+
+            $detalle = new ExtensionUniversitariaDetalle();
+            $detalle->extension_universitaria_id = $extension->id;
+            $detalle->alumno_id = $alumno->id;
+            $detalle->carrera_id = $carreraSemestre['carrera_id'];
+            $detalle->semestre_id = $carreraSemestre['semestre_id'];
+            $detalle->estado = 'PE';
+            $detalle->fecha_postulacion = now();
+            $detalle->save();
+
+            DB::commit();
+
+            return redirect()->route('pantallas_alumnos.extensiones_universitarias', Auth::id())->with('success-message', 'Tu postulación a ' . $extension->nombre . ' fue enviada. Vas a ver el resultado en "Mis Postulaciones".');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('pantallas_alumnos.catalogo_extensiones_universitarias', Auth::id())->with('error-message', $e->getMessage());
+        }
+    }
+
+    public function cancelar_postulacion_extension_universitaria($idUsuario, $idDetalle)
+    {
+        $this->authorize('postular_extensiones_alumnos_pantalla');
+
+        DB::beginTransaction();
+
+        try {
+            $alumno = Alumno::where('usuario_id', Auth::id())->firstOrFail();
+            $detalle = ExtensionUniversitariaDetalle::where('alumno_id', $alumno->id)->findOrFail($idDetalle);
+
+            if ($detalle->estado !== 'PE') {
+                throw new \Exception('Solo se puede cancelar una postulación mientras está pendiente de revisión.');
+            }
+
+            $detalle->delete();
+
+            DB::commit();
+
+            return redirect()->route('pantallas_alumnos.extensiones_universitarias', Auth::id())->with('success-message', 'La postulación fue cancelada.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('pantallas_alumnos.extensiones_universitarias', Auth::id())->with('error-message', $e->getMessage());
         }
     }
 
@@ -1217,20 +1095,6 @@ class PantallaAlumnoController extends Controller
                     $materias->push($smm->materia);
                 }
 
-                if ($matriculacion->carrera_siu_id) {
-                    $malla_siu = Malla::where('carrera_id', $matriculacion->carrera_siu_id)->first();
-                    if ($malla_siu) {
-                        $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_siu->id)->first();
-                        if ($semestre_malla_siu) {
-                            $semestre_malla_materias_siu = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla_siu->id)->get();
-                            if ($semestre_malla_materias_siu) {
-                                foreach ($semestre_malla_materias_siu as $smms) {
-                                    $materias->push($smms->materia);
-                                }
-                            }
-                        }
-                    }
-                }
                 $materias = $materias->sortBy('nombre_fantasia');
                 //fin ausencias
 
@@ -1242,7 +1106,7 @@ class PantallaAlumnoController extends Controller
                 $semestre_malla = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla->id)->first();
                 $semestre_malla_materias = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla->id)->pluck('materia_id')->toArray();
 
-                $inscripciones = Inscripcion::where('alumno_id', $alumno->id)->whereIn('estado', ['AP', 'CO', 'ES', 'SU'])->pluck('materia_id')->toArray();
+                $inscripciones = Inscripcion::where('alumno_id', $alumno->id)->whereIn('estado', ['AP', 'CO', 'SU'])->pluck('materia_id')->toArray();
                 $examenes_suficiencia = ExamenSuficiencia::where('alumno_id', $alumno->id)->pluck('materia_id')->toArray();
 
                 $materias_suficiencias = collect();

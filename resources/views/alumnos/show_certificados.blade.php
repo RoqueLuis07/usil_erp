@@ -1,5 +1,5 @@
-@if (Auth::user()->can('ver_certificado_estudios_alumnos') || Auth::user()->can('ver_certificado_estudios_siu_alumnos'))
-    @extends('layouts.master')
+@if (Auth::user()->can('ver_certificado_estudios_alumnos'))
+    @extends('layouts.master-academic')
     @section('title') Ver Certificado de Estudios @endsection
     @section('content')
         @component('components.breadcrumb')
@@ -37,15 +37,15 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="sexo">Sexo</label>
-                                    <input type="text" class="form-control" id="sexo" value="{{$alumno->sexo->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="sexo" value="{{optional($alumno->sexo)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
-                                    <input type="text" class="form-control" id="fecha_nacimiento" value="{{\Carbon\Carbon::parse($alumno->fecha_nacimiento)->format('d/m/Y')}}" readonly>
+                                    <input type="text" class="form-control" id="fecha_nacimiento" value="{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->format('d/m/Y') : 'Sin dato'}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="edad">Edad</label>
-                                    <input type="text" class="form-control" id="edad" value="{{\Carbon\Carbon::createFromDate($alumno->fecha_nacimiento)->age}} años" readonly>
+                                    <input type="text" class="form-control" id="edad" value="{{$alumno->fecha_nacimiento ? \Carbon\Carbon::parse($alumno->fecha_nacimiento)->age . ' años' : 'Sin dato'}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -82,7 +82,7 @@
                                                         @forelse ($semestres as $key => $semestre)
                                                             <div class="accordion-item">
                                                                 <h2 class="accordion-header">
-                                                                    <button type="button" class="accordion-button collapsed semestre" data-bs-toggle="collapse" data-bs-target="#acordeon-{{$key}}" aria-expanded="false" aria-controls="acordeon-{{$key}}" id="semestre-{{$key}}" data-id="{{$key}}">@if ($tipo == 'SIU') TERM {{$semestre}} @else SEMESTRE {{$semestre}} @endif</button>
+                                                                    <button type="button" class="accordion-button collapsed semestre" data-bs-toggle="collapse" data-bs-target="#acordeon-{{$key}}" aria-expanded="false" aria-controls="acordeon-{{$key}}" id="semestre-{{$key}}" data-id="{{$key}}"> SEMESTRE {{$semestre}} </button>
                                                                 </h2>
                                                                 <div class="accordion-collapse collapse" id="acordeon-{{$key}}" aria-labelledby="{{$key}}-acordeon" data-bs-parent="#acordeon">
                                                                     <div class="accordion-body">
@@ -92,14 +92,6 @@
                                                                                     <table class="table align-middle table-nowrap text-center" id="semestreTabla-{{$key}}">
                                                                                         <thead class="table-light">
                                                                                             <tr>
-                                                                                                @if ($tipo == 'SIU')
-                                                                                                    <th>Course Number</th>
-                                                                                                    <th>Course Title</th>
-                                                                                                    <th>Credit Hours</th>
-                                                                                                    <th>Term / Year Taken</th>
-                                                                                                    <th>Grade</th>
-                                                                                                    <th>Transfer</th>
-                                                                                                @else
                                                                                                     <th>Asignatura</th>
                                                                                                     <th>N° Acta</th>
                                                                                                     <th>Fecha</th>
@@ -107,21 +99,13 @@
                                                                                                     <th>Periodo de Examen</th>
                                                                                                     <th>Carga Horaria</th>
                                                                                                     <th>Modalidad</th>
-                                                                                                @endif
+                                                                                                
                                                                                             </tr>
                                                                                         </thead>
                                                                                         <tbody>
                                                                                             @foreach ($alumno_notas as $nota)
                                                                                                 @if ($nota->semestre_materia == $semestre)
                                                                                                     <tr>
-                                                                                                        @if ($tipo == 'SIU')
-                                                                                                            <td>{{$nota->materia->codigo}}</td>
-                                                                                                            <td>{{$nota->materia->nombre_real}}</td>
-                                                                                                            <td class="carga_horaria">{{$nota->materia->carga_horaria}}</td>
-                                                                                                            <td>{{$nota->fecha}}</td>
-                                                                                                            <td>{{$nota->calificacion}}</td>
-                                                                                                            <td>--------------</td>
-                                                                                                        @else
                                                                                                             <td>{{$nota->materia->nombre_real}}</td>
                                                                                                             <td>{{$nota->numero_acta}}</td>
                                                                                                             <td>{{\Carbon\Carbon::parse($nota->fecha)->format('d/m/Y')}}</td>
@@ -130,7 +114,7 @@
                                                                                                             <td>{{$nota->evaluacion}}</td>
                                                                                                             <td class="carga_horaria">{{$nota->materia->carga_horaria}}</td>
                                                                                                             <td>{{$nota->carrera->modalidad->nombre}}</td>
-                                                                                                        @endif
+                                                                                                        
                                                                                                     </tr>
                                                                                                 @endif
                                                                                             @endforeach

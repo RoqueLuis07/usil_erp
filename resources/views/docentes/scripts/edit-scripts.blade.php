@@ -146,8 +146,8 @@
     })
 
     $('#update-btn').click(function () {
-        var nombre = ($('#primer_nombre_docente').val()).toUpperCase();
-        var apellido = ($('#primer_apellido_docente').val()).toUpperCase();
+        var nombre = ($('#nombres_docente').val()).toUpperCase();
+        var apellido = ($('#apellidos_docente').val()).toUpperCase();
         const swalWithBootstrapButtons = Swal.mixin({
             customClass: {
                 confirmButton: 'btn btn-success me-2',

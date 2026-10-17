@@ -97,18 +97,7 @@
 </head>
 <body>
     <header>
-        <div id="encabezado">
-            <div id="logo">
-                <img src="{{asset('storage/empresa/' . $empresa->logo)}}" alt="logo-usil" style="width: 100px; height: 100px">
-            </div>
-            <div id="datos">
-                <div class="mb-1" style="font-size: 14px"><b>{{$empresa->razon_social}}</b></div>
-                {{-- <div style="font-size: 12px">{{$empresa->razon_social}}</div> --}}
-                <div style="font-size: 10px">{{$empresa->direccion}}</div>
-                <div style="font-size: 10px">{{$empresa->ciudad->nombre}}, {{$empresa->pais->nombre}}</div>
-                <div style="font-size: 10px">Teléfono: {{$empresa->telefono}}</div>
-            </div>
-        </div>
+        @include('layouts.pdf.encabezado')
     </header>
 
     <footer>

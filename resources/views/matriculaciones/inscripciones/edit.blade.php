@@ -43,12 +43,6 @@
                                         <label class="form-label" for="carrera">Carrera</label>
                                         <input type="text" class="form-control" id="carrera" value="{{$matriculacion->carrera->nombre_fantasia}}" readonly>
                                     </div>
-                                    @if ($matriculacion->programa_id == 1)
-                                        <div class="col-lg-3 mb-3">
-                                            <label class="form-label" for="carrera_siu">Carrera SIU</label>
-                                            <input type="text" class="form-control" id="carrera_siu" @if ($matriculacion->carrera_siu_id) value="{{$matriculacion->carreraSiu->nombre_fantasia}}" @endif readonly>
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
                         </div>

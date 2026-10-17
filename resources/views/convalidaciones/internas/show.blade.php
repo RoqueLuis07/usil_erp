@@ -55,15 +55,15 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-3 mb-3">
-                                    <label class="form-label" for="carrera">Carrera USIL</label>
+                                    <label class="form-label" for="carrera">Carrera de la Universidad</label>
                                     <input type="text" class="form-control" id="carrera" value="{{$convalidacion->carrera->nombre_fantasia}}" readonly>
                                 </div>
                                 <div class="col-lg-3 mb-3">
-                                    <label class="form-label" for="facultad">Facultad USIL</label>
+                                    <label class="form-label" for="facultad">Facultad de la Universidad</label>
                                     <input type="text" class="form-control" id="facultad" value="{{$convalidacion->facultad->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="programa">Programa USIL</label>
+                                    <label class="form-label" for="programa">Programa de la Universidad</label>
                                     <input type="text" class="form-control" id="programa" value="{{$convalidacion->programa->nombre}}" readonly>
                                 </div>
                             </div>

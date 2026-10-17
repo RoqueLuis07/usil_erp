@@ -37,8 +37,14 @@ class HomeController extends Controller
     {
         if (Auth::user()->hasRole('ALUMNO')) { //cambiar el rol por ALUMNO al terminar los roles y permisos
             return redirect()->route('pantallas_alumnos.index', Auth::id());
-        } elseif (Auth::user()->hasRole('DOCENTE')) { //cambiar el rol por DOCENTE al terminar los roles y permisos
+        } elseif (Auth::user()->hasAnyRole(['DOCENTE', 'ENCARGADO_DOCENTE'])) { //cambiar el rol por DOCENTE al terminar los roles y permisos
             return redirect()->route('pantallas_docentes.index', Auth::id());
+        } elseif (Auth::user()->hasRole('ADMINISTRADOR_EXTENSION')) {
+            // Este rol vive enteramente dentro del apartado de Extensión (diseño
+            // nuevo); el dashboard genérico de abajo es compartido con SUPERADMIN
+            // y el resto del ERP, así que lo salteamos para que el cambio de
+            // diseño se note desde el mismo login.
+            return redirect()->route('extensiones_universitarias.index');
         } else {
             return view('index');
         }

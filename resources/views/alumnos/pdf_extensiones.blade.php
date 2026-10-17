@@ -142,50 +142,8 @@
                             }
                         @endphp
                         <td class="text-center">
-                            @switch($tipo->id)
-                                @case(1)
-                                    @php
-                                        if ($cantidad_realizada_1 != 1) {
-                                            $texto = 'actividades';
-                                        } else {
-                                            $texto = 'actividad';
-                                        }
-                                    @endphp
-                                    {{number_format($cantidad_realizada_1, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(2)
-                                    @php
-                                        if ($cantidad_realizada_2 != 1) {
-                                            $texto = 'actividades';
-                                        } else {
-                                            $texto = 'actividad';
-                                        }
-                                    @endphp
-                                    {{number_format($cantidad_realizada_2, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(3)
-                                    @php
-                                        if ($cantidad_realizada_3 != 1) {
-                                            $texto = 'actividades';
-                                        } else {
-                                            $texto = 'actividad';
-                                        }
-                                    @endphp
-                                    {{number_format($cantidad_realizada_3, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(4)
-                                    @php
-                                        if ($cantidad_realizada_4 != 1) {
-                                            $texto = 'actividades';
-                                        } else {
-                                            $texto = 'actividad';
-                                        }
-                                    @endphp
-                                    {{number_format($cantidad_realizada_4, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @default
-                                    @break
-                            @endswitch
+                            @php $valor_tipo = $resumen['por_tipo'][$tipo->id]['cantidad'] ?? 0; @endphp
+                            {{number_format($valor_tipo, 0, ',', '.')}} {{ $valor_tipo == 1 ? 'actividad' : 'actividades' }}
                         </td>
                         @php
                             if ($tipo->maxima_cantidad_horas != 1) {
@@ -196,96 +154,12 @@
                         @endphp
                         <td class="text-center">{{number_format($tipo->maxima_cantidad_horas, 0, ',', '.')}} {{$texto}}</td>
                         <td class="text-center">
-                            @switch($tipo->id)
-                                @case(1)
-                                    @php
-                                        if ($horas_realizadas_1 != 1) {
-                                            $texto = 'horas';
-                                        } else {
-                                            $texto = 'hora';
-                                        }
-                                    @endphp
-                                    {{number_format($horas_realizadas_1, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(2)
-                                    @php
-                                        if ($horas_realizadas_2 != 1) {
-                                            $texto = 'horas';
-                                        } else {
-                                            $texto = 'hora';
-                                        }
-                                    @endphp
-                                    {{number_format($horas_realizadas_2, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(3)
-                                    @php
-                                        if ($horas_realizadas_3 != 1) {
-                                            $texto = 'horas';
-                                        } else {
-                                            $texto = 'hora';
-                                        }
-                                    @endphp
-                                    {{number_format($horas_realizadas_3, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(4)
-                                    @php
-                                        if ($horas_realizadas_4 != 1) {
-                                            $texto = 'horas';
-                                        } else {
-                                            $texto = 'hora';
-                                        }
-                                    @endphp
-                                    {{number_format($horas_realizadas_4, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @default
-                                    @break
-                            @endswitch
+                            @php $valor_tipo = $resumen['por_tipo'][$tipo->id]['horas'] ?? 0; @endphp
+                            {{number_format($valor_tipo, 0, ',', '.')}} {{ $valor_tipo == 1 ? 'hora' : 'horas' }}
                         </td>
                         <td class="text-center">
-                            @switch($tipo->id)
-                                @case(1)
-                                    @php
-                                        if ($horas_acreditadas_1 != 1) {
-                                            $texto = 'horas';
-                                        } else {
-                                            $texto = 'hora';
-                                        }
-                                    @endphp
-                                    {{number_format($horas_acreditadas_1, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(2)
-                                    @php
-                                        if ($horas_acreditadas_2 != 1) {
-                                            $texto = 'horas';
-                                        } else {
-                                            $texto = 'hora';
-                                        }
-                                    @endphp
-                                    {{number_format($horas_acreditadas_2, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(3)
-                                    @php
-                                        if ($horas_acreditadas_3 != 1) {
-                                            $texto = 'horas';
-                                        } else {
-                                            $texto = 'hora';
-                                        }
-                                    @endphp
-                                    {{number_format($horas_acreditadas_3, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @case(4)
-                                    @php
-                                        if ($horas_acreditadas_4 != 1) {
-                                            $texto = 'horas';
-                                        } else {
-                                            $texto = 'hora';
-                                        }
-                                    @endphp
-                                    {{number_format($horas_acreditadas_4, 0, ',', '.')}} {{$texto}}
-                                    @break
-                                @default
-                                    @break
-                            @endswitch
+                            @php $valor_tipo = $resumen['por_tipo'][$tipo->id]['acreditadas'] ?? 0; @endphp
+                            {{number_format($valor_tipo, 0, ',', '.')}} {{ $valor_tipo == 1 ? 'hora' : 'horas' }}
                         </td>
                     </tr>
                 @endforeach

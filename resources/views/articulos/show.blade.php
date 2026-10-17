@@ -19,20 +19,20 @@
                             <p class="text-muted">Por favor, complete los <code>campos marcados</code> para poder agregar un registro con éxito</p>
                             <div class="row">
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="codigo">Código</span></label>
+                                    <label class="form-label" for="codigo">Código</label>
                                     <input type="text" class="form-control" id="codigo" value="{{$articulo->codigo}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="nombre">Nombre</span></label>
+                                    <label class="form-label" for="nombre">Nombre</label>
                                     <input type="text" class="form-control" id="nombre" value="{{$articulo->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="impuesto">Impuesto</span></label>
+                                    <label class="form-label" for="impuesto">Impuesto</label>
                                     <input type="text" class="form-control text-center" id="impuesto" @if ($articulo->impuesto == 0) value="EXENTO" @elseif ($articulo->impuesto == 5) value="5 %" @elseif ($articulo->impuesto == 10) value="10 %" @endif readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3 text-center">
                                     <div>
-                                        <label class="form-label" for="compra_venta">Compra / Venta</span></label>
+                                        <label class="form-label" for="compra_venta">Compra / Venta</label>
                                     </div>
                                     <div class="btn-group" role="group">
                                         <input type="radio" class="btn-check compra_venta1" id="compra_venta1" @if ($articulo->compra_venta == 'COMPRA') checked @endif disabled>
@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="col-lg-2 mb-3 text-center">
                                     <div>
-                                        <label class="form-label" for="stock">Tiene Stock ?</span></label>
+                                        <label class="form-label" for="stock">Tiene Stock ?</label>
                                     </div>
                                     <div class="btn-group" role="group">
                                         <input type="radio" class="btn-check stock1" id="stock1" @if ($articulo->tiene_stock == false) checked @endif disabled>
@@ -53,59 +53,40 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-2 mb-3 @if ($articulo->tiene_stock == false) d-none @endif">
-                                    <label class="form-label" for="stock">Stock</span></label>
+                                    <label class="form-label" for="stock">Stock</label>
                                     <input type="text" class="form-control" id="stock" value="{{number_format($articulo->stock, 0, ',', '.')}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="unidad_negocio">Unidad de Negocio</span></label>
+                                    <label class="form-label" for="unidad_negocio">Unidad de Negocio</label>
                                     <input type="text" class="form-control" id="unidad_negocio" value="{{$articulo->unidadNegocio->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="subunidad_negocio">Subunidad de Negocio</span></label>
+                                    <label class="form-label" for="subunidad_negocio">Subunidad de Negocio</label>
                                     <input type="text" class="form-control" id="subunidad_negocio" value="{{$articulo->subunidadNegocio->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-3 mb-3">
-                                    <label class="form-label" for="centro_costo">Centro de Costo</span></label>
+                                    <label class="form-label" for="centro_costo">Centro de Costo</label>
                                     <input type="text" class="form-control" id="centro_costo" value="{{$articulo->centroCosto->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-3 mb-3">
-                                    <label class="form-label" for="subcentro_costo">Subcentro de Costo</span></label>
+                                    <label class="form-label" for="subcentro_costo">Subcentro de Costo</label>
                                     <input type="text" class="form-control" id="subcentro_costo" value="{{$articulo->subcentroCosto->nombre}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-2 mb-3 @if ($articulo->compra_venta == 'VENTA') d-none @endif">
-                                    <label class="form-label" for="cuenta_compra">Cuenta Compra</span></label>
+                                    <label class="form-label" for="cuenta_compra">Cuenta Compra</label>
                                     <input type="text" class="form-control" id="cuenta_compra" @if ($articulo->cuenta_compra_id) value="{{$articulo->cuentaCompra->nombre}}" @endif readonly>
                                 </div>
-                                <div class="col-lg-2 mb-3 text-center @if ($articulo->compra_venta == 'COMPRA') d-none @endif" id="div-carrera_curso">
-                                    <div>
-                                        <label class="form-label" for="carrera_curso">Carrera / Curso</label>
-                                    </div>
-                                    <div class="btn-group" role="group">
-                                        <input type="radio" class="btn-check carrera_curso1" id="carrera_curso1" @if ($articulo->carrera_curso == 'CARRERA') checked @endif disabled>
-                                        <label class="btn btn-outline-info" for="carrera_curso1">Carrera</label>
-                                        <input type="radio" class="btn-check carrera_curso2" id="carrera_curso2" @if ($articulo->carrera_curso == 'CURSO') checked @endif disabled>
-                                        <label class="btn btn-outline-info" for="carrera_curso2">Curso</label>
-                                    </div>
-                                </div>
                                 <div class="col-lg-3 mb-3 @if(!$articulo->carrera) d-none @endif">
-                                    <label class="form-label" for="carrera">Carrera</span></label>
+                                    <label class="form-label" for="carrera">Carrera</label>
                                     <input type="text" class="form-control" id="carrera" @if ($articulo->carrera) value="{{$articulo->carrera->nombre_fantasia}}" @endif readonly>
                                 </div>
                                 <div class="col-lg-3 mb-3 @if(!$articulo->carrera) d-none @endif">
-                                    <label class="form-label" for="programa">Programa</span></label>
+                                    <label class="form-label" for="programa">Programa</label>
                                     <input type="text" class="form-control" id="programa" @if ($articulo->carrera) value="{{$articulo->carrera->programa->nombre}}" @endif readonly>
-                                </div>
-                                <div class="col-lg-3 mb-3 @if(!$articulo->curso) d-none @endif">
-                                    <label class="form-label" for="curso">Curso</span></label>
-                                    <input type="text" class="form-control" id="curso" @if ($articulo->curso) value="{{$articulo->curso->nombre_fantasia}}" @endif readonly>
-                                </div>
-                                <div class="col-lg-3 mb-3 @if(!$articulo->curso) d-none @endif">
-                                    <label class="form-label" for="tipo_curso">Tipo de Curso</span></label>
-                                    <input type="text" class="form-control" id="tipo_curso" @if ($articulo->curso) value="{{$articulo->curso->tipoCurso->nombre}}" @endif readonly>
                                 </div>
                             </div>
                         </div>

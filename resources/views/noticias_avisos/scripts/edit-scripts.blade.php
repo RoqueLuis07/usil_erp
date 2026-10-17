@@ -170,7 +170,7 @@
                     url = url.replace(':portada', noticia_aviso.portada)
                     $('#vista-imagen').prop('src', url);
                 } else {
-                    $('#vista-imagen').prop('src', '{{asset('storage/no_image.png')}}');
+                    $('#vista-imagen').prop('src', '{{asset('images/placeholders/no_image.svg')}}');
                 }
                 $(this).prop('disabled', true);
             }

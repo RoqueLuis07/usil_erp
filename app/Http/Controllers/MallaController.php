@@ -294,11 +294,7 @@ class MallaController extends Controller
                 }
             }
 
-            if ($malla->programa_id != 4) {
-                $pdf = Pdf::loadView('mallas/pdf_paraguay', compact('empresa', 'fecha_hoy', 'semestres', 'malla', 'correlatividades'));
-            } else {
-                $pdf = Pdf::loadView('mallas/pdf_siu', compact('empresa', 'fecha_hoy', 'malla'));
-            }
+            $pdf = Pdf::loadView('mallas/pdf_paraguay', compact('empresa', 'fecha_hoy', 'semestres', 'malla', 'correlatividades'));
             $pdf->setPaper('A4');
 
             return $pdf->stream('malla_' . $malla->carrera->nombre_real . '.pdf');
