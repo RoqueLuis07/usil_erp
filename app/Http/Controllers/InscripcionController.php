@@ -114,32 +114,6 @@ class InscripcionController extends Controller
                 $semestre_malla_materias_ambos->push($smm);
             }
         
-            // Lógica para añadir materias de Mallas SIU auxiliares/secundarias
-            if ($matriculacion->carrera_siu_id) {
-                $malla_siu = Malla::where('carrera_id', $matriculacion->carrera_siu_id)->where('estado', 'AC')->first();
-                if ($malla_siu) {
-                    $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_siu->id)->where('estado', 'AC')->first();
-                    if ($semestre_malla_siu) {
-                        $semestre_malla_materias_siu = SemestreMallaMateria::with('horarios')->where('semestre_malla_id', $semestre_malla_siu->id)->where('estado', 'AC')->get();
-                        foreach ($semestre_malla_materias_siu as $smms) {
-                            $semestre_malla_materias_ambos->push($smms);
-                        }
-                    }
-                }
-            } else {
-                $malla_auxiliar_siu = Malla::whereHas('carrera', function ($query) {
-                    $query->where('nombre_real', 'LIKE', '%SIU AUXILIAR%');
-                })->first();
-                if ($malla_auxiliar_siu) {
-                    $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_auxiliar_siu->id)->where('estado', 'AC')->first();
-                    if ($semestre_malla_siu) {
-                        $semestre_malla_materias_siu = SemestreMallaMateria::with('horarios')->where('semestre_malla_id', $semestre_malla_siu->id)->where('estado', 'AC')->get();
-                        foreach ($semestre_malla_materias_siu as $smms) {
-                            $semestre_malla_materias_ambos->push($smms);
-                        }
-                    }
-                }
-            }
         
             $semestre = Semestre::where('estado', 'AC')->orderBy('id', 'desc')->first();
             if (!$semestre) {
@@ -201,20 +175,20 @@ class InscripcionController extends Controller
                         
                         // Si NO tiene correlativas
                         if (!$materia->correlativas()->exists()) {
-                            if (!$materia->estaAprobadaConvalidadaEspejoSuficiencia($alumno->id)) {
+                            if (!$materia->estaAprobadaConvalidadaSuficiencia($alumno->id)) {
                                 $agregar = true;
                             }
                         } else {
                             // SI tiene correlativas
                             $correlativasAprobadas = false;
                             foreach ($materia->correlativas as $correlativa) {
-                                if ($correlativa->estaAprobadaConvalidadaEspejoSuficiencia($alumno->id)) {
+                                if ($correlativa->estaAprobadaConvalidadaSuficiencia($alumno->id)) {
                                     $correlativasAprobadas = true;
                                     break;
                                 }
                             }
                             // Si cumple correlativas y NO aprobada
-                            if ($correlativasAprobadas && !$materia->estaAprobadaConvalidadaEspejoSuficiencia($alumno->id)) {
+                            if ($correlativasAprobadas && !$materia->estaAprobadaConvalidadaSuficiencia($alumno->id)) {
                                 // Verificamos que no esté duplicada 
                                 if (!$materias->contains('id', $semestre_malla_materia->id)) {
                                     $agregar = true;
@@ -392,22 +366,6 @@ class InscripcionController extends Controller
             foreach ($semestre_malla_materias as $smm) {
                 $semestre_malla_materias_ambos->push($smm);
             }
-            if ($matriculacion->carrera_siu_id) {
-                $malla_siu = Malla::where('carrera_id', $matriculacion->carrera_siu_id)->where('estado', 'AC')->first();
-            } else {
-                $malla_auxiliar_siu = Malla::whereHas('carrera', function ($query) {
-                    $query->where('nombre_real', 'LIKE', '%SIU AUXILIAR%');
-                })->first();
-                if ($malla_auxiliar_siu) {
-                    $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_auxiliar_siu->id)->where('estado', 'AC')->first();
-                    if ($semestre_malla_siu) {
-                        $semestre_malla_materias_siu = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla_siu->id)->where('estado', 'AC')->get();
-                        foreach ($semestre_malla_materias_siu as $smms) {
-                            $semestre_malla_materias_ambos->push($smms);
-                        }
-                    }
-                }
-            }
 
             $materias_obtenidas = collect(); //creamos coleccion para comprobar la existencia
             if ($request->detalles) {
@@ -490,7 +448,7 @@ class InscripcionController extends Controller
                 }
             }
 
-            //borramos lo no encontrado en el front y si no esta aprobado, convalidado o espejo
+            //borramos lo no encontrado en el front y si no esta aprobado o convalidado
             foreach ($inscripcionesMateriaIds as $borrar) {
                 Inscripcion::where('matriculacion_id', $matriculacion->id)->where('materia_id', $borrar)->delete();
             }
@@ -627,24 +585,6 @@ class InscripcionController extends Controller
                 $semestre_malla_materias_ambos->push($smm);
             }
 
-            if ($matriculacion->carrera_siu_id) {
-                $malla_siu = Malla::where('carrera_id', $matriculacion->carrera_siu_id)->first();
-                $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_siu->id)->first();
-                $semestre_malla_materias_siu = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla_siu->id)->get();
-
-                foreach ($semestre_malla_materias_siu as $smms) {
-                    $semestre_malla_materias_ambos->push($smms);
-                }
-            } else {
-                $malla_auxiliar_siu = Malla::whereHas('carrera', function ($query) {
-                    $query->where('nombre_real', 'LIKE', '%SIU AUXILIAR%');
-                })->first();
-                $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_auxiliar_siu->id)->where('estado', 'AC')->first();
-                $semestre_malla_materias_siu = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla_siu->id)->where('estado', 'AC')->get();
-                foreach ($semestre_malla_materias_siu as $smms) {
-                    $semestre_malla_materias_ambos->push($smms);
-                }
-            }
 
             $alumno = Alumno::findOrFail($matriculacion->alumno_id);
             //funcion para concatenar el nombre completo del alumno ordenado por apellido nombre
@@ -742,7 +682,6 @@ class InscripcionController extends Controller
             $horarios_clases = collect();
             $horarios = collect();
             $semestre_malla_materias_ambos = collect();
-            $existe_siu = 'NO';
 
             $matriculacion = Matriculacion::findOrFail($id);
             $carrera_py = $matriculacion->carrera->nombre_real;
@@ -754,26 +693,6 @@ class InscripcionController extends Controller
                 $semestre_malla_materias_ambos->push($smm);
             }
 
-            if ($matriculacion->carrera_siu_id) {
-                $existe_siu = 'SI';
-                $carrera_siu = $matriculacion->carreraSiu->nombre_real;
-                $malla_siu = Malla::where('carrera_id', $matriculacion->carrera_siu_id)->first();
-                $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_siu->id)->first();
-                $semestre_malla_materias_siu = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla_siu->id)->get();
-
-                foreach ($semestre_malla_materias_siu as $smms) {
-                    $semestre_malla_materias_ambos->push($smms);
-                }
-            } else {
-                $malla_auxiliar_siu = Malla::whereHas('carrera', function ($query) {
-                    $query->where('nombre_real', 'LIKE', '%SIU AUXILIAR%');
-                })->first();
-                $semestre_malla_siu = SemestreMalla::where('semestre_id', $matriculacion->semestre_id)->where('malla_id', $malla_auxiliar_siu->id)->where('estado', 'AC')->first();
-                $semestre_malla_materias_siu = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla_siu->id)->where('estado', 'AC')->get();
-                foreach ($semestre_malla_materias_siu as $smms) {
-                    $semestre_malla_materias_ambos->push($smms);
-                }
-            }
 
             $alumno = Alumno::findOrFail($matriculacion->alumno_id);
             //funcion para concatenar el nombre completo del alumno ordenado por apellido nombre
@@ -955,11 +874,8 @@ class InscripcionController extends Controller
                 }
             }
 
-            if ($existe_siu == 'SI') {
-                $pdf = Pdf::loadView('matriculaciones/inscripciones/pdf_horarios', compact('empresa', 'fecha_hoy', 'dias_semana', 'nombre_alumno', 'documento_alumno', 'semestre', 'programa', 'horarios_clases', 'horarios', 'carrera_py', 'carrera_siu', 'total_materias', 'vencimientos', 'existe_siu'));
-            } else {
-                $pdf = Pdf::loadView('matriculaciones/inscripciones/pdf_horarios', compact('empresa', 'fecha_hoy', 'dias_semana', 'nombre_alumno', 'documento_alumno', 'semestre', 'programa', 'horarios_clases', 'horarios', 'carrera_py', 'total_materias', 'vencimientos', 'existe_siu'));
-            }
+            $pdf = Pdf::loadView('matriculaciones/inscripciones/pdf_horarios', compact('empresa', 'fecha_hoy', 'dias_semana', 'nombre_alumno', 'documento_alumno', 'semestre', 'programa', 'horarios_clases', 'horarios', 'carrera_py', 'total_materias', 'vencimientos'));
+            
             $pdf->setPaper('A4', 'landscape');
 
             return $pdf->stream('horario_' . $documento_alumno . '_' . $semestre . '.pdf');

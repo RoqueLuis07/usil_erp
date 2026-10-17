@@ -592,26 +592,6 @@
                                     <div class="card">
                                         <div class="card-info card-header">
                                             <div class="form-check form-check-dark mb-3">
-                                                <input type="checkbox" class="form-check-input float-end fs-xxs padre" id="chk_mallas_espejo" name="chk_mallas_espejo">
-                                                <h6 class="card-title text-white">Mallas Espejo</h6>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach ($p_mallas_espejo as $p_malla_espejo)
-                                                <li class="list-group-item">
-                                                    <div class="form-check form-check-info">
-                                                        <input class="form-check-input hijo hijo-mallas_espejo" type="checkbox" id="permission[{{$p_malla_espejo->id}}]" name="permission[{{$p_malla_espejo->id}}]" value="permission[{{$p_malla_espejo->id}}]">
-                                                        <label class="form-check-label" for="{{$p_malla_espejo->name}}">{{$p_malla_espejo->name}}</label>
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-3 col-lg-12">
-                                    <div class="card">
-                                        <div class="card-info card-header">
-                                            <div class="form-check form-check-dark mb-3">
                                                 <input type="checkbox" class="form-check-input float-end fs-xxs padre" id="chk_escalas" name="chk_escalas">
                                                 <h6 class="card-title text-white">Escalas</h6>
                                             </div>

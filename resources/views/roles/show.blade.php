@@ -509,23 +509,6 @@
                                 <div class="col-xxl-3 col-lg-12">
                                     <div class="card">
                                         <div class="card-info card-header">
-                                            <h6 class="card-title mb-3 text-white">Mallas Espejo</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach ($p_mallas_espejo as $p_malla_espejo)
-                                                <li class="list-group-item">
-                                                    <div class="form-check form-check-info">
-                                                        <input class="form-check-input hijo" disabled type="checkbox" id="permiso[{{$p_malla_espejo->id}}]" name="permiso[{{$p_malla_espejo->id}}]" value="permiso[{{$p_malla_espejo->id}}]">
-                                                        <label class="form-check-label" for="{{$p_malla_espejo->name}}">{{$p_malla_espejo->name}}</label>
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xxl-3 col-lg-12">
-                                    <div class="card">
-                                        <div class="card-info card-header">
                                             <h6 class="card-title mb-3 text-white">Escalas</h6>
                                         </div>
                                         <div class="card-body">

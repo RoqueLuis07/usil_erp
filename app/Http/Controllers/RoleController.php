@@ -65,7 +65,6 @@ class RoleController extends Controller
             $p_materias_suficiencia = Permission::where('name', 'like', '%' . 'materias_suficiencias')->orderBy('id')->get();
             $p_semestres = Permission::where('name', 'like', '%' . 'periodos')->orderBy('id')->get();
             $p_mallas = Permission::where('name', 'like', '%' . 'mallas')->orderBy('id')->get();
-            $p_mallas_espejo = Permission::where('name', 'like', '%' . 'mallas_espejo')->orderBy('id')->get();
             $p_escalas = Permission::where('name', 'like', '%' . 'escalas')->orderBy('id')->get();
             $p_evaluaciones = Permission::where('name', 'like', '%' . 'evaluaciones')->orderBy('id')->get();
             $p_modalidades = Permission::where('name', 'like', '%' . 'modalidades')->orderBy('id')->get();
@@ -128,7 +127,7 @@ class RoleController extends Controller
                                                     'p_tutorias', 'p_extensiones_universitarias',
                                                     'p_solicitudes', 'p_encuestas', 'p_parametros_academicos', 'p_programas', 'p_facultades', 'p_carreras',
                                                     'p_materias', 'p_materias_suficiencia', 'p_semestres', 'p_mallas',
-                                                    'p_mallas_espejo', 'p_escalas', 'p_modalidades', 'p_formaciones_academicas',
+                                                    'p_escalas', 'p_modalidades', 'p_formaciones_academicas',
                                                     'p_evaluaciones', 'p_instituciones_educativas', 'p_fechas_desmatriculaciones', 'p_areas_conocimientos',
                                                     'p_reportes_academicos',
 
@@ -195,7 +194,6 @@ class RoleController extends Controller
             $p_materias_suficiencia = Permission::where('name', 'like', '%' . 'materias_suficiencias')->orderBy('id')->get();
             $p_semestres = Permission::where('name', 'like', '%' . 'periodos')->orderBy('id')->get();
             $p_mallas = Permission::where('name', 'like', '%' . 'mallas')->orderBy('id')->get();
-            $p_mallas_espejo = Permission::where('name', 'like', '%' . 'mallas_espejo')->orderBy('id')->get();
             $p_escalas = Permission::where('name', 'like', '%' . 'escalas')->orderBy('id')->get();
             $p_evaluaciones = Permission::where('name', 'like', '%' . 'evaluaciones')->orderBy('id')->get();
             $p_modalidades = Permission::where('name', 'like', '%' . 'modalidades')->orderBy('id')->get();
@@ -257,7 +255,7 @@ class RoleController extends Controller
                                                         'p_tutorias', 'p_extensiones_universitarias',
                                                         'p_solicitudes', 'p_encuestas', 'p_parametros_academicos', 'p_programas', 'p_facultades', 'p_carreras',
                                                         'p_materias', 'p_materias_suficiencia', 'p_semestres', 'p_mallas',
-                                                        'p_mallas_espejo', 'p_escalas', 'p_modalidades', 'p_formaciones_academicas',
+                                                        'p_escalas', 'p_modalidades', 'p_formaciones_academicas',
                                                         'p_evaluaciones', 'p_instituciones_educativas', 'p_fechas_desmatriculaciones', 'p_areas_conocimientos',
                                                         'p_reportes_academicos',
 
@@ -358,7 +356,6 @@ class RoleController extends Controller
             $p_materias_suficiencia = Permission::where('name', 'like', '%' . 'materias_suficiencias')->orderBy('id')->get();
             $p_semestres = Permission::where('name', 'like', '%' . 'periodos')->orderBy('id')->get();
             $p_mallas = Permission::where('name', 'like', '%' . 'mallas')->orderBy('id')->get();
-            $p_mallas_espejo = Permission::where('name', 'like', '%' . 'mallas_espejo')->orderBy('id')->get();
             $p_escalas = Permission::where('name', 'like', '%' . 'escalas')->orderBy('id')->get();
             $p_evaluaciones = Permission::where('name', 'like', '%' . 'evaluaciones')->orderBy('id')->get();
             $p_modalidades = Permission::where('name', 'like', '%' . 'modalidades')->orderBy('id')->get();
@@ -421,7 +418,7 @@ class RoleController extends Controller
                                                     'p_tutorias', 'p_extensiones_universitarias',
                                                     'p_solicitudes', 'p_encuestas', 'p_parametros_academicos', 'p_programas', 'p_facultades', 'p_carreras',
                                                     'p_materias', 'p_materias_suficiencia', 'p_semestres', 'p_mallas',
-                                                    'p_mallas_espejo', 'p_escalas', 'p_modalidades', 'p_formaciones_academicas',
+                                                    'p_escalas', 'p_modalidades', 'p_formaciones_academicas',
                                                     'p_evaluaciones', 'p_instituciones_educativas', 'p_fechas_desmatriculaciones', 'p_areas_conocimientos',
                                                     'p_reportes_academicos',
 

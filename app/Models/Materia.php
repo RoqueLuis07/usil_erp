@@ -32,13 +32,12 @@ class Materia extends Model implements Auditable
         ->withTimestamps();
     }
 
-    public function EstaAprobadaConvalidadaEspejoSuficiencia($alumno){
+    public function EstaAprobadaConvalidadaSuficiencia($alumno){
         return $this->inscripciones()
                      ->where('alumno_id', $alumno)
                      ->where(function ($query) {
                          $query->where('inscripciones.estado', 'AP')
                                ->orWhere('inscripciones.estado', 'CO')
-                               ->orWhere('inscripciones.estado', 'ES')
                                ->orWhere('inscripciones.estado', 'SU');
                      })
                      ->exists();

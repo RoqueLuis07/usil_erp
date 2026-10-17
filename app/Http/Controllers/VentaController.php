@@ -231,7 +231,6 @@ class VentaController extends Controller
                     $matriculacion->semestre_id = $semestre->id;
                     $matriculacion->programa_id = $carrera->programa_id;
                     $matriculacion->carrera_id = $carrera->id;
-                    $matriculacion->carrera_siu_id = null;
                     $matriculacion->tipo_pago = 'EM';
                     $matriculacion->venta_id = $venta->id;
                     $matriculacion->cargado_por_id = Auth::id();

@@ -131,10 +131,6 @@
                     <b>Semestre:</b> {{$semestre}}
                     <br>
                     <b>Carrera:</b> {{$carrera_py}}
-                    @if ($existe_siu == 'SI')
-                        <br>
-                        <b>Carrera SIU:</b> {{$carrera_siu}}
-                    @endif
                 </p>
             </div>
         </div>

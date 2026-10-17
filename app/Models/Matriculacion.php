@@ -28,10 +28,6 @@ class Matriculacion extends Model implements Auditable
         return $this->belongsTo(Carrera::class);
     }
 
-    public function CarreraSiu(){
-        return $this->belongsTo(Carrera::class);
-    }
-
     public function Convenio(){
         return $this->belongsTo(Convenio::class);
     }

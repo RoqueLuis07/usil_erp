@@ -14,4 +14,8 @@ return [
     // Datos opcionales que usan los contratos y constancias; vacíos se reemplazan por una frase neutra.
     'sitio_web' => env('INSTITUCION_SITIO_WEB'),
     'direccion' => env('INSTITUCION_DIRECCION'),
+    'ciudad' => env('INSTITUCION_CIUDAD'),
+    // Firmantes de certificados y constancias (nombre con título, p. ej. "Abg. Nombre Apellido").
+    'secretario_general' => env('INSTITUCION_SECRETARIO_GENERAL'),
+    'rector' => env('INSTITUCION_RECTOR'),
 ];

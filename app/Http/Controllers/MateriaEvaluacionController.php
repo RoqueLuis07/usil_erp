@@ -25,8 +25,6 @@ use App\Models\ActaEvaluacion;
 use App\Models\ActaEvaluacionAlumno;
 use App\Models\Matriculacion;
 use App\Models\Inscripcion;
-use App\Models\MallaEspejo;
-use App\Models\MallaEspejoDetalle;
 
 
 class MateriaEvaluacionController extends Controller
@@ -271,8 +269,6 @@ class MateriaEvaluacionController extends Controller
 
                             $carrera = Carrera::findOrFail($request->carrera);
                             $escala = Escala::with('escalaDetalles')->where('programa_id', $carrera->programa_id)->first();
-                            $malla = Malla::where('carrera_id', $carrera->id)->first();
-                            $malla_espejo = MallaEspejo::where('malla_paraguay_id', $malla->id)->first();
 
                             foreach ($escala->escalaDetalles as $detalle) {
                                 if ($total_puntos_alumno >= $detalle->punto_minimo && $total_puntos_alumno <= $detalle->punto_maximo) {
@@ -299,79 +295,10 @@ class MateriaEvaluacionController extends Controller
                                 $alumno_nota->calificacion = $nota;
                                 $alumno_nota->save();
 
-                                if ($malla_espejo && $nota != 'AUSENTE') {
-                                    $doble_grado = MallaDetalle::where('malla_id', $malla->id)->where('materia_id', $alumno_puntaje->materia_id)->where('doble_grado', 'true')->count();
-                                    if ($doble_grado == 1) {
-                                        $escala_siu = Escala::where('programa_id', $malla_espejo->mallaSiu->carrera->programa_id)->first();
-                                        $malla_espejo_detalles = MallaEspejoDetalle::where('malla_espejo_id', $malla_espejo->id)->get();
-                                        foreach ($malla_espejo_detalles as $detalle) {
-                                            if ($detalle->materia_paraguay_id == $alumno_puntaje->materia_id) {
-                                                foreach ($escala_siu->escalaDetalles as $esiu) {
-                                                    if ($total_puntos_alumno >= $esiu->punto_minimo && $total_puntos_alumno <= $esiu->punto_maximo) {
-                                                        $nota_siu = $esiu->nota;
-                                                    }
-                                                }
-
-                                                $alumno_nota_siu = new AlumnoNota();
-                                                $alumno_nota_siu->alumno_id = $alumno_puntaje->alumno_id;
-                                                $alumno_nota_siu->materia_id = $detalle->materia_siu_id;
-                                                $alumno_nota_siu->carrera_id = $malla_espejo->mallaSiu->carrera_id;
-                                                $alumno_nota_siu->semestre_id = $request->semestre;
-                                                $alumno_nota_siu->evaluacion = 'ESPEJO DE ' . $alumno_puntaje->materia->nombre_fantasia;
-                                                $alumno_nota_siu->calificacion = $nota_siu;
-                                                $alumno_nota_siu->save();
-
-                                                $matriculacion = Matriculacion::where('alumno_id', $alumno_puntaje->alumno_id)->where('semestre_id', $request->semestre)->where('carrera_id', $request->carrera)->first();
-                                                $old_inscripcion = Inscripcion::where('matriculacion_id', $matriculacion->id)->where('materia_id', $alumno_puntaje->materia_id)->first();
-                                                $inscripcion = new Inscripcion();
-                                                $inscripcion->fecha = $old_inscripcion->fecha;
-                                                $inscripcion->matriculacion_id = $matriculacion->id;
-                                                $inscripcion->materia_id = $detalle->materia_siu_id;
-                                                $inscripcion->estado = 'ES';
-                                                $inscripcion->cargado_por_id = $old_inscripcion->cargado_por_id;
-                                                $inscripcion->alumno_id = $alumno_puntaje->alumno_id;
-                                                $inscripcion->docente_id = $old_inscripcion->docente_id;
-                                                $inscripcion->save();
-                                            }
-                                        }
-                                    }
-                                }
                             } else {
                                 $old_alumno_nota->calificacion = $nota;
                                 $old_alumno_nota->save();
 
-                                if ($malla_espejo && $nota != 'AUSENTE') {
-                                    $doble_grado = MallaDetalle::where('malla_id', $malla->id)->where('materia_id', $alumno_puntaje->materia_id)->where('doble_grado', 'true')->count();
-                                    if ($doble_grado == 1) {
-                                        $escala_siu = Escala::where('programa_id', $malla_espejo->mallaSiu->carrera->programa_id)->first();
-                                        $malla_espejo_detalles = MallaEspejoDetalle::where('malla_espejo_id', $malla_espejo->id)->get();
-                                        foreach ($malla_espejo_detalles as $detalle) {
-                                            if ($detalle->materia_paraguay_id == $alumno_puntaje->materia_id) {
-                                                $old_alumno_nota_siu = AlumnoNota::where('alumno_id', $alumno_puntaje->alumno_id)->where('materia_id', $detalle->materia_siu_id)->where('carrera_id', $malla_espejo->mallaSiu->carrera_id)->where('semestre_id', $request->semestre)->first();
-                                                foreach ($escala_siu->escalaDetalles as $esiu) {
-                                                    if ($total_puntos_alumno >= $esiu->punto_minimo && $total_puntos_alumno <= $esiu->punto_maximo) {
-                                                        $nota_siu = $esiu->nota;
-                                                    }
-                                                }
-
-                                                $old_alumno_nota_siu->calificacion = $nota_siu;
-                                                $old_alumno_nota_siu->save();
-
-                                                $matriculacion = Matriculacion::where('alumno_id', $alumno_puntaje->alumno_id)->where('semestre_id', $request->semestre)->where('carrera_id', $request->carrera)->first();
-                                                $old_inscripcion = Inscripcion::where('matriculacion_id', $matriculacion->id)->where('materia_id', $alumno_puntaje->materia_id)->first();
-                                                $inscripcion = new Inscripcion();
-                                                $inscripcion->fecha = $old_inscripcion->fecha;
-                                                $inscripcion->matriculacion_id = $matriculacion->id;
-                                                $inscripcion->materia_id = $detalle->materia_siu_id;
-                                                $inscripcion->estado = 'ES';
-                                                $inscripcion->cargado_por_id = $old_inscripcion->cargado_por_id;
-                                                $inscripcion->alumno_id = $alumno_puntaje->alumno_id;
-                                                $inscripcion->docente_id = $old_inscripcion->docente_id;
-                                                $inscripcion->save();
-                                            }
-                                        }
-                                    }
-                                }
                             }
 
                             $acta_detalle = ActaEvaluacionAlumno::where('acta_evaluacion_id', $acta->id)->where('alumno_id', $alumno_puntaje->alumno_id)->first();
@@ -386,7 +313,7 @@ class MateriaEvaluacionController extends Controller
                             $matriculacion = Matriculacion::where('alumno_id', $alumno_puntaje->alumno_id)->where('semestre_id', $semestre->id)->where('programa_id', $carrera->programa_id)->where('carrera_id', $carrera->id)->first();
                             $inscripcion = Inscripcion::where('matriculacion_id', $matriculacion->id)->where('materia_id', $alumno_puntaje->materia_id)->where('alumno_id', $alumno_puntaje->alumno_id)->first();
                             if ($nota != 'AUSENTE') {
-                                if ($nota != 1) { //Agregar el 1 de SIU
+                                if ($nota != 1) {
                                     $inscripcion->estado = 'AP';
                                     $inscripcion->save();
                                 } else {

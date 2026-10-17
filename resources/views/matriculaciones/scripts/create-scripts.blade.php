@@ -45,7 +45,6 @@
         var semestreSelected = $('#semestre option:selected').val();
         var programaSelected = {!!json_encode(old('programa'), JSON_HEX_TAG) !!};
         var carreraSelected = {!!json_encode(old('carrera'), JSON_HEX_TAG) !!};
-        var carreraSiuSelected = {!!json_encode(old('carrera_siu'), JSON_HEX_TAG) !!};
 
         $.each(semestres, function (index, value) {
             if (semestreSelected == value.id) {
@@ -53,13 +52,9 @@
                 $('#programa').append('<option value="" selected disabled>Seleccionar...</option>');
                 $('#carrera').empty();
                 $('#carrera').append('<option value="" selected disabled>Seleccionar...</option>');
-                $('#carrera_siu').empty();
-                $('#carrera_siu').append('<option value="" selected disabled>Seleccionar...</option>');
 
                 var opcionesUnicas = new Set();
                 var opcionesUnicasProgramas = new Set();
-                var opcionesUnicasSiu = new Set();
-                var programaSiuId = 4;
 
                 $.each(value.semestre_mallas, function (i, s_malla) {
                     var fechaInicio = moment(s_malla.fecha_inicio_matriculacion);
@@ -73,10 +68,6 @@
                         if (programaId == 1 || programaId == 2 || programaId == 3) {
                             if (!opcionesUnicas.has(carreraId)) {
                                 opcionesUnicas.add(carreraId);
-                            }
-                        } else {
-                            if (!opcionesUnicasSiu.has(carreraId)) {
-                                opcionesUnicasSiu.add(carreraId);
                             }
                         }
                     // }
@@ -98,15 +89,6 @@
                     })
                 });
 
-                $('#carrera_siu').selectpicker('destroy');
-                opcionesUnicasSiu.forEach(function (carreraId) {
-                    $.each(carreras, function (index, carrera) {
-                        if (carreraId == carrera.id && carrera.programa_id == programaSiuId) {
-                            $('#carrera_siu').append('<option value="' + carrera.id + '" data-subtext="' + carrera.nombre_real + '">' + carrera.nombre_fantasia + '</option>');
-                        }
-                    })
-                });
-                $('#carrera_siu').selectpicker('render');
             }
         });
 
@@ -128,17 +110,6 @@
                         $(this).prop('selected', true);
                 }
             });
-        }
-        if ($('#programa option:selected').val() == 1) {
-            $('#div-carrera_siu').removeClass('d-none');
-            $('#carrera_siu').selectpicker('destroy');
-            $('#carrera_siu').prop('disabled', false);
-            $('#carrera_siu option').each(function () {
-                if ($(this).val() == carreraSiuSelected) {
-                        $(this).prop('selected', true);
-                }
-            });
-            $('#carrera_siu').addClass('selectpicker').selectpicker('render');
         }
 
         $('#programa').addClass('selectpicker').selectpicker('render');
@@ -370,60 +341,9 @@
                     })
                 }
 
-                if (programaSelected == 1) {
-                    $('#div-carrera_siu').removeClass('d-none');
-                    var opcionesUnicasSiu = new Set();
-
-                    $.each(value.semestre_mallas, function (i, s_malla) {
-                        var fechaInicio = moment(s_malla.fecha_inicio_matriculacion);
-                        var fechaFin = moment(s_malla.fecha_fin_matriculacion);
-                        // if (hoy.isBetween(fechaInicio, fechaFin, 'day', '[]')) {
-                            var carreraId = s_malla.malla.carrera.id;
-                            var programaId = s_malla.malla.carrera.programa.id;
-                            if (programaId == 4) {
-                                if (!opcionesUnicasSiu.has(carreraId)) {
-                                    opcionesUnicasSiu.add(carreraId);
-                                }
-                            }
-                        // }
-                    });
-                    $('#carrera_siu').selectpicker('destroy');
-                    $('#carrera_siu').empty();
-                    $('#carrera_siu').append('<option value="" selected disabled>Seleccionar...</option>')
-                    opcionesUnicasSiu.forEach(function (carreraId) {
-                        $.each(carreras, function (index, carrera) {
-                            var programaSiuId = 4;
-                            if (carreraId == carrera.id && carrera.programa_id == programaSiuId) {
-                                $('#carrera_siu').append('<option value="' + carrera.id + '" data-subtext="' + carrera.nombre_real + '">' + carrera.nombre_fantasia + '</option>');
-                            }
-                        })
-                    });
-
-                    if (opcionesUnicasSiu.size > 0) {
-                        $('#carrera_siu').selectpicker('destroy');
-                        $('#carrera_siu').prop('disabled', false);
-                        $('#carrera_siu').addClass('selectpicker').selectpicker('render');
-                    }
-                } else {
-                    if (!$('#div-carrera_siu').hasClass('d-none')) {
-                        $('#div-carrera_siu').addClass('d-none');
-                        $('#carrera_siu').selectpicker('destroy');
-                        $('#carrera_siu').empty();
-                        $('#carrera_siu').append('<option value="" selected disabled>Seleccionar...</option>')
-                        $('#carrera_siu').selectpicker('render');
-                        $('#validacion').val(0);
-                    }
-                }
             }
         });
 
-        var alumno = $('#alumno option:selected').val();
-        var programa = $(this).val();
-        var carrera = $('#carrera option:selected').val();
-
-        if (alumno != '' && carrera != '') {
-            validate_carrera_siu(alumno, carrera, programa);
-        }
     });
 
     $('#carrera').on('change', function () {
@@ -431,14 +351,6 @@
         $(this).removeClass('is-invalid');
         $(this).selectpicker('render');
         $(this).selectpicker('toggle');
-
-        var alumno = $('#alumno option:selected').val();
-        var programa = $('#programa option:selected').val();
-        var carrera = $(this).val();
-
-        if (alumno != '' && programa != '') {
-            validate_carrera_siu(alumno, carrera, programa);
-        }
     })
 
     $('#alumno').on('change', function () {
@@ -449,10 +361,6 @@
 
         if (semestre != '') {
             get_carrera_alumno(alumno);
-        }
-
-        if (programa != '' && carrera != '') {
-            validate_carrera_siu(alumno, carrera, programa);
         }
     })
 
@@ -521,76 +429,6 @@
                 }
                 $('#carrera').selectpicker('render');
 
-                if (response.carreras_siu.length != 0) {
-                    $('#carrera_siu').selectpicker('destroy');
-                    $('#div-carrera_siu').removeClass('d-none');
-                    if ($('#carrera_siu option').length == 1) {
-                        $('#carrera_siu').empty();
-                        $('#carrera_siu').prop('disabled', false);
-                        $('#carrera_siu').append('<option value="" disabled selected>Seleccionar...</option>');
-                        $.each(response.carreras_siu, function (index, value) {
-                            if (value != null) {
-                                if (index == 0) {
-                                    var selected = 'selected';
-                                } else {
-                                    var selected = '';
-                                }
-                                $('#carrera_siu').append('<option value="' + value.id + '"' + selected + ' data-subtext="' + value.nombre_real + '">' + value.nombre_fantasia + '</option>');
-                            }
-                        })
-                    } else {
-                        $.each(response.carreras_siu, function (index, value) {
-                            if (value != null) {
-                                if ($('#carrera_siu option[value="' + value.id + '"]').length == 0) {
-                                    $('#carrera_siu').append('<option value="' + value.id + '" data-subtext="' + value.nombre_real + '">' + value.nombre_fantasia + '</option>');
-                                } else {
-                                    $('#carrera_siu').val(value.id);
-                                }
-                            }
-                        })
-                    }
-                    $('#carrera_siu').selectpicker('render');
-                }
-            }
-        })
-    }
-
-    function validate_carrera_siu(alumno, carrera, programa) {
-        var url = "{{route('matriculaciones.validate_carrera_siu', ['alumno' => ":alumno", 'carrera' => ":carrera", 'programa' => ":programa"])}}";
-        url = url.replace(':alumno', alumno);
-        url = url.replace(':carrera', carrera);
-        url = url.replace(':programa', programa);
-
-        $.ajax({
-            url: url,
-            type: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': '{{csrf_token()}}'
-            },
-            processData: false,
-            contentType: false,
-            cache: false,
-        }).then(function(response) {
-            if (response.validacion == 1) {
-                $('#validacion').val(response.validacion);
-                $('#label-carrera_siu').html('Carrera SIU <span class="text-danger">(*)</span>');
-                const swalWithBootstrapButtons = Swal.mixin({
-                    customClass: {
-                        confirmButton: 'btn btn-light',
-                    },
-                    buttonsStyling: false
-                });
-                swalWithBootstrapButtons.fire({
-                    title: 'El alumno ya debe ser inscripto obligatoriamente en una carrera SIU.',
-                    icon: 'warning',
-                    showCancelButton: false,
-                    confirmButtonText: 'OK',
-                })
-            }
-            if (response.carrera_siu) {
-                $('#carrera_siu').selectpicker('destroy');
-                $('#carrera_siu').val(response.carrera_siu);
-                $('#carrera_siu').selectpicker('render');
             }
         })
     }

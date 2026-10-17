@@ -215,7 +215,6 @@
                                                                 @endcan
                                                                 @can('ver_notas_alumnos')
                                                                     <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_notas', $alumno->id)}}">Notas</a></li>
-                                                                    <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_notas_espejo', $alumno->id)}}">Espejo</a></li>
                                                                 @endcan
                                                                 @can('ver_asistencias_alumnos')
                                                                     <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_asistencias', $alumno->id)}}">Asistencias</a></li>
@@ -228,13 +227,6 @@
 																		<li><a class="dropdown-item dropdown-item-mas" href="{{route('certificados_estudios.show', ['id' => $alumno->id, 'tipo' => 'PY'])}}">Cert. Estudios</a></li>
 																	@else
 																		<li><a class="dropdown-item dropdown-item-mas" href="{{asset($alumno->url_certificado_estudio)}}" target="_blank">Cert. Estudios</a></li>
-																	@endif
-                                                                @endcan
-                                                                @can('ver_certificado_estudios_siu_alumnos')
-                                                                    @if (!$alumno->url_certificado_estudio_siu)
-																		<li><a class="dropdown-item dropdown-item-mas" href="{{route('certificados_estudios.show', ['id' => $alumno->id, 'tipo' => 'SIU'])}}">Cert. Estudios SIU</a></li>
-																	@else
-																		<li><a class="dropdown-item dropdown-item-mas" href="{{asset($alumno->url_certificado_estudio_siu)}}" target="_blank">Cert. Estudios SIU</a></li>
 																	@endif
                                                                 @endcan
                                                             </ul>

@@ -59,7 +59,6 @@
                                                 <input type="hidden" id="filtro_ingreso_input" name="filtro_ingreso" value="{{$filtro_ingreso}}">
                                                 <input type="hidden" id="filtro_programa_input" name="filtro_programa" value="{{$filtro_programa}}">
                                                 <input type="hidden" id="filtro_carrera_input" name="filtro_carrera" value="{{$filtro_carrera}}">
-                                                <input type="hidden" id="filtro_carrera_siu_input" name="filtro_carrera_siu" value="{{$filtro_carrera_siu}}">
                                                 <i class="ri-search-line search-icon"></i>
                                                 <button class="btn btn-primary py-0 d-none" type="submit">
                                                 </button>
@@ -132,17 +131,6 @@
                                         <button class="btn btn-sm btn-outline-danger" id="delete-carrera-filter-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Filtro por Carrera"><i class="ri-close-line"></i></button>
                                     </div>
                                 </div>
-                                <div class="col-lg-2">
-                                    <div class="input-group">
-                                        <select class="selectpicker form-control" id="filtro_carrera_siu" data-live-search="true">
-                                            <option value="" selected disabled>Filtrar por Carrera SIU...</option>
-                                            @foreach ($carreras_siu as $carrera_siu)
-                                                <option value="{{$carrera_siu->id}}" @if ($filtro_carrera_siu == $carrera_siu->id) selected @endif>{{$carrera_siu->nombre_fantasia}}</option>
-                                            @endforeach
-                                        </select>
-                                        <button class="btn btn-sm btn-outline-danger" id="delete-carrera_siu-filter-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Filtro por Carrera SIU"><i class="ri-close-line"></i></button>
-                                    </div>
-                                </div>
                             </div>
                             <div class="table-responsive table-card mt-3 mb-1">
                                 <table class="table align-middle table-nowrap">
@@ -154,7 +142,6 @@
                                             <th>Semestre</th>
                                             <th>Programa</th>
                                             <th>Carrera</th>
-                                            <th>Carrera SIU</th>
                                             <th>Ingreso</th>
                                             <th class="text-center">Materias</th>
                                             <th class="text-center">Estado</th>
@@ -170,11 +157,6 @@
                                                 <td>{{$matriculacion->semestre->nombre}}</td>
                                                 <td>{{$matriculacion->programa->nombre}}</td>
                                                 <td>{{$matriculacion->carrera->nombre_fantasia}}</td>
-                                                <td>
-                                                    @if ($matriculacion->carrera_siu_id)
-                                                        {{$matriculacion->carreraSiu->nombre_fantasia}}
-                                                    @endif
-                                                </td>
                                                 <td>{{$matriculacion->ingreso}}</td>
                                                 <td class="text-center">{{$matriculacion->inscripciones->count()}}</td>
                                                 <td class="text-center">

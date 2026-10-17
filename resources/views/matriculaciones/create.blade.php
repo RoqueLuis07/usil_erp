@@ -75,18 +75,6 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3 d-none" id="div-carrera_siu">
-                                    <label class="form-label" for="carrera_siu" id="label-carrera_siu">Carrera SIU</label>
-                                    <select class="selectpicker form-control @error('carrera_siu') is-invalid @enderror" id="carrera_siu" name="carrera_siu" data-live-search="true" disabled>
-                                        <option value="" selected disabled>Seleccionar...</option>
-
-                                    </select>
-                                    @error('carrera_siu')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
                                 <div class="col-lg-2 text-center">
                                     <label class="form-label">Tipo de Pago <span class="text-danger">(*)</span></label>
                                     <div class="btn-group @error('tipo_pago') is-invalid @enderror" role="group" id="div-tipo_pago">
@@ -101,7 +89,6 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <input type="hidden" id="validacion" name="validacion" value="0">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="convenio">Convenio</label>
                                     <select class="selectpicker form-control @error('convenio') is-invalid @enderror" id="convenio" name="convenio" data-live-search="true">

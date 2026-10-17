@@ -224,12 +224,6 @@
             $('#chk_mallas').prop('checked', true);
         }
 
-        const p_mallas_espejo = {!! json_encode($p_mallas_espejo) !!};
-        var count_mallas_espejo = p_mallas_espejo.length;
-        var count_hijos_mallas_espejo =  $('.hijo-mallas_espejo').filter(':checked').length
-        if (count_mallas_espejo == count_hijos_mallas_espejo) {
-            $('#chk_mallas_espejo').prop('checked', true);
-        }
 
         const p_escalas = {!! json_encode($p_escalas) !!};
         var count_escalas = p_escalas.length;
