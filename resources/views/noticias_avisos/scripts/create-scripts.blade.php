@@ -163,7 +163,7 @@
                 $('#portada').val('');
                 $('#vista-imagen').css('width', '200px');
                 $('#vista-imagen').css('height', '200px');
-                $('#vista-imagen').prop('src', '{{asset('storage/no_image.png')}}');
+                $('#vista-imagen').prop('src', '{{asset('images/placeholders/no_image.svg')}}');
                 $(this).prop('disabled', true);
             }
         });

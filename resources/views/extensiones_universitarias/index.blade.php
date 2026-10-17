@@ -107,8 +107,8 @@
                                                 <td class="docente">{{$extension->docente ? $extension->docente->primer_nombre . ' ' . $extension->docente->primer_apellido : 'Sin asignar'}}</td>
                                                 <td>{{number_format($extension->cantidad_horas, 2, ',', '.')}} @if ($extension->cantidad_horas != 1) horas @else hora @endif</td>
                                                 <td>
-                                                    {{$extension->extensionUniversitariaDetalles->count()}}
-                                                    @if ($extension->extensionUniversitariaDetalles->count() == 1)
+                                                    {{$extension->extension_universitaria_detalles_count}}
+                                                    @if ($extension->extension_universitaria_detalles_count == 1)
                                                         alumno
                                                     @else
                                                         alumnos

@@ -110,13 +110,5 @@
         $('#buscar_form').submit();
     });
 
-    $('#delete-ubs-filter-btn').on('click', function () {
-        $('#filtro_ubs').selectpicker('val', '');
-        $('#filtro_ubs').trigger('change');
-    })
 
-    $('#filtro_ubs').change(function () {
-        $('#filtro_ubs_input').val($(this).val());
-        $('#buscar_form').submit();
-    });
 </script>

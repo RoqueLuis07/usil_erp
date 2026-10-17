@@ -18,7 +18,7 @@ RUN apk add --no-cache \
         libpng-dev libjpeg-turbo-dev freetype-dev libzip-dev icu-dev oniguruma-dev \
         $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install -j"$(nproc)" pdo_mysql mbstring gd bcmath zip \
+    && docker-php-ext-install -j"$(nproc)" pdo_mysql mbstring gd bcmath zip opcache \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apk del $PHPIZE_DEPS \
@@ -37,6 +37,7 @@ RUN composer dump-autoload --optimize --no-dev \
     && chmod -R 775 storage bootstrap/cache
 
 COPY docker/uploads.ini /usr/local/etc/php/conf.d/zz-uploads.ini
+COPY docker/opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh && sed -i 's/\r$//' /usr/local/bin/entrypoint.sh
 

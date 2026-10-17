@@ -102,7 +102,7 @@
     <header>
         @include('layouts.pdf.encabezado', ['subtitulo' => config('institucion.ley')])
         <div class="watermark">
-            <img src="{{ public_path(config('institucion.logo')) }}" alt="logo-usil">
+            <img src="{{ public_path(config('institucion.logo')) }}" alt="logo">
         </div>
     </header>
 

@@ -37,7 +37,7 @@
                                     </div>
                                     <div class="col-lg-2 mb-3">
                                         <label class="form-label" for="universidad_origen">Universidad Origen</label>
-                                        <input type="text" class="form-control" id="universidad_origen" value="{{$usil}}" readonly>
+                                        <input type="text" class="form-control" id="universidad_origen" value="{{$universidad}}" readonly>
                                     </div>
                                     <div class="col-lg-2 mb-3">
                                         <label class="form-label" for="carrera_origen">Carrera Origen</label>
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-3 mb-3">
-                                        <label class="form-label" for="carrera">Carrera a Convalidar</span></label>
+                                        <label class="form-label" for="carrera">Carrera a Convalidar</label>
                                         <input type="text" class="form-control" id="carrera" value="{{$convalidacion->carrera->nombre_fantasia}}" readonly>
                                     </div>
                                     <div class="col-lg-3 mb-3">

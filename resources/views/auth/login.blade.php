@@ -97,7 +97,7 @@ Bienvenido
                                         </div>
                                         <div class="auth-effect-main my-5 position-relative rounded-circle d-flex align-items-center justify-content-center mx-auto">
                                             <div class="auth-user-list list-unstyled">
-                                                <img src="{{asset('storage/auth/signin.png')}}" alt="" class="img-fluid">
+                                                <img src="{{ asset(config('institucion.logo')) }}" alt="{{ config('institucion.nombre') }}" class="img-fluid p-3" style="max-height: 220px">
                                             </div>
                                         </div>
                                         <div class="text-center">

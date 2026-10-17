@@ -157,7 +157,7 @@ class MatriculacionController extends Controller
             }
 
             $semestres = Semestre::orderBy('id', 'desc')->get();
-            $alumnos = Alumno::where('ubs', false)->where('estado', 'AC')->get();
+            $alumnos = Alumno::where('estado', 'AC')->get();
             $programas = Programa::whereIn('id', [1, 2, 3, 8])->where('estado', 'AC')->get();
             $carreras = Carrera::whereHas('programa', function ($query) {
                 $query->whereIn('id', [1, 2, 3, 8]);

@@ -287,68 +287,14 @@
             $('#chk_reportes_academicos').prop('checked', true);
         }
 
-        const p_alumnos_ubs = {!! json_encode($p_alumnos_ubs) !!};
-        var count_alumnos_ubs = p_alumnos_ubs.length;
-        var count_hijos_alumnos_ubs =  $('.hijo-alumnos_ubs').filter(':checked').length
-        if (count_alumnos_ubs == count_hijos_alumnos_ubs) {
-            $('#chk_alumnos_ubs').prop('checked', true);
-        }
 
-        const p_inscripciones_ubs = {!! json_encode($p_inscripciones_ubs) !!};
-        var count_inscripciones_ubs = p_inscripciones_ubs.length;
-        var count_hijos_inscripciones_ubs =  $('.hijo-inscripciones_ubs').filter(':checked').length
-        if (count_inscripciones_ubs == count_hijos_inscripciones_ubs) {
-            $('#chk_inscripciones_ubs').prop('checked', true);
-        }
 
-        const p_cursos_ubs = {!! json_encode($p_cursos_ubs) !!};
-        var count_cursos_ubs = p_cursos_ubs.length;
-        var count_hijos_cursos_ubs =  $('.hijo-cursos_ubs').filter(':checked').length
-        if (count_cursos_ubs == count_hijos_cursos_ubs) {
-            $('#chk_cursos_ubs').prop('checked', true);
-        }
 
-        const p_modulos_ubs = {!! json_encode($p_modulos_ubs) !!};
-        var count_modulos_ubs = p_modulos_ubs.length;
-        var count_hijos_modulos_ubs =  $('.hijo-modulos_ubs').filter(':checked').length
-        if (count_modulos_ubs == count_hijos_modulos_ubs) {
-            $('#chk_modulos_ubs').prop('checked', true);
-        }
 
-        const p_tipos_cursos_ubs = {!! json_encode($p_tipos_cursos_ubs) !!};
-        var count_tipos_cursos_ubs = p_tipos_cursos_ubs.length;
-        var count_hijos_tipos_cursos_ubs =  $('.hijo-tipos_cursos_ubs').filter(':checked').length
-        if (count_tipos_cursos_ubs == count_hijos_tipos_cursos_ubs) {
-            $('#chk_tipos_cursos_ubs').prop('checked', true);
-        }
 
-        const p_maestrias_ubs = {!! json_encode($p_maestrias_ubs) !!};
-        var count_maestrias_ubs = p_maestrias_ubs.length;
-        var count_hijos_maestrias_ubs =  $('.hijo-maestrias_ubs').filter(':checked').length
-        if (count_maestrias_ubs == count_hijos_maestrias_ubs) {
-            $('#chk_maestrias_ubs').prop('checked', true);
-        }
 
-        const p_tesis_ubs = {!! json_encode($p_tesis_ubs) !!};
-        var count_tesis_ubs = p_tesis_ubs.length;
-        var count_hijos_tesis_ubs =  $('.hijo-tesis_ubs').filter(':checked').length
-        if (count_tesis_ubs == count_hijos_tesis_ubs) {
-            $('#chk_tesis_ubs').prop('checked', true);
-        }
 
-        const p_extensiones_ubs = {!! json_encode($p_extensiones_ubs) !!};
-        var count_extensiones_ubs = p_extensiones_ubs.length;
-        var count_hijos_extensiones_ubs =  $('.hijo-extensiones_ubs').filter(':checked').length
-        if (count_extensiones_ubs == count_hijos_extensiones_ubs) {
-            $('#chk_extensiones_ubs').prop('checked', true);
-        }
 
-        const p_docentes_ubs = {!! json_encode($p_docentes_ubs) !!};
-        var count_docentes_ubs = p_docentes_ubs.length;
-        var count_hijos_docentes_ubs =  $('.hijo-docentes_ubs').filter(':checked').length
-        if (count_docentes_ubs == count_hijos_docentes_ubs) {
-            $('#chk_docentes_ubs').prop('checked', true);
-        }
 
         const p_ventas = {!! json_encode($p_ventas) !!};
         var count_ventas = p_ventas.length;

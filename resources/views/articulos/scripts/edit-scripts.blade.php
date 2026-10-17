@@ -105,13 +105,8 @@
 
             $('#div-cuenta_compra').removeClass('d-none');
 
-            $('#div-carrera_curso').addClass('d-none');
-            $('.carrera_curso1').prop('checked', false);
-            $('.carrera_curso2').prop('checked', false);
             $('#div-carrera').addClass('d-none');
             $('#carrera').selectpicker('val', '');
-            $('#curso').selectpicker('val', '');
-            $('#div-curso').addClass('d-none');
         }
     });
 
@@ -123,27 +118,7 @@
             $('#div-cuenta_compra').addClass('d-none');
             $('#cuenta_compra').selectpicker('val', '');
 
-            $('#div-carrera_curso').removeClass('d-none');
-        }
-    });
-
-    $('.carrera_curso1').on('click', function () {
-        if ($(this).is(':checked')) {
-            $('.carrera_curso2').prop('checked', false);
-            $('#div-curso').addClass('d-none');
-            $('#curso').selectpicker('val', '');
-
             $('#div-carrera').removeClass('d-none');
-        }
-    });
-
-    $('.carrera_curso2').on('click', function () {
-        if ($(this).is(':checked')) {
-            $('.carrera_curso1').prop('checked', false);
-            $('#div-carrera').addClass('d-none');
-            $('#carrera').selectpicker('val', '');
-
-            $('#div-curso').removeClass('d-none');
         }
     });
 

@@ -36,15 +36,6 @@
                         <div id="planes_clases-list">
                             <div class="row g-4 mb-3">
                                 <div class="col-lg-3">
-                                    <div class="btn-group dropdown" role="group">
-                                        <button id="dropdown-plantillas" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Descargar Plantillas de Ejemplo">
-                                            <i class="ri-download-line align-bottom mb-0 me-2"></i> Plantillas
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-plantillas" aria-labelledby="dropdown-plantillas">
-                                            <li><a class="dropdown-item dropdown-item-plantillas" href="{{ asset('storage/planes_clases/planificacion_clase_2025_2_usil.doc') }}" download="planificacion_clase_2025_2_usil.doc">Plan de Clases</a></li>
-                                            {{-- <li><a class="dropdown-item dropdown-item-plantillas" href="#" download="programa-estudio.xlsx">Programa de Estudio</a></li> --}}
-                                        </ul>
-                                    </div>
                                 </div>
                                 <div class="col-lg-9">
                                     <div class="d-flex justify-content-sm-end">
@@ -78,7 +69,7 @@
                                                     <td>
                                                         @if ($materia->url_plan_clase)
                                                             <a href="{{ asset($materia->url_plan_clase) }}" target="_blank" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Ver plan de clases">
-                                                                <img src="{{ asset('storage/pdf.png') }}" alt="pdf-icon" style="width: 50px; height: 50px;">
+                                                                <img src="{{ asset('images/placeholders/pdf.svg') }}" alt="pdf-icon" style="width: 50px; height: 50px;">
                                                             </a>
                                                             <div class="mt-2">
                                                                 <button type="button" class="btn btn-sm btn-danger delete-adjunto-btn" data-id="{{$materia->id}}" data-tipo="Plan">Eliminar</button>
@@ -97,7 +88,7 @@
                                                     <td>
                                                         @if ($materia->url_programa_clase)
                                                             <a href="{{ asset($materia->url_programa_clase) }}" target="_blank" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Ver programa de clases">
-                                                                <img src="{{ asset('storage/pdf.png') }}" alt="pdf-icon" style="width: 50px; height: 50px;">
+                                                                <img src="{{ asset('images/placeholders/pdf.svg') }}" alt="pdf-icon" style="width: 50px; height: 50px;">
                                                             </a>
                                                             <div class="mt-2">
                                                                 <button type="button" class="btn btn-sm btn-danger mt-2 delete-adjunto-btn" data-id="{{$materia->id}}" data-tipo="Programa">Eliminar</button>

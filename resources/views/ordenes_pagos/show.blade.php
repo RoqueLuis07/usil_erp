@@ -39,20 +39,20 @@
                                 </div>
                                 @if ($orden_pago->compra_id)
                                     <div class="col-lg-2 mb-3 text-center">
-                                        <label class="form-label" for="numero_factura">Factura de Compra</span></label>
+                                        <label class="form-label" for="numero_factura">Factura de Compra</label>
                                         <input type="text" class="form-control text-center" id="numero_factura" value="{{$orden_pago->compra->numero_factura}}" readonly>
                                     </div>
                                 @endif
                                 <div class="col-lg-3 mb-3 text-center">
-                                    <label class="form-label" for="proveedor">Proveedor</span></label>
+                                    <label class="form-label" for="proveedor">Proveedor</label>
                                     <input type="text" class="form-control text-center" id="proveedor" value="{{$orden_pago->proveedor->razon_social}}" readonly>
                                 </div>
                                 <div class="col-lg-1 mb-3 text-center">
-                                    <label class="form-label" for="documento_proveedor">R.U.C.</span></label>
+                                    <label class="form-label" for="documento_proveedor">R.U.C.</label>
                                     <input type="text" class="form-control text-center" id="documento_proveedor" value="{{ $orden_pago->proveedor->ruc }}" readonly>
                                 </div>
                                 <div class="col-lg-1 mb-3 text-center">
-                                    <label class="form-label" for="moneda">Moneda</span></label>
+                                    <label class="form-label" for="moneda">Moneda</label>
                                     <input type="text" class="form-control text-center" id="moneda" value="{{ $orden_pago->moneda->codigo }}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3 text-center">

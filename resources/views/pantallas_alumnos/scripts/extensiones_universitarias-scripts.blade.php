@@ -6,7 +6,7 @@
             if (input.files[0].type == 'application/pdf') {
                 $('#vista-imagen-' + id).css('width', '100px');
                 $('#vista-imagen-' + id).css('height', '100px');
-                $('#vista-imagen-' + id).prop('src', '{{asset('storage/pdf.png')}}');
+                $('#vista-imagen-' + id).prop('src', '{{asset('images/placeholders/pdf.svg')}}');
             } else {
                 reader.onload = function (e) {
                     $('#vista-imagen-' + id).prop('src', e.target.result);
@@ -119,7 +119,7 @@
                 $('#adjunto-' + id).val('');
                 $('#vista-imagen-' + id).css('width', '200px');
                 $('#vista-imagen-' + id).css('height', '200px');
-                $('#vista-imagen-' + id).prop('src', '{{asset('storage/no_image.png')}}');
+                $('#vista-imagen-' + id).prop('src', '{{asset('images/placeholders/no_image.svg')}}');
                 $(this).prop('disabled', true);
             }
         });
@@ -151,7 +151,7 @@
                 $('#adjunto-' + id).val('');
                 $('#vista-imagen-' + id).css('width', '200px');
                 $('#vista-imagen-' + id).css('height', '200px');
-                $('#vista-imagen-' + id).prop('src', '{{asset('storage/no_image.png')}}');
+                $('#vista-imagen-' + id).prop('src', '{{asset('images/placeholders/no_image.svg')}}');
                 $('#subirAdjuntoModal-' + id).modal('hide');
             }
         })

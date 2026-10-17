@@ -179,6 +179,7 @@
                                                     <h5 class="mt-2">Sin resultados.</h5>
                                                     <p class="text-muted mb-0">No pudimos encontrar ningún docente según tus parámetros de búsqueda.</p>
                                                 </td>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>

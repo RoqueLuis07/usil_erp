@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-light p-3">
-                <h5 class="modal-title" id="showModal">Ver Forma de Conocer USIL</h5>
+                <h5 class="modal-title" id="showModal">Ver Forma de Conocer la Universidad</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -29,7 +29,7 @@
                 <div class="modal-content">
                     <form id="store-form">
                         <div class="modal-header bg-light p-3">
-                            <h5 class="modal-title" id="createModal">Agregar Forma de Conocer USIL</h5>
+                            <h5 class="modal-title" id="createModal">Agregar Forma de Conocer la Universidad</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -63,7 +63,7 @@
                 <div class="modal-content">
                     <form id="update-form">
                         <div class="modal-header bg-light p-3">
-                            <h5 class="modal-title" id="editModal">Actualizar Forma de Conocer USIL</h5>
+                            <h5 class="modal-title" id="editModal">Actualizar Forma de Conocer la Universidad</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">

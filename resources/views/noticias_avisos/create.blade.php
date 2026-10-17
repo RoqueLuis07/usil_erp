@@ -119,7 +119,7 @@
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="vista-imagen">Visualización Previa</label>
                                     <div class="text-center">
-                                        <img src="{{asset('storage/no_image.png')}}" alt="Imagen" id="vista-imagen" style="width: 200px; height:200px;">
+                                        <img src="{{asset('images/placeholders/no_image.svg')}}" alt="Imagen" id="vista-imagen" style="width: 200px; height:200px;">
                                     </div>
                                 </div>
                             </div>

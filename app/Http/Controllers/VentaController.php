@@ -36,16 +36,12 @@ use App\Models\PagoMatriculacion;
 use App\Models\PagoSolicitud;
 use App\Models\PagoTesis;
 use App\Models\PagoTutoria;
-use App\Models\PagoInscripcionUbs;
-use App\Models\PagoTesisUbs;
 use App\Models\Recibo;
 use App\Models\NotaCredito;
 use App\Models\Alumno;
 use App\Models\Carrera;
-use App\Models\Curso;
 use App\Models\Semestre;
 use App\Models\Matriculacion;
-use App\Models\InscripcionUbs;
 
 class VentaController extends Controller
 {
@@ -226,26 +222,7 @@ class VentaController extends Controller
                 }
 
                 $carrera = Carrera::where('articulo_id', $articulo->id)->first();
-                if (!$carrera) {
-                    $curso = Curso::where('articulo_id', $articulo->id)->first();
-                    if ($curso) {
-                        $ultima_inscripcion = InscripcionUbs::where('curso_id', $request->curso)->orderBy('id', 'desc')->first();
-                        if ($ultima_inscripcion) {
-                            $numero_inscripcion = $ultima_inscripcion->numero_inscripcion + 1;
-                        } else {
-                            $numero_inscripcion = 1;
-                        }
-
-                        $inscripcion = new InscripcionUbs();
-                        $inscripcion->fecha = Carbon::now();
-                        $inscripcion->alumno_id = $detalle['alumno'];
-                        $inscripcion->curso_id = $curso->id;
-                        $inscripcion->numero_inscripcion = $numero_inscripcion;
-                        $inscripcion->tipo_pago = 'EM';
-                        $inscripcion->cargado_por_id = Auth::id();
-                        $inscripcion->save();
-                    }
-                } else {
+                if ($carrera) {
                     $semestre = Semestre::where('estado', 'AC')->orderBy('id', 'desc')->first();
 
                     $matriculacion = new Matriculacion();
@@ -1128,8 +1105,6 @@ class VentaController extends Controller
                 $pago_solicitud = PagoSolicitud::where('id', $detalle->pago_solicitud_id)->first();
                 $pago_tesis = PagoTesis::where('id', $detalle->pago_tesis_id)->first();
                 $pago_tutoria = PagoTutoria::where('id', $detalle->pago_tutoria_id)->first();
-                $pago_ubs = PagoInscripcionUbs::where('id', $detalle->pago_inscripcion_ubs_id)->first();
-                $pago_tesis_ubs = PagoTesisUbs::where('id', $detalle->pago_tesis_ubs_id)->first();
                 if ($pago_matriculacion) {
                     $pago_matriculacion->saldo = $pago_matriculacion->saldo + $venta->monto_total;
                     if ($pago_matriculacion->saldo == $pago_matriculacion->monto) {
@@ -1193,38 +1168,6 @@ class VentaController extends Controller
                             $pago_tutoria->estado = 'PA';
                         }
                         $pago_tutoria->save();
-                    }
-                } elseif ($pago_ubs) {
-                    $pago_ubs->saldo = $pago_ubs->saldo + $venta->monto_total;
-                    if ($pago_ubs->saldo == $pago_ubs->monto) {
-                        $pago_ubs->estado = 'PE';
-                        $pago_ubs->fecha_pago = null;
-                    } elseif ($pago_ubs->saldo == 0) {
-                        $pago_ubs->estado = 'CA';
-                    } else {
-                        $pago_ubs->estado = 'PA';
-                    }
-                    $pago_ubs->save();
-                } elseif ($pago_tesis_ubs) {
-                    $inscripcion = InscripcionTemaTesisUbs::findOrFail($pago_tesis_ubs->inscripcion_id);
-                    if ($inscripcion->estado == 'PA') {
-                        $inscripcion->estado = 'BA';
-                        $inscripcion->fecha_pago = null;
-
-                        $pago_tesis_ubs->saldo = $pago_tesis_ubs->saldo + $venta->monto_total;
-                        if ($pago_tesis_ubs->saldo == $pago_tesis_ubs->monto) {
-                            $pago_tesis_ubs->estado = 'PE';
-                            $pago_tesis_ubs->fecha_pago = null;
-                            $inscripcion->pagado = 'PE';
-                        } elseif ($pago_tesis_ubs->saldo == 0) {
-                            $pago_tesis_ubs->estado = 'CA';
-                            $inscripcion->pagado = 'CA';
-                        } else {
-                            $pago_tesis_ubs->estado = 'PA';
-                            $inscripcion->pagado = 'PA';
-                        }
-                        $pago_tesis_ubs->save();
-                        $inscripcion->save();
                     }
                 }
             }

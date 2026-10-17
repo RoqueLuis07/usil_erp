@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-3 mb-3">
-                                        <label class="form-label" for="carrera">Carrera USIL</span></label>
+                                        <label class="form-label" for="carrera">Carrera de la Universidad</label>
                                         <input type="text" class="form-control" id="carrera" name="carrera" value="{{$convalidacion->carrera->nombre_fantasia}}" readonly>
                                     </div>
                                     <div class="col-lg-3 mb-3">

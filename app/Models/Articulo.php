@@ -14,9 +14,6 @@ class Articulo extends Model implements Auditable
         return $this->hasOne(Carrera::class);
     }
 
-    public function Curso(){
-        return $this->hasOne(Curso::class);
-    }
 
     public function CentroCosto(){
         return $this->belongsTo(CentroCostoContable::class, 'centro_costo_id');

@@ -188,7 +188,7 @@
                                 @else
                                     {{ $detalle->articulo->nombre }}
                                 @endif
-                            </span></td>
+                            </td>
                         <td style="text-align: center;">{{ number_format($detalle->cantidad, 0, ',', '.') }}</td>
                         <td style="text-align: right;"><span style="margin-right: 5px;">{{ number_format($detalle->precio_costo, $decimales, ',', '.') }}</span></td>
                         <td style="text-align: right;"><span style="margin-right: 5px;">{{ number_format($detalle->subtotal, $decimales, ',', '.') }}</span></td>

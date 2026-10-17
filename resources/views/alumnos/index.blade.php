@@ -52,7 +52,6 @@
                                                 <input type="hidden" id="filtro_programa_input" name="filtro_programa" value="{{$filtro_programa}}">
                                                 <input type="hidden" id="filtro_periodo_input" name="filtro_periodo" value="{{$filtro_periodo}}">
                                                 <input type="hidden" id="filtro_correo_input" name="filtro_correo" value="{{$filtro_correo}}">
-                                                <input type="hidden" id="filtro_ubs_input" name="filtro_ubs" value="{{$filtro_ubs}}">
 												<i class="ri-search-line search-icon"></i>
 												<button class="btn btn-primary py-0 d-none" type="submit">
 												</button>
@@ -117,16 +116,6 @@
                                         <button class="btn btn-sm btn-outline-danger" id="delete-correo-filter-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Filtro por Correo"><i class="ri-close-line"></i></button>
                                     </div>
                                 </div>
-                                <div class="col-lg-2">
-                                    <div class="input-group">
-                                        <select class="selectpicker form-control" id="filtro_ubs" data-live-search="true">
-                                            <option value="" selected disabled>Filtrar por UBS...</option>
-                                            <option value="GRADO" @if ($filtro_ubs == 'GRADO') selected @endif>GRADO</option>
-                                            <option value="UBS" @if ($filtro_ubs == 'UBS') selected @endif>UBS</option>
-                                        </select>
-                                        <button class="btn btn-sm btn-outline-danger" id="delete-ubs-filter-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Filtro por UBS"><i class="ri-close-line"></i></button>
-                                    </div>
-                                </div>
                             </div>
                             <div class="table-responsive table-card mt-3 mb-1">
 								<table class="table align-middle table-nowrap">
@@ -143,7 +132,6 @@
                                             <th class="text-center">Horas Ext.</th>
                                             <th class="text-center">Extensión</th>
 											<th class="text-center">Correo</th>
-											<th class="text-center">UBS</th>
                                             <th>Estado</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -182,17 +170,6 @@
 												<td class="text-center">
                                                     <span
                                                         class="badge @if ($alumno->email_institucional)
-                                                            bg-success-subtle text-success text-uppercase">
-														<i class="ri-check-fill"></i>
-                                                        @else
-                                                            bg-danger-subtle text-danger text-uppercase">
-														<i class="ri-close-fill"></i>
-                                                        @endif
-                                                    </span>
-                                                </td>
-												<td class="text-center">
-                                                    <span
-                                                        class="badge @if ($alumno->ubs)
                                                             bg-success-subtle text-success text-uppercase">
 														<i class="ri-check-fill"></i>
                                                         @else
@@ -267,11 +244,12 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="14" class="text-center">
+                                                <td colspan="13" class="text-center">
                                                     <lord-icon src="https://cdn.lordicon.com/jtkfemwz.json" trigger="in" estado="morph-cross" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
                                                     <h5 class="mt-2">Sin resultados.</h5>
                                                     <p class="text-muted mb-0">No pudimos encontrar ningún alumno según tus parámetros de búsqueda.</p>
                                                 </td>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>

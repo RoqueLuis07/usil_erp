@@ -106,7 +106,7 @@ class NoticiaAvisoController extends Controller
                 $image->save($directorio . '/' . $nombre_archivo);
                 $noticia_aviso->portada = $directorio . '/' . $nombre_archivo;
             } else {
-                $noticia_aviso->portada = 'storage/no_image.png';
+                $noticia_aviso->portada = 'images/placeholders/no_image.svg';
             }
             //fin cargar archivo
 
@@ -309,7 +309,7 @@ class NoticiaAvisoController extends Controller
             $ubicacion_archivo = str_replace('storage', 'public', $ubicacion_archivo);
             Storage::delete($ubicacion_archivo);
 
-            $noticia_aviso->portada = 'storage/no_image.png';
+            $noticia_aviso->portada = 'images/placeholders/no_image.svg';
             $noticia_aviso->actualizado_por_id = Auth::id();
             $noticia_aviso->save();
 

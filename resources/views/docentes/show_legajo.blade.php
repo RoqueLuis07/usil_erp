@@ -99,9 +99,9 @@
                                                 <div class="card card-body text-center">
                                                     <div class="mx-auto mb-3">
                                                         @if ($legajo->extension == 'pdf')
-                                                            <img src="{{asset('storage/pdf.png')}}" alt="pdf_icon" style="width:50px; heigth:50px">
+                                                            <img src="{{asset('images/placeholders/pdf.svg')}}" alt="pdf_icon" style="width:50px; heigth:50px">
                                                         @else
-                                                            <img src="{{asset('storage/img.png')}}" alt="image_icon" style="width:50px; heigth:50px">
+                                                            <img src="{{asset('images/placeholders/img.svg')}}" alt="image_icon" style="width:50px; heigth:50px">
                                                         @endif
                                                         @can('eliminar_legajos_docentes')
                                                             <button type="button" class="btn btn-danger position-absolute translate-middle badge bg-danger delete-legajo-btn" data-id="{{$legajo->id}}" data-tipo="{{$legajo->tipoLegajo->nombre}}">Eliminar</button>

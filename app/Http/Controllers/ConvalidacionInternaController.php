@@ -89,7 +89,7 @@ class ConvalidacionInternaController extends Controller
         try {
             $alumnos = Alumno::where('estado', 'AC')->get();
             $carreras = Carrera::with('facultad', 'programa')->where('estado', 'AC')->get();
-            $usil = 'USIL';
+            $universidad = config('institucion.nombre');
 
             $anho_actual = Carbon::now()->format('Y'); //obtenemos el año actual
             $convalidacion = Convalidacion::orderBy('id', 'desc')->first();
@@ -107,7 +107,7 @@ class ConvalidacionInternaController extends Controller
                 $solicitud_nueva = '1/' . $anho_actual;
             }
 
-            return view('convalidaciones/internas/create')->with(compact('alumnos', 'carreras', 'usil', 'solicitud_nueva'));
+            return view('convalidaciones/internas/create')->with(compact('alumnos', 'carreras', 'universidad', 'solicitud_nueva'));
         } catch (\Exception $e) {
             return redirect()->route('convalidaciones_internas.index')->with('error-message', $e->getMessage());
         }
@@ -187,7 +187,7 @@ class ConvalidacionInternaController extends Controller
             $convalidacion = Convalidacion::findOrFail($id);
             $carreras = Carrera::with('facultad', 'programa')->where('estado', 'AC')->get();
             $instituciones_educativas = InstitucionEducativa::where('tipo', 'UN')->where('estado', 'AC')->get();
-            $usil = 'USIL';
+            $universidad = config('institucion.nombre');
 
             $carrera = Carrera::where('nombre_fantasia', $convalidacion->carrera_origen)->first();
             $malla = Malla::where('carrera_id', $carrera->id)->first();
@@ -198,7 +198,7 @@ class ConvalidacionInternaController extends Controller
                                         ->select('materias.*')
                                         ->get();
 
-            return view('convalidaciones/internas/edit')->with(compact('convalidacion', 'carreras', 'instituciones_educativas', 'usil', 'materias'));
+            return view('convalidaciones/internas/edit')->with(compact('convalidacion', 'carreras', 'instituciones_educativas', 'universidad', 'materias'));
         } catch (\Exception $e) {
             return redirect()->route('evaluaciones.index')->with('error-message', $e->getMessage());
         }

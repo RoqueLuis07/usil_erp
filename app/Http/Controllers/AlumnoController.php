@@ -87,7 +87,6 @@ class AlumnoController extends Controller
             $filtro_programa = $request->filtro_programa;
             $filtro_periodo = $request->filtro_periodo;
             $filtro_correo = $request->filtro_correo;
-            $filtro_ubs = $request->filtro_ubs;
 
             $query = Alumno::with('matriculaciones');
 
@@ -158,14 +157,6 @@ class AlumnoController extends Controller
                 }
             }
 
-            if (!(blank($filtro_ubs))) {
-                if ($filtro_ubs == 'UBS') {
-                    $query->where('ubs', true);
-                } else if ($filtro_ubs == 'GRADO') {
-                    $query->where('ubs', false);
-                }
-            }
-
 			if (!(blank($buscar))) {
                 $query->orWhere('id', 'LIKE', '%' . str_replace(' ', '%', $buscar) . '%')
                     ->orWhere('primer_nombre', 'LIKE', '%' . str_replace(' ', '%', $buscar) . '%')
@@ -203,7 +194,7 @@ class AlumnoController extends Controller
             $semestres = Semestre::orderBy('id', 'desc')->get();
             $programas = Programa::whereIn('id', [1, 2, 3, 8])->where('estado', 'AC')->get();
 
-            return view('alumnos/index')->with(compact('alumnos', 'resumenes_extension', 'semestres', 'programas', 'buscar', 'filtro_ingreso', 'filtro_edad', 'filtro_programa', 'filtro_periodo', 'filtro_correo', 'filtro_ubs'));
+            return view('alumnos/index')->with(compact('alumnos', 'resumenes_extension', 'semestres', 'programas', 'buscar', 'filtro_ingreso', 'filtro_edad', 'filtro_programa', 'filtro_periodo', 'filtro_correo'));
         } catch (\Exception $e) {
             return redirect()->route('alumnos.index')->with('error-message', $e->getMessage());
         }
@@ -580,7 +571,6 @@ class AlumnoController extends Controller
             'ciudad' => ['required', 'numeric'],
             'barrio' => ['nullable', 'numeric'],
             'usuario' => ['nullable', 'numeric'],
-            'ubs' => 'required',
 
             'carrera' => ['nullable', 'numeric'],
             'anho_ingreso' => ['nullable', 'integer', 'between:1990,2100'],
@@ -699,7 +689,6 @@ class AlumnoController extends Controller
             }
 
             $alumno->actualizado_por_id = Auth::id();
-            $alumno->ubs = filter_var($request->ubs, FILTER_VALIDATE_BOOLEAN);
             $alumno->save();
 
 			if ($cliente && $cliente->numero_documento != $alumno->numero_documento) {

@@ -198,7 +198,7 @@
                 <b>Observaciones:</b>
                 <ol id="lista_observaciones">
                     <li>Estar al día en el pago de la última cuota del semestre, 48 horas antes del Examen Final.</li>
-                    <li>No estar atrasado en ningún compromiso contraído con la Universidad San Ignacio de Loyola.</li>
+                    <li>No estar atrasado en ningún compromiso contraído con la {{ config('institucion.nombre') }}.</li>
                     <li>No estar afectado por ninguna medida disciplinaria.</li>
                     <li>Cumplir con el porcentaje de asistencia mínimo, conforme a lo estipulado en la planilla de Cátedra.</li>
                     <li>Cumplir con el porcentaje de evaluación contínua, conforme a lo estipulado en la planilla de Cátedra.</li>

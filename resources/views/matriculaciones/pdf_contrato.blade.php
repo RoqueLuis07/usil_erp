@@ -355,7 +355,7 @@
             </p>
             <p class="parrafo">
                 Los documentos que usted ha confirmado conocer son los vigentes y podrá descargarlos
-                desde <u>http://www.usil.edu.py</u> como (Menú INSTITUCIONAL, opción Institucional Reglamentos
+                desde <u>{{ config('institucion.sitio_web') ?: 'el sitio web de la Universidad' }}</u> como (Menú INSTITUCIONAL, opción Institucional Reglamentos
                 y Manual del Estudiante).
             </p>
             <p class="parrafo">
@@ -368,7 +368,7 @@
                     <tr>
                         <td><input type="checkbox" class="checkbox" id="checkbox" @if ($matriculacion->licenciatura == true) checked @endif></td>
                         <td>
-                            <span><b>a) Obtener el Título de Licenciado de la USIL, el estudiante deberá:</b></span>
+                            <span><b>a) Obtener el Título de Licenciado de la Universidad, el estudiante deberá:</b></span>
                             <ul>
                                 <li>1 (una) fotocopia autenticada de la cédula de identidad.</li>
                                 <li>Presentar 1 (una) fotocopia simple del certificado de estudios de Bachiller.</li>
@@ -397,7 +397,7 @@
                     <tr>
                         <td><input type="checkbox" class="checkbox" id="checkbox"></td>
                         <td>
-                            <span><b>c) Para obtener el Título de Mágister de la USIL: el estudiante debe además de los puntos en común con los programas de arriba:</b></span>
+                            <span><b>c) Para obtener el Título de Mágister de la Universidad: el estudiante debe además de los puntos en común con los programas de arriba:</b></span>
                             <ul>
                                 <li>Elaboración y Defensa de la Tesis. Los documentales requeridos son:</li>
                                 <li>2 (dos) copias de Cédula de Identidad auntenticadas por escribanía.</li>
@@ -437,7 +437,7 @@
             <br>
             <p class="titulos_estudiante">2.2 &nbsp; Promoción de empleo:
                 <span style="font-weight:normal!important">
-                    La Universidad San Ignacio de Loyola podrá brindar apoyo a sus estudiantes en los procesos de reclutamiento de las
+                    La {{ config('institucion.nombre') }} podrá brindar apoyo a sus estudiantes en los procesos de reclutamiento de las
                     empresas a través de su página Web; sin embargo, no asegura la obtención de plazas vacantes.
                 </span>
             </p>
@@ -536,19 +536,19 @@
                     </li>
                     <li><b>En caso de haber recibido algún tipo de beca, la consideración de ésta, estará
                         sujeta a la siguiente condición:</b> No encontrarse en mora con la cuota estipulada.</li>
-                    <li>Autorizo a USIL en forma expresa e irrevocable, otorgando suficiente mandato en los términos
+                    <li>Autorizo a la Universidad en forma expresa e irrevocable, otorgando suficiente mandato en los términos
                         del Art. 917 inc. A) del Código Civil para que por propia cuenta o a través de empresas
                         especializadas de nuestro medio, puedan consultar informaciones de los registros públicos o
                         privados en esta plaza comercial o en otra, referente a mi situación patrimonial, solvencia
                         económica, o el cumplimiento de mis obligaciones comerciales, como también para que en caso
-                        de incumplimiento o retraso de mis obligaciones de más de 90 días la USIL podría incluir mi
+                        de incumplimiento o retraso de mis obligaciones de más de 90 días la Universidad podría incluir mi
                         nombre, en el Registro de Morosos de INFORMCONF u otra empresa dedicada a este tipo de actividad.
                     </li>
-                    <li>La USIL se reserva el derecho de actuar conforme a las políticas institucionales administrativas
+                    <li>La Universidad se reserva el derecho de actuar conforme a las políticas institucionales administrativas
                         y académicas, respecto al incumplimiento de las obligaciones de parte de los alumnos.
                     </li>
-                    <li>La USIL revisará el anexo correspondiente al Reglamento de Aranceles, semestralmente, en el
-                        caso de existir modificaciones publicará en la página web de USIL el anexo actualizado a los
+                    <li>La Universidad revisará el anexo correspondiente al Reglamento de Aranceles, semestralmente, en el
+                        caso de existir modificaciones publicará en la página web de la Universidad el anexo actualizado a los
                         efectos de que la información sobre los aranceles vigentes sea notificada a los alumnos. Es
                         responsabilidad de los alumnos, estar al tanto de la información, no pudiendo alegar en ningún caso
                         desconocimiento de la misma.
@@ -589,7 +589,7 @@
             <p style="margin-top:5px; margin-left: 2.38cm;">Pago en cuotas:</p>
             <p style="margin-top:-30px;">
                 <ul style="margin-left:2cm;width:75%">
-                    <li>La Universidad San Ignacion de Loyola establece sus precios por periodo académico (un semestre);
+                    <li>La {{ config('institucion.nombre') }} establece sus precios por periodo académico (un semestre);
                         sin embargo, brinda la facilidad a sus estudiantes de realizar los pagos en cuotas mensuales de acuerdo
                         con la categoría de pago asignada.
                     </li>
@@ -617,14 +617,14 @@
             </p>
             <p class="letras_chicas">
                 <span>
-                    * &nbsp; Responsabilidad: las partes dejan constancia que no será responsabilidad de la USIL los perjuicios
+                    * &nbsp; Responsabilidad: las partes dejan constancia que no será responsabilidad de la Universidad los perjuicios
                     derivados de la pérdida, daños, sustracción de efectos personales, artículos, bienes de cualquier clase
-                    naturaleza del estudiante, que se introduzca o se mantengan en la USIL.
+                    naturaleza del estudiante, que se introduzca o se mantengan en la Universidad.
                 </span>
                 <br>
                 <span>
                     * &nbsp; Obligación: La firma del presente instrumento representa una obligación tanto para el alumno como
-                    para la USIL, en ese sentido la USIL se obliga a prestar los servicios educacionales siempre y cuando se den
+                    para la Universidad, en ese sentido la Universidad se obliga a prestar los servicios educacionales siempre y cuando se den
                     las condiciones establecidas en los Reglamentos y Políticas Institucionales; así como también un mínimo de
                     alumnos que permita la continuidad del curso académico que se está llevando a cabo; debiendo el alumno dar
                     cumplimiento a sus obligaciones administrativas y académicas.
@@ -639,15 +639,14 @@
                 <span>
                     * &nbsp; Domicilios, jurisdicción y competencia: El alumno constituye domicilio en la casa de la calle más arriba
                     señalada, para todos los efectos emergentes de este contrato, donde se tendrán por válida todas las notificaciones
-                    que se cursaren por recibidas las facturas que allí se remitan. La USIL constituye domicion en Avda. Venezuela 2087
-                    de la ciudad de Asunción, tanto la USIL como el alumno se somete a la jurisdicción de los Tribunales Ordinarios
+                    que se cursaren por recibidas las facturas que allí se remitan. La Universidad constituye domicion en {{ config('institucion.direccion') ?: 'su sede central' }}, tanto la Universidad como el alumno se somete a la jurisdicción de los Tribunales Ordinarios
                     de Fuero Civil y Comercial de la ciudad de Asunción, con exclusión de todo fuero y jurisdicción.
                 </span>
             </p>
             <p class="nota">Nota.- &nbsp;&nbsp;&nbsp;&nbsp;
                 <span style="font-weight:normal!important; font-style:italic;">
                     El estudiante confirma tener una copia de este documento. Asimismo, declara haber leído en la página web de
-                    la USIL las políticas contenidas en el catálogo de la Universidad.
+                    la Universidad las políticas contenidas en el catálogo de la Universidad.
                 </span>
             </p>
         </div>

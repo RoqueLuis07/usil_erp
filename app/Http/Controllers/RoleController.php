@@ -73,15 +73,6 @@ class RoleController extends Controller
             $p_instituciones_educativas = Permission::where('name', 'like', '%' . 'instituciones_educativas')->orderBy('id')->get();
             $p_fechas_desmatriculaciones = Permission::where('name', 'like', '%' . 'fechas_desmatriculaciones')->orderBy('id')->get();
             $p_areas_conocimientos = Permission::where('name', 'like', '%' . 'areas_conocimientos')->orderBy('id')->get();
-            $p_alumnos_ubs = Permission::where('name', 'like', '%' . 'alumnos_ubs')->orderBy('id')->get();
-            $p_inscripciones_ubs = Permission::where('name', 'like', '%' . 'inscripciones_ubs')->orderBy('id')->get();
-            $p_cursos_ubs = Permission::where('name', 'like', '%' . 'cursos_ubs')->orderBy('id')->get();
-            $p_modulos_ubs = Permission::where('name', 'like', '%' . 'modulos_ubs')->orderBy('id')->get();
-            $p_tipos_cursos_ubs = Permission::where('name', 'like', '%' . 'tipos_cursos_ubs')->orderBy('id')->get();
-            $p_maestrias_ubs = Permission::where('name', 'like', '%' . 'maestrias_ubs')->orderBy('id')->get();
-            $p_extensiones_ubs = Permission::where('name', 'like', '%' . 'extensiones_ubs')->orderBy('id')->get();
-            $p_tesis_ubs = Permission::where('name', 'like', '%' . 'tesis_ubs')->orderBy('id')->get();
-            $p_docentes_ubs = Permission::where('name', 'like', '%' . 'docentes_ubs')->orderBy('id')->get();
             $p_ventas = Permission::where('name', 'like', '%' . 'ventas')->orderBy('id')->get();
             $p_recibos = Permission::where('name', 'like', '%' . 'recibos')->orderBy('id')->get();
             $p_cobros = Permission::where('name', 'like', '%' . 'cobros')->orderBy('id')->get();
@@ -141,11 +132,6 @@ class RoleController extends Controller
                                                     'p_evaluaciones', 'p_instituciones_educativas', 'p_fechas_desmatriculaciones', 'p_areas_conocimientos',
                                                     'p_reportes_academicos',
 
-                                                    'p_alumnos_ubs', 'p_inscripciones_ubs',
-                                                    'p_cursos_ubs', 'p_modulos_ubs', 'p_tipos_cursos_ubs',
-                                                    'p_maestrias_ubs',
-                                                    'p_tesis_ubs',
-                                                    'p_extensiones_ubs', 'p_docentes_ubs',
 
                                                     'p_ventas', 'p_recibos', 'p_cobros', 'p_notas_creditos',
                                                     'p_cajas_arqueos',
@@ -217,15 +203,6 @@ class RoleController extends Controller
             $p_instituciones_educativas = Permission::where('name', 'like', '%' . 'instituciones_educativas')->orderBy('id')->get();
             $p_fechas_desmatriculaciones = Permission::where('name', 'like', '%' . 'fechas_desmatriculaciones')->orderBy('id')->get();
             $p_areas_conocimientos = Permission::where('name', 'like', '%' . 'areas_conocimientos')->orderBy('id')->get();
-            $p_alumnos_ubs = Permission::where('name', 'like', '%' . 'alumnos_ubs')->orderBy('id')->get();
-            $p_inscripciones_ubs = Permission::where('name', 'like', '%' . 'inscripciones_ubs')->orderBy('id')->get();
-            $p_cursos_ubs = Permission::where('name', 'like', '%' . 'cursos_ubs')->orderBy('id')->get();
-            $p_modulos_ubs = Permission::where('name', 'like', '%' . 'modulos_ubs')->orderBy('id')->get();
-            $p_tipos_cursos_ubs = Permission::where('name', 'like', '%' . 'tipos_cursos_ubs')->orderBy('id')->get();
-            $p_maestrias_ubs = Permission::where('name', 'like', '%' . 'maestrias_ubs')->orderBy('id')->get();
-            $p_extensiones_ubs = Permission::where('name', 'like', '%' . 'extensiones_ubs')->orderBy('id')->get();
-            $p_tesis_ubs = Permission::where('name', 'like', '%' . 'tesis_ubs')->orderBy('id')->get();
-            $p_docentes_ubs = Permission::where('name', 'like', '%' . 'docentes_ubs')->orderBy('id')->get();
             $p_ventas = Permission::where('name', 'like', '%' . 'ventas')->orderBy('id')->get();
             $p_recibos = Permission::where('name', 'like', '%' . 'recibos')->orderBy('id')->get();
             $p_cobros = Permission::where('name', 'like', '%' . 'cobros')->orderBy('id')->get();
@@ -284,11 +261,6 @@ class RoleController extends Controller
                                                         'p_evaluaciones', 'p_instituciones_educativas', 'p_fechas_desmatriculaciones', 'p_areas_conocimientos',
                                                         'p_reportes_academicos',
 
-                                                        'p_alumnos_ubs', 'p_inscripciones_ubs',
-                                                        'p_cursos_ubs', 'p_modulos_ubs', 'p_tipos_cursos_ubs',
-                                                        'p_maestrias_ubs',
-                                                        'p_tesis_ubs',
-                                                        'p_extensiones_ubs', 'p_docentes_ubs',
 
                                                         'p_ventas', 'p_recibos', 'p_cobros', 'p_notas_creditos',
                                                         'p_cajas_arqueos',
@@ -394,15 +366,6 @@ class RoleController extends Controller
             $p_instituciones_educativas = Permission::where('name', 'like', '%' . 'instituciones_educativas')->orderBy('id')->get();
             $p_fechas_desmatriculaciones = Permission::where('name', 'like', '%' . 'fechas_desmatriculaciones')->orderBy('id')->get();
             $p_areas_conocimientos = Permission::where('name', 'like', '%' . 'areas_conocimientos')->orderBy('id')->get();
-            $p_alumnos_ubs = Permission::where('name', 'like', '%' . 'alumnos_ubs')->orderBy('id')->get();
-            $p_inscripciones_ubs = Permission::where('name', 'like', '%' . 'inscripciones_ubs')->orderBy('id')->get();
-            $p_cursos_ubs = Permission::where('name', 'like', '%' . 'cursos_ubs')->orderBy('id')->get();
-            $p_modulos_ubs = Permission::where('name', 'like', '%' . 'modulos_ubs')->orderBy('id')->get();
-            $p_tipos_cursos_ubs = Permission::where('name', 'like', '%' . 'tipos_cursos_ubs')->orderBy('id')->get();
-            $p_maestrias_ubs = Permission::where('name', 'like', '%' . 'maestrias_ubs')->orderBy('id')->get();
-            $p_extensiones_ubs = Permission::where('name', 'like', '%' . 'extensiones_ubs')->orderBy('id')->get();
-            $p_tesis_ubs = Permission::where('name', 'like', '%' . 'tesis_ubs')->orderBy('id')->get();
-            $p_docentes_ubs = Permission::where('name', 'like', '%' . 'docentes_ubs')->orderBy('id')->get();
             $p_ventas = Permission::where('name', 'like', '%' . 'ventas')->orderBy('id')->get();
             $p_recibos = Permission::where('name', 'like', '%' . 'recibos')->orderBy('id')->get();
             $p_cobros = Permission::where('name', 'like', '%' . 'cobros')->orderBy('id')->get();
@@ -462,11 +425,6 @@ class RoleController extends Controller
                                                     'p_evaluaciones', 'p_instituciones_educativas', 'p_fechas_desmatriculaciones', 'p_areas_conocimientos',
                                                     'p_reportes_academicos',
 
-                                                    'p_alumnos_ubs', 'p_inscripciones_ubs',
-                                                    'p_cursos_ubs', 'p_modulos_ubs', 'p_tipos_cursos_ubs',
-                                                    'p_maestrias_ubs',
-                                                    'p_tesis_ubs',
-                                                    'p_extensiones_ubs', 'p_docentes_ubs',
 
                                                     'p_ventas', 'p_recibos', 'p_cobros', 'p_notas_creditos',
                                                     'p_cajas_arqueos',

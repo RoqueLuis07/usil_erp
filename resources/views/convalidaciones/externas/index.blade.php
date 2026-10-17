@@ -44,7 +44,7 @@
                                             <th class="sort" data-sort="id">ID</th>
                                             <th class="sort" data-sort="numero_solicitud">N° Solicitud</th>
                                             <th class="sort" data-sort="alumno">Alumno</th>
-                                            <th class="sort" data-sort="carrera">Carrera USIL</th>
+                                            <th class="sort" data-sort="carrera">Carrera de la Universidad</th>
                                             <th class="sort" data-sort="carrera_origen">Carrera Origen</th>
                                             <th class="sort" data-sort="universidad_origen">Universidad Origen</th>
                                             <th>Estado</th>

@@ -202,22 +202,6 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3">
-                                    <div>
-                                        <label class="form-label" for="ubs">Alumno UBS <span class="text-danger">(*)</span></label>
-                                    </div>
-                                    <div class="btn-group @error('ubs') is-invalid @enderror" role="group">
-                                        <input type="radio" class="btn-check ubs1" id="ubs1" name="ubs" value="false" @if (old('ubs') == 'false' || $alumno->ubs == false) checked @endif>
-                                        <label class="btn btn-outline-danger" for="ubs1">No</label>
-                                        <input type="radio" class="btn-check ubs2" id="ubs2" name="ubs" value="true" @if (old('ubs') == 'true' || $alumno->ubs == true) checked @endif>
-                                        <label class="btn btn-outline-success" for="ubs2">Si</label>
-                                    </div>
-                                    @error('ubs')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
                             </div>
                         </div>
                     </div>

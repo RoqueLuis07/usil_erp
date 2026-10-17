@@ -23,7 +23,6 @@ use App\Models\PagoTesis;
 use App\Models\TutoriaAlumno;
 use App\Models\TutoriaPrecio;
 use App\Models\PagoTutoria;
-use App\Models\PagoInscripcionUbs;
 use App\Models\FormaPago;
 use App\Models\Banco;
 use App\Models\CuentaBancaria;
@@ -39,11 +38,7 @@ use App\Models\ArqueoCaja;
 use App\Models\Solicitud;
 use App\Models\InscripcionTemaTesis;
 use App\Models\FechaDefensaTesis;
-use App\Models\InscripcionUbs;
-use App\Models\InscripcionTemaTesisUbs;
-use App\Models\PagoTesisUbs;
 use App\Models\Carrera;
-use App\Models\Curso;
 use App\Models\Articulo;
 use App\Models\CuentaContable;
 use App\Models\AsientoContable;
@@ -485,117 +480,6 @@ class CajeroController extends Controller
                             $cuenta_contable_descuento->monto = $venta_detalle->descuento;
                             $cuentas_contables_descuentos->push($cuenta_contable_descuento);
                         }
-                    }
-
-                } else if ($detalle['tipo'] == 'inscripcion_ubs') {
-                    $venta_detalle->pago_inscripcion_ubs_id = $detalle['id'];
-                    $pago_inscripcion = PagoInscripcionUbs::findOrFail($detalle['id']);
-                    $pago_inscripcion->saldo = $pago_inscripcion->saldo - ($venta_detalle->monto_neto + $venta_detalle->descuento);
-                    if ($pago_inscripcion->saldo == 0) {
-                        $pago_inscripcion->estado = 'CA';
-                    } else {
-                        $pago_inscripcion->estado = 'PA';
-                    }
-                    $pago_inscripcion->fecha_pago = Carbon::now();
-                    $pago_inscripcion->save();
-
-                    $inscripcion = InscripcionUbs::find($pago_inscripcion->inscripcion_id);
-                    if ($inscripcion) {
-                        $articulo = Curso::where('id', $inscripcion->curso_id)->first()->articulo;
-                        if ($articulo) {
-                            if ($pago_inscripcion->tipo == null) {
-                                $cuenta_contable_venta = CuentaContable::where('id', $articulo->detalle->cuenta_contado_id)->first();
-                                if (!$cuenta_contable_venta) {
-                                    return response()->json([
-                                        'mensaje' => 'Hubo un problema al realizar la venta. No es posible obtener la cuenta contable del artículo.'
-                                    ]);
-                                } else {
-                                    $cuenta_contable_venta->monto = $venta_detalle->monto_bruto;
-                                    $cuentas_contables_ventas->push($cuenta_contable_venta);
-                                }
-                            } else {
-                                $cuenta_contable_venta = CuentaContable::where('id', $articulo->detalle->cuenta_cuota_id)->first();
-                                if (!$cuenta_contable_venta) {
-                                    return response()->json([
-                                        'mensaje' => 'Hubo un problema al realizar la venta. No es posible obtener la cuenta contable del artículo.'
-                                    ]);
-                                } else {
-                                    $cuenta_contable_venta->monto = $venta_detalle->monto_bruto;
-                                    $cuentas_contables_ventas->push($cuenta_contable_venta);
-                                }
-                            }
-
-                            if ($venta_detalle->descuento > 0) {
-                                $cuenta_contable_descuento = CuentaContable::where('id', $articulo->detalle->cuenta_descuento_id)->first();
-                                if (!$cuenta_contable_descuento) {
-                                    return response()->json([
-                                        'mensaje' => 'Hubo un problema al realizar la venta. No es posible obtener la cuenta contable de descuentos del artículo.'
-                                    ]);
-                                } else {
-                                    $cuenta_contable_descuento->monto = $venta_detalle->descuento;
-                                    $cuentas_contables_descuentos->push($cuenta_contable_descuento);
-                                }
-                            }
-                        } else {
-                            return response()->json([
-                                'mensaje' => 'Hubo un problema al realizar la venta. No es posible obtener el articulo asociado al curso del alumno.'
-                            ]);
-                        }
-                    } else {
-                        return response()->json([
-                            'mensaje' => 'Hubo un problema al realizar la venta. No es posible obtener la inscripcion del alumno.'
-                        ]);
-                    }
-
-
-                } else if ($detalle['tipo'] == 'tesis_ubs') {
-                    $venta_detalle->pago_tesis_ubs_id = $detalle['id'];
-                    $pago_tesis = PagoTesisUbs::findOrFail($detalle['id']);
-                    $tesis = InscripcionTemaTesisUbs::findOrFail($pago_tesis->tesis_id);
-
-                    $pago_tesis->saldo = $pago_tesis->saldo - ($venta_detalle->monto_neto + $venta_detalle->descuento);
-                    if ($pago_tesis->saldo == 0) {
-                        $pago_tesis->estado = 'CA';
-
-                        $tesis->estado = 'PA';
-                        $tesis->pagado = 'CA';
-                        $tesis->fecha_pago = $venta->fecha;
-                    } else {
-                        $pago_tesis->estado = 'PA';
-
-                        $tesis->pagado = 'PA';
-                    }
-                    $pago_tesis->fecha_pago = Carbon::now();
-                    $pago_tesis->save();
-                    $tesis->save();
-
-                    $articulo = Curso::where('id', $tesis->curso_id)->first()->articulo;
-                    if ($articulo) {
-                        if ($pago_tesis->descripcion == 'DEFENSA DE TESIS') {
-                            $cuenta_contable_venta = CuentaContable::where('id', $articulo->detalle->cuenta_defensa_id)->first();
-                            if (!$cuenta_contable_venta) {
-                                return response()->json([
-                                    'mensaje' => 'Hubo un problema al realizar la venta. No es posible obtener la cuenta contable del artículo.'
-                                ]);
-                            } else {
-                                $cuenta_contable_venta->monto = $venta_detalle->monto_bruto;
-                                $cuentas_contables_ventas->push($cuenta_contable_venta);
-                            }
-                        } else {
-                            $cuenta_contable_venta = CuentaContable::where('id', $articulo->detalle->cuenta_titulo_id)->first();
-                            if (!$cuenta_contable_venta) {
-                                return response()->json([
-                                    'mensaje' => 'Hubo un problema al realizar la venta. No es posible obtener la cuenta contable del artículo.'
-                                ]);
-                            } else {
-                                $cuenta_contable_venta->monto = $venta_detalle->monto_bruto;
-                                $cuentas_contables_ventas->push($cuenta_contable_venta);
-                            }
-                        }
-                    } else {
-                        return response()->json([
-                            'mensaje' => 'Hubo un problema al realizar la venta. No es posible obtener el artículo asociado a la carrera del alumno.'
-                        ]);
                     }
 
                 }
@@ -1189,38 +1073,6 @@ class CajeroController extends Controller
                                 'saldo' => number_format($pago->saldo, 0, ',', '.'),
                                 'tipo' => 'tutoria'];
                 $pagos->push($datos_pago);
-            }
-
-            $pagos_inscripciones_ubs = PagoInscripcionUbs::whereHas('inscripcion', function ($query) use ($alumno) {
-                $query->where('alumno_id', $alumno);
-            })->where('estado', '!=', 'CA')
-            ->orderBy('id', 'asc')
-            ->get();
-
-            foreach ($pagos_inscripciones_ubs as $pago) {
-                $datos_pagos = ['id' => $pago->id,
-                                'descripcion' => $pago->descripcion,
-                                'bruto' => number_format($pago->monto, 0, ',', '.'),
-                                'convenio' => number_format($pago->monto_convenio, 0, ',', '.'),
-                                'saldo' => number_format($pago->saldo, 0, ',', '.'),
-                                'tipo' => 'inscripcion_ubs'];
-                $pagos->push($datos_pagos);
-            }
-
-            $pagos_tesis_ubs = PagoTesisUbs::whereHas('tesis', function ($query) use ($alumno) {
-                $query->where('alumno_id', $alumno);
-            })->where('estado', '!=', 'CA')
-              ->orderBy('id', 'asc')
-              ->get();
-
-            foreach ($pagos_tesis_ubs as $pago) {
-                $datos_pagos = ['id' => $pago->id,
-                                'descripcion' => $pago->descripcion,
-                                'bruto' => number_format($pago->monto, 0, ',', '.'),
-                                'convenio' => number_format($pago->monto_convenio, 0, ',', '.'),
-                                'saldo' => number_format($pago->saldo, 0, ',', '.'),
-                                'tipo' => 'tesis_ubs'];
-                $pagos->push($datos_pagos);
             }
 
             return response()->json([

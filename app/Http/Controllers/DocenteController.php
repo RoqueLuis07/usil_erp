@@ -354,7 +354,6 @@ class DocenteController extends Controller
             'area_conocimiento' => ['required', 'numeric'],
             'carreras' => ['nullable', 'array'],
             'carreras.*' => ['numeric'],
-            'ubs' => 'required',
             'tutor_tesis' => 'required'
         ]);
 
@@ -385,7 +384,6 @@ class DocenteController extends Controller
             $docente->area_conocimiento_id = $request->area_conocimiento;
             $docente->usuario_id = $request->usuario;
             $docente->actualizado_por_id = Auth::id();
-            $docente->ubs = filter_var($request->ubs, FILTER_VALIDATE_BOOLEAN);
             $docente->tutor_tesis = filter_var($request->tutor_tesis, FILTER_VALIDATE_BOOLEAN);
             $docente->save();
 

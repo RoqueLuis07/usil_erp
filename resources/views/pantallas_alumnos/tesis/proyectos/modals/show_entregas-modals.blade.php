@@ -82,7 +82,7 @@
                                             $nombre_archivo = $nombre . $entrega->extension_archivo;
                                         @endphp
                                         <a href="{{asset($entrega->url_archivo)}}" download="{{$nombre_archivo}}">
-                                            <img src="{{asset('storage/word.png')}}" alt="Documento" width="100px">
+                                            <img src="{{asset('images/placeholders/word.svg')}}" alt="Documento" width="100px">
                                         </a>
                                     </div>
                                     <p class="text-muted">Haga click en el icono para descargar el archivo.</p>

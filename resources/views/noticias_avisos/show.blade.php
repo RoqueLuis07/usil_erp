@@ -71,10 +71,10 @@
                                     <div class="col-lg-12 mb-3">
                                         <label class="form-label" for="vista-imagen">Portada</label>
                                         <div class="text-center mb-3">
-                                            <img src="@if ($noticia_aviso->portada) {{asset($noticia_aviso->portada)}} @else {{asset('storage/no_image.png')}} @endif" alt="Imagen" id="vista-imagen" style="width: 200px; height:200px;">
+                                            <img src="@if ($noticia_aviso->portada) {{asset($noticia_aviso->portada)}} @else {{asset('images/placeholders/no_image.svg')}} @endif" alt="Imagen" id="vista-imagen" style="width: 200px; height:200px;">
                                         </div>
                                         @can('eliminar_portadas_noticias_avisos')
-                                        @if ($noticia_aviso->portada != 'storage/no_image.png')
+                                        @if ($noticia_aviso->portada != 'images/placeholders/no_image.svg')
                                             <button type="button" class="btn btn-danger" id="eliminar-portada" data-id="{{$noticia_aviso->id}}" data-url="{{route('noticias_avisos.destroy_portada', $noticia_aviso->id)}}">Eliminar Portada</button>
                                         @endif
                                         @endcan

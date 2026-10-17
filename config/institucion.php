@@ -11,4 +11,7 @@ return [
     'logo' => 'images/logo-nihon-gakko.png',
     // Texto legal opcional bajo el nombre (p. ej. "Creada por Ley N° ..."). Vacío = no se imprime.
     'ley' => env('INSTITUCION_LEY'),
+    // Datos opcionales que usan los contratos y constancias; vacíos se reemplazan por una frase neutra.
+    'sitio_web' => env('INSTITUCION_SITIO_WEB'),
+    'direccion' => env('INSTITUCION_DIRECCION'),
 ];

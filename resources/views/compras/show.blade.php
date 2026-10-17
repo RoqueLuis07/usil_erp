@@ -48,7 +48,7 @@
                                 @endif
                                 @if ($compra->url_factura)
                                     <div class="col-lg-1 mb-3 text-center">
-                                        <label class="form-label" for="factura">Factura</span></label>
+                                        <label class="form-label" for="factura">Factura</label>
                                         <div>
                                             <a type="button" class="btn btn-info" href="{{asset($compra->url_factura)}}" target="_blank">Visualizar</a>
                                         </div>

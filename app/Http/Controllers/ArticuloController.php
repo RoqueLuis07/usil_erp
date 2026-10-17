@@ -12,8 +12,6 @@ use App\Models\Articulo;
 use App\Models\ArticuloDetalle;
 use App\Models\CuentaContable;
 use App\Models\Carrera;
-use App\Models\Curso;
-use App\Models\CursoPrecio;
 use App\Models\UnidadNegocioContable;
 use App\Models\SubunidadNegocioContable;
 use App\Models\CentroCostoContable;
@@ -69,10 +67,9 @@ class ArticuloController extends Controller
         try {
             $cuentas_contables = CuentaContable::where('imputable', true)->where('estado', 'AC')->get();
             $carreras = Carrera::where('estado', 'AC')->get();
-            $cursos = Curso::where('estado', 'AC')->get();
             $unidades_negocios = UnidadNegocioContable::where('estado', 'AC')->get();
             $centros_costos = CentroCostoContable::where('estado', 'AC')->get();
-            return view('articulos/create')->with(compact('cuentas_contables', 'carreras', 'cursos', 'unidades_negocios', 'centros_costos'));
+            return view('articulos/create')->with(compact('cuentas_contables', 'carreras', 'unidades_negocios', 'centros_costos'));
         } catch (\Exception $e) {
             return redirect()->route('articulos.index')->with('error-message', $e->getMessage());
         }
@@ -94,8 +91,7 @@ class ArticuloController extends Controller
             'centro_costo' => ['required', 'numeric'],
             'subcentro_costo' => ['required', 'numeric'],
             'carrera_curso' => 'nullable',
-            'carrera' => ['nullable', 'numeric', 'required_if:carrera_curso,carrera'],
-            'curso' => ['nullable', 'numeric', 'required_if:carrera_curso,curso'],
+            'carrera' => ['nullable', 'numeric'],
 
             'precio_matricula' => ['nullable', 'numeric', 'min:1'],
             'cuenta_matricula' => ['nullable', 'numeric'],
@@ -148,7 +144,7 @@ class ArticuloController extends Controller
                 $detalle->cuenta_compra_id = $request->cuenta_compra;
                 $detalle->save();
             } elseif ($request->compra_venta == 'venta') {
-                $articulo->carrera_curso = Str::upper($request->carrera_curso);
+                $articulo->carrera_curso = 'CARRERA';
                 $articulo->save();
 
                 $detalle = new ArticuloDetalle();
@@ -193,30 +189,6 @@ class ArticuloController extends Controller
                     $carrera->articulo_id = $articulo->id;
                     $carrera->save();
                 }
-            } elseif ($request->curso) {
-                $curso = Curso::find($request->curso);
-                if ($curso) {
-                    $curso->articulo_id = $articulo->id;
-                    $curso->save();
-
-                    $precio_curso = CursoPrecio::where('curso_id', $curso->id)->first();
-                    if ($precio_curso) {
-                        $precio_curso->delete();
-                    }
-                    $precio = new CursoPrecio();
-                    $precio->curso_id = $curso->id;
-                    $precio->moneda_id = 1;
-                    $precio->cantidad_cuotas = $articulo->detalle->cantidad_cuotas;
-                    $precio->precio_contado = $articulo->detalle->precio_contado;
-                    $precio->precio_cuota = $articulo->detalle->precio_cuota;
-                    $precio->precio_multa = $articulo->detalle->precio_multa;
-                    $precio->dia_vencimiento_cuota = $articulo->detalle->dia_vencimiento_cuotas;
-                    $precio->fecha_inicio_vencimiento_cuota = $articulo->detalle->fecha_vencimiento_primera_cuota;
-                    $precio->dias_gracia = $articulo->detalle->dias_gracia;
-                    $precio->precio_defensa = $articulo->detalle->precio_defensa;
-                    $precio->precio_titulo = $articulo->detalle->precio_titulo;
-                    $precio->save();
-                }
             }
 
             DB::commit();
@@ -236,13 +208,12 @@ class ArticuloController extends Controller
             $articulo = Articulo::findOrFail($id);
             $cuentas_contables = CuentaContable::where('imputable', true)->where('estado', 'AC')->get();
             $carreras = Carrera::where('estado', 'AC')->get();
-            $cursos = Curso::where('estado', 'AC')->get();
             $unidades_negocios = UnidadNegocioContable::where('estado', 'AC')->get();
             $subunidades_negocios = SubunidadNegocioContable::where('unidad_id', $articulo->unidad_id)->where('estado', 'AC')->get();
             $centros_costos = CentroCostoContable::where('estado', 'AC')->get();
             $subcentros_costos = SubcentroCostoContable::where('centro_costo_id', $articulo->centro_costo_id)->where('estado', 'AC')->get();
 
-            return view('articulos/edit')->with(compact('articulo', 'cuentas_contables', 'carreras', 'cursos', 'unidades_negocios', 'subunidades_negocios', 'centros_costos', 'subcentros_costos'));
+            return view('articulos/edit')->with(compact('articulo', 'cuentas_contables', 'carreras', 'unidades_negocios', 'subunidades_negocios', 'centros_costos', 'subcentros_costos'));
         } catch (\Exception $e) {
             return redirect()->route('articulos.index')->with('error-message', $e->getMessage());
         }
@@ -264,14 +235,13 @@ class ArticuloController extends Controller
             'centro_costo' => ['required', 'numeric'],
             'subcentro_costo' => ['required', 'numeric'],
             'carrera_curso' => 'nullable',
-            'carrera' => ['nullable', 'numeric', 'required_if:carrera_curso,carrera'],
-            'curso' => ['nullable', 'numeric', 'required_if:carrera_curso,curso'],
+            'carrera' => ['nullable', 'numeric'],
 
             'precio_matricula' => ['nullable', 'numeric', 'min:1', 'required_with:carrera'],
             'cuenta_matricula' => ['nullable', 'numeric', 'required_with:carrera'],
-            'precio_contado' => ['nullable', 'numeric', 'min:1', 'required_with:carrera,curso'],
-            'cuenta_contado' => ['nullable', 'numeric', 'required_with:carrera,curso'],
-            'precio_cuota' => ['nullable', 'numeric', 'min:1', 'required_with:carrera,curso'],
+            'precio_contado' => ['nullable', 'numeric', 'min:1', 'required_with:carrera'],
+            'cuenta_contado' => ['nullable', 'numeric', 'required_with:carrera'],
+            'precio_cuota' => ['nullable', 'numeric', 'min:1', 'required_with:carrera'],
             'cuenta_cuota' => ['nullable', 'numeric'],
             'cuenta_descuento' => ['nullable', 'numeric'],
             'precio_defensa' => ['nullable', 'numeric', 'min:1', 'required_with:carrera'],
@@ -286,9 +256,9 @@ class ArticuloController extends Controller
             'cuenta_examen_suficiencia' => ['nullable', 'numeric'],
             'precio_constancia_carrera' => ['nullable', 'numeric', 'min:1'],
             'cuenta_constancia_carrera' => ['nullable', 'numeric'],
-            'cantidad_cuotas' => ['nullable', 'numeric', 'min:2', 'max:24', 'required_with:carrera,curso'],
-            'fecha_vencimiento_primera_cuota' => ['nullable', 'date', 'required_with:carrera,curso'],
-            'dia_vencimiento_cuotas' => ['nullable', 'numeric', 'min:1', 'max:28', 'required_with:carrera,curso'],
+            'cantidad_cuotas' => ['nullable', 'numeric', 'min:2', 'max:24', 'required_with:carrera'],
+            'fecha_vencimiento_primera_cuota' => ['nullable', 'date', 'required_with:carrera'],
+            'dia_vencimiento_cuotas' => ['nullable', 'numeric', 'min:1', 'max:28', 'required_with:carrera'],
             'dias_gracia' => ['nullable', 'numeric', 'min:0', 'max:28'],
         ]);
 
@@ -311,7 +281,7 @@ class ArticuloController extends Controller
             if ($request->compra_venta == 'compra') {
                 $articulo->cuenta_compra_id = $request->cuenta_compra;
             } elseif ($request->compra_venta == 'venta') {
-                $articulo->carrera_curso = Str::upper($request->carrera_curso);
+                $articulo->carrera_curso = 'CARRERA';
 
                 $detalle = ArticuloDetalle::where('articulo_id', $articulo->id)->first();
                 $detalle->articulo_id = $articulo->id;
@@ -356,31 +326,6 @@ class ArticuloController extends Controller
                 if ($carrera) {
                     $carrera->articulo_id = $articulo->id;
                     $carrera->save();
-                }
-            } elseif ($request->curso) {
-                $curso = Curso::find($request->curso);
-                if ($curso) {
-                    $curso->articulo_id = $articulo->id;
-                    $curso->save();
-
-                    $precio_curso = CursoPrecio::where('curso_id', $curso->id)->first();
-                    if ($precio_curso) {
-                        $precio_curso->delete();
-                    }
-
-                    $precio = new CursoPrecio();
-                    $precio->curso_id = $curso->id;
-                    $precio->moneda_id = 1;
-                    $precio->cantidad_cuotas = $articulo->detalle->cantidad_cuotas;
-                    $precio->precio_contado = $articulo->detalle->precio_contado;
-                    $precio->precio_cuota = $articulo->detalle->precio_cuota;
-                    $precio->precio_multa = $articulo->detalle->precio_multa;
-                    $precio->dia_vencimiento_cuota = $articulo->detalle->dia_vencimiento_cuotas;
-                    $precio->fecha_inicio_vencimiento_cuota = $articulo->detalle->fecha_vencimiento_primera_cuota;
-                    $precio->dias_gracia = $articulo->detalle->dias_gracia;
-                    $precio->precio_defensa = $articulo->detalle->precio_defensa;
-                    $precio->precio_titulo = $articulo->detalle->precio_titulo;
-                    $precio->save();
                 }
             }
 
@@ -449,16 +394,6 @@ class ArticuloController extends Controller
             if ($carrera) {
                 $carrera->articulo_id = null;
                 $carrera->save();
-            }
-            $curso = Curso::where('articulo_id', $articulo->id)->first();
-            if ($curso) {
-                $curso->articulo_id = null;
-                $curso->save();
-
-                $curso_precio = CursoPrecio::where('curso_id', $curso->id)->first();
-                if ($curso_precio) {
-                    $curso_precio->delete();
-                }
             }
             $articulo->delete();
 

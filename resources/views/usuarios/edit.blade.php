@@ -58,7 +58,7 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-lg-4">
-                                    <label class="form-label" for="password">Contraseña</span></label>
+                                    <label class="form-label" for="password">Contraseña</label>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Escriba una contraseña">
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
@@ -67,7 +67,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-lg-4">
-                                    <label class="form-label" for="password_confirmation">Confirmar Contraseña</span></label>
+                                    <label class="form-label" for="password_confirmation">Confirmar Contraseña</label>
                                     <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" name="password_confirmation" placeholder="Confirme una contraseña">
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">

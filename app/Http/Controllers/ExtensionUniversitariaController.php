@@ -49,7 +49,7 @@ class ExtensionUniversitariaController extends Controller
         $this->authorize('ver_extensiones_universitarias');
 
         try {
-            $extensiones = ExtensionUniversitaria::with(['tipoExtension', 'docente', 'extensionUniversitariaDetalles'])->orderBy('id', 'desc')->get();
+            $extensiones = ExtensionUniversitaria::with(['tipoExtension', 'docente'])->withCount('extensionUniversitariaDetalles')->orderBy('id', 'desc')->get();
             $alumnos = Alumno::whereHas('extensionesDetalles')->distinct()->orderBy('primer_nombre', 'asc')->get();
             $periodos = collect();
             foreach ($extensiones as $extension) {

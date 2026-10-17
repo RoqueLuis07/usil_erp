@@ -126,7 +126,7 @@
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="vista-imagen">Portada Actual - Visualización Previa</label>
                                     <div class="text-center">
-                                        <img src="@if ($noticia_aviso->portada) {{asset($noticia_aviso->portada)}} @else {{asset('storage/no_image.png')}} @endif" alt="Imagen" id="vista-imagen" style="width: 200px; height:200px;">
+                                        <img src="@if ($noticia_aviso->portada) {{asset($noticia_aviso->portada)}} @else {{asset('images/placeholders/no_image.svg')}} @endif" alt="Imagen" id="vista-imagen" style="width: 200px; height:200px;">
                                     </div>
                                 </div>
                             </div>
