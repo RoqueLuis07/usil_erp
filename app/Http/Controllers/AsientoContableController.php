@@ -15,7 +15,6 @@ use App\Models\CuentaContable;
 use App\Models\SaldoCuentaContable;
 use App\Models\SaldoCuentaContableDetalle;
 use App\Models\UnidadNegocioContable;
-use App\Models\SubnidadNegocioContable;
 use App\Models\CentroCostoContable;
 use App\Models\SubcentroCostoContable;
 

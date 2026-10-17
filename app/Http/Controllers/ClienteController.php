@@ -16,8 +16,6 @@ use App\Models\DepartamentoParaguay;
 use App\Models\Ciudad;
 use App\Models\Barrio;
 use App\Models\ClienteDatoLaboral;
-use App\Models\ClienteDireccion;
-use App\Models\ClienteTelefono;
 
 
 class ClienteController extends Controller
