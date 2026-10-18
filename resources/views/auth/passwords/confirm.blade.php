@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.master-without-nav')
+@section('title') Acceso @endsection
 
 @section('content')
 <div class="container">

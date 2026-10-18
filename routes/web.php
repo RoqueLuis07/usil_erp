@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Auth::routes();
+// Sin registro público: las cuentas las crea Extensión (usuarios, alumnos y docentes); sin verificación por correo.
+Auth::routes(['register' => false, 'verify' => false]);
 //Dashboard
     Route::get('/', 'HomeController@root')->name('root');
 
