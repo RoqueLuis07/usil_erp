@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Models\ExtensionUniversitariaDetalle;
-use App\Models\Matriculacion;
 use App\Models\RequerimientoExtensionUniversitaria;
 use Illuminate\Support\Collection;
 
@@ -42,13 +41,6 @@ class ResumenExtensionAlumno
             return is_null($r->carrera_id);
         });
 
-        // Alumnos sin carrera propia: se usa la de su matriculación más reciente.
-        $sinCarrera = $alumnos->filter(function ($a) {
-            return !$a->carrera_id;
-        })->pluck('id')->all();
-        $carreraPorMatriculacion = $sinCarrera
-            ? Matriculacion::whereIn('alumno_id', $sinCarrera)->orderByDesc('fecha')->get()->unique('alumno_id')->pluck('carrera_id', 'alumno_id')
-            : collect();
 
         $resumenes = [];
         foreach ($alumnos as $alumno) {
@@ -75,7 +67,7 @@ class ResumenExtensionAlumno
                 $actividades += $datos['cantidad'];
             }
 
-            $carreraId = $alumno->carrera_id ?: $carreraPorMatriculacion->get($alumno->id);
+            $carreraId = $alumno->carrera_id;
             $requerimiento = $carreraId
                 ? $requerimientos->first(function ($r) use ($carreraId) {
                     return $r->carrera_id == $carreraId;

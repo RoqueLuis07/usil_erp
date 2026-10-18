@@ -13,22 +13,14 @@ class Kernel extends ConsoleKernel
      */
 
     protected $commands = [
-        'App\Console\Commands\InactivarAnulacionesCorrelatividades',
         'App\Console\Commands\InactivarSemestres',
     ];
 
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('inactivar:anulaciones_correlatividades')
-                    ->daily() //se ejecuta todos los dias a la medianoche
-                    ->timezone('America/Asuncion')
-                    ->onFailure(function () {
-                        Log::info('Inactivar anulaciones de correlatividades falló.');
-                    });
 
         $schedule->command('inactivar:semestres')
-                    ->everySecond()
-                    // ->daily() //se ejecuta todos los dias a la medianoche
+                    ->daily() //se ejecuta todos los dias a la medianoche
                     ->timezone('America/Asuncion')
                     ->onFailure(function () {
                         Log::info('Inactivar semestres falló.');

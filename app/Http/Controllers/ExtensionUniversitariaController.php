@@ -18,10 +18,8 @@ use App\Models\Docente;
 use App\Models\Alumno;
 use App\Models\AlumnoExtension;
 use App\Models\Materia;
-use App\Models\Empresa;
 use App\Models\Carrera;
 use App\Models\Semestre;
-use App\Models\Matriculacion;
 use App\Traits\ResuelveCarreraSemestreAlumno;
 
 class ExtensionUniversitariaController extends Controller
@@ -995,7 +993,6 @@ class ExtensionUniversitariaController extends Controller
             $tipo_extension = '';
             $alumno = '';
 
-            $empresa = Empresa::first(); //obtenemos los datos de la empresa para el header
             $fecha_hoy = Carbon::now(); //obtenemos la fecha de hoy para el footer
             $query = ExtensionUniversitaria::query();
 
@@ -1033,7 +1030,7 @@ class ExtensionUniversitariaController extends Controller
                 }
             }
 
-            $pdf = Pdf::loadView('extensiones_universitarias/pdf', compact('empresa', 'fecha_hoy', 'extensiones', 'proyecto', 'periodo' ,'tipo_extension', 'alumno'));
+            $pdf = Pdf::loadView('extensiones_universitarias/pdf', compact('fecha_hoy', 'extensiones', 'proyecto', 'periodo' ,'tipo_extension', 'alumno'));
             $pdf->setPaper('A4', 'landscape');
 
             return $pdf->stream('rpt_extensiones_universitaria_' . Carbon::now()->format('dmY_His') . '.pdf');
@@ -1127,7 +1124,6 @@ class ExtensionUniversitariaController extends Controller
             $semestre = '';
             $tipo_extension = '';
 
-            $empresa = Empresa::first();
             $fecha_hoy = Carbon::now();
 
             if ($request->carrera) {
@@ -1144,7 +1140,7 @@ class ExtensionUniversitariaController extends Controller
 
             $reporte = $this->queryReporteCarreraSemestre($request);
 
-            $pdf = Pdf::loadView('extensiones_universitarias/pdf_carrera_semestre', compact('empresa', 'fecha_hoy', 'reporte', 'carrera', 'semestre', 'tipo_extension'));
+            $pdf = Pdf::loadView('extensiones_universitarias/pdf_carrera_semestre', compact('fecha_hoy', 'reporte', 'carrera', 'semestre', 'tipo_extension'));
             $pdf->setPaper('A4', 'landscape');
 
             return $pdf->stream('rpt_extensiones_universitarias_carrera_semestre_' . Carbon::now()->format('dmY_His') . '.pdf');

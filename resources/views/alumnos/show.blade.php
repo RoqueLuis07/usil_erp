@@ -125,9 +125,6 @@
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link align-middle" data-bs-toggle="tab" href="#tablistLaboral" role="tab" aria-selected="true">Datos Laborales</a>
                                         </li>
-                                        <li class="nav-item" role="presentation">
-                                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#tablistFacturacion" role="tab" aria-selected="true">Facturación</a>
-                                        </li>
                                     </ul>
                                     {{-- Tab panes --}}
                                     <div class="tab-content">
@@ -215,37 +212,6 @@
                                         </div>
                                     </div>
                                     <div class="tab-content">
-                                        <div class="tab-pane" id="tablistFacturacion" role="tabpanel">
-                                            @foreach ($alumno->alumnoClientes as $key => $cliente)
-                                                <div class="row d-flex flex-wrap justify-content-center">
-                                                    <div class="col-lg-2 mb-3 text-center">
-                                                        @if ($key == 0) <label class="form-label" for="nombre_cliente">Cliente</label> @endif
-                                                        <input type="text" class="form-control text-center" id="nombre_cliente" value="{{$cliente->cliente->nombre}}" readonly>
-                                                    </div>
-                                                    <div class="col-lg-2 mb-3 text-center">
-                                                        @if ($key == 0) <label class="form-label" for="razon_social">Razón Social</label> @endif
-                                                        <input type="text" class="form-control text-center" id="razon_social" value="{{$cliente->cliente->razon_social}}" readonly>
-                                                    </div>
-                                                    <div class="col-lg-2 mb-3 text-center">
-                                                        @if ($key == 0) <label class="form-label" for="numero_documento_cliente">N° Documento</label> @endif
-                                                        <input type="text" class="form-control text-center" id="numero_documento_cliente" value="{{$cliente->cliente->numero_documento}}" readonly>
-                                                    </div>
-                                                    <div class="col-lg-1 text-center">
-                                                        @if ($key == 0)
-                                                            <div>
-                                                                <label class="form-label">Es Principal ?</label>
-                                                            </div>
-                                                        @endif
-                                                        <div class="btn-group" role="group">
-                                                            <input type="radio" class="btn-check" id="es_principal1" @if ($cliente->es_principal == false) checked @endif disabled>
-                                                            <label class="btn btn-outline-danger" for="es_principal1">No</label>
-                                                            <input type="radio" class="btn-check" id="es_principal2" @if ($cliente->es_principal == true) checked @endif disabled>
-                                                            <label class="btn btn-outline-success" for="es_principal2">Si</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
                                     </div>
                                     {{-- /Tab panes --}}
                                 </div>

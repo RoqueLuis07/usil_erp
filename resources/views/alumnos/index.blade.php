@@ -213,21 +213,8 @@
                                                                 @can('ver_legajos_alumnos')
                                                                     <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.ver_legajo', $alumno->id)}}">Legajo</a></li>
                                                                 @endcan
-                                                                @can('ver_notas_alumnos')
-                                                                    <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_notas', $alumno->id)}}">Notas</a></li>
-                                                                @endcan
-                                                                @can('ver_asistencias_alumnos')
-                                                                    <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_asistencias', $alumno->id)}}">Asistencias</a></li>
-                                                                @endcan
                                                                 @can('ver_extensiones_alumnos')
                                                                     <li><a class="dropdown-item dropdown-item-mas" href="{{route('alumnos.show_extensiones', $alumno->id)}}">Extensiones</a></li>
-                                                                @endcan
-                                                                @can('ver_certificado_estudios_alumnos')
-                                                                    @if (!$alumno->url_certificado_estudio)
-																		<li><a class="dropdown-item dropdown-item-mas" href="{{route('certificados_estudios.show', ['id' => $alumno->id, 'tipo' => 'PY'])}}">Cert. Estudios</a></li>
-																	@else
-																		<li><a class="dropdown-item dropdown-item-mas" href="{{asset($alumno->url_certificado_estudio)}}" target="_blank">Cert. Estudios</a></li>
-																	@endif
                                                                 @endcan
                                                             </ul>
                                                         </div>

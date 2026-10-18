@@ -1,5 +1,5 @@
 @can('ver_carreras')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Carreras @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">

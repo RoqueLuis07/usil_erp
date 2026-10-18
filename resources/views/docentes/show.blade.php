@@ -106,7 +106,7 @@
                         <div class="col-lg-12 mb-3">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title mb-0">Carreras, facultad y semestre</h4>
+                                    <h4 class="card-title mb-0">Carreras, facultad y actividades</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-3">
@@ -131,22 +131,22 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <label class="form-label">Materias asignadas por período</label>
+                                    <label class="form-label">Actividades de extensión a su cargo</label>
                                     <div class="table-responsive">
                                         <table class="table align-middle table-nowrap mb-0">
                                             <thead class="table-light">
-                                                <tr><th>Período (semestre)</th><th>Carrera</th><th>Facultad</th><th>Materia</th></tr>
+                                                <tr><th>Período</th><th>Actividad</th><th>Tipo</th><th>Estado</th></tr>
                                             </thead>
                                             <tbody>
-                                                @forelse ($asignaciones as $asignacion)
+                                                @forelse ($actividades as $actividad)
                                                     <tr>
-                                                        <td>{{$asignacion->periodo}}</td>
-                                                        <td>{{$asignacion->carrera}}</td>
-                                                        <td>{{$asignacion->facultad}}</td>
-                                                        <td>{{$asignacion->materia}}</td>
+                                                        <td>{{ $actividad->periodo ?? '—' }}</td>
+                                                        <td><a href="{{ route('extensiones_universitarias.show', $actividad->id) }}">{{ $actividad->nombre }}</a></td>
+                                                        <td>{{ optional($actividad->tipoExtension)->nombre }}</td>
+                                                        <td>{{ ['PE' => 'Pendiente', 'AP' => 'Aprobado', 'IN' => 'Informado', 'RE' => 'Rechazado', 'CO' => 'Completo', 'FI' => 'Finalizado'][$actividad->estado] ?? $actividad->estado }}</td>
                                                     </tr>
                                                 @empty
-                                                    <tr><td colspan="4" class="text-center text-muted">No tiene materias asignadas en ningún período.</td></tr>
+                                                    <tr><td colspan="4" class="text-center text-muted">No tiene actividades de extensión a su cargo.</td></tr>
                                                 @endforelse
                                             </tbody>
                                         </table>

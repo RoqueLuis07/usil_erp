@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Configuracion;
-use App\Models\User;
 
 
 class ConfiguracionController extends Controller

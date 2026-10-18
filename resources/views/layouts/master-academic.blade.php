@@ -155,12 +155,6 @@
                         @endcan
                     </div>
                 @endcan
-                @can('ver_noticias_avisos_alumnos_pantalla')
-                    <a href="{{route('pantallas_alumnos.noticias', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_alumnos.noticias') ? 'active' : '' }}">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
-                        <span class="ac-nav-label">Noticias y Avisos</span>
-                    </a>
-                @endcan
 
             @elseif (Auth::user()->hasAnyRole(['DOCENTE', 'ENCARGADO_DOCENTE']))
                 <a href="{{route('pantallas_docentes.index', Auth::id())}}" class="ac-nav-item {{ request()->routeIs('pantallas_docentes.index') ? 'active' : '' }}">
@@ -286,6 +280,12 @@
                             <a href="{{route('roles.index')}}" class="ac-nav-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
                                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 2.5l6 2.3v4.4c0 3.6-2.4 6.7-6 7.8-3.6-1.1-6-4.2-6-7.8V4.8l6-2.3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.3 10l1.9 1.9L12.7 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 <span class="ac-nav-label">Roles</span>
+                            </a>
+                        @endcan
+                        @can('ver_parametros_academicos')
+                            <a href="{{route('parametros_academicos.index')}}" class="ac-nav-item {{ request()->routeIs('parametros_academicos.*', 'facultades.*', 'carreras.*', 'programas.*', 'tipos_carreras.*', 'modalidades.*', 'materias.*', 'semestres.*', 'alumnos_formaciones.*', 'instituciones_educativas.*', 'areas_conocimientos.*', 'formas_conocimientos.*', 'nacionalidades.*', 'departamentos_paraguay.*', 'ciudades.*', 'barrios.*') ? 'active' : '' }}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                                <span class="ac-nav-label">Parámetros</span>
                             </a>
                         @endcan
                         @can('ver_auditoria')

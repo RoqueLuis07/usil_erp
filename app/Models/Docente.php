@@ -52,10 +52,6 @@ class Docente extends Model implements Auditable
         return $this->belongsTo(DocenteDatoLaboral::class);
     }
 
-    public function Banco(){
-        return $this->belongsTo(Banco::class);
-    }
-
     public function Usuario(){
         return $this->belongsTo(User::class);
     }

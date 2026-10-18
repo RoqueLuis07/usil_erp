@@ -10,15 +10,11 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
 use App\Models\Semestre;
-use App\Models\SemestreMalla;
-use App\Models\SemestreMallaMateria;
-use App\Models\SemestreMallaMateriaHorario;
-use App\Models\Docente;
-use App\Models\Malla;
-use App\Models\MallaDetalle;
-use App\Models\Moneda;
 
-
+/**
+ * Períodos académicos (ej. "2026-1"). Extensión los usa para ubicar cada actividad en su período
+ * y para el reporte por carrera y semestre.
+ */
 class SemestreController extends Controller
 {
     /**
@@ -31,12 +27,6 @@ class SemestreController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-
     public function index()
     {
         $this->authorize('ver_periodos');
@@ -45,23 +35,7 @@ class SemestreController extends Controller
             $semestres = Semestre::orderBy('id', 'desc')->get();
             return view('semestres/index')->with(compact('semestres'));
         } catch (\Exception $e) {
-            return redirect()->route('semestres.index')->with('error-message', $e->getMessage());
-        }
-    }
-
-    public function show($id)
-    {
-        $this->authorize('ver_periodos');
-
-        try {
-            $semestre = Semestre::with(['semestreMallas' => function ($query) {
-                $query->orderBy('id');
-            }])->findOrFail($id);
-            $coordinadores = Docente::where('estado', 'AC')->get();
-            $monedas = Moneda::where('estado', 'AC')->get();
-            return view('semestres/show')->with(compact('semestre', 'coordinadores', 'monedas'));
-        } catch (\Exception $e) {
-            return redirect()->route('semestres.index')->with('error-message', $e->getMessage());
+            return redirect()->route('root')->with('error-message', $e->getMessage());
         }
     }
 
@@ -69,89 +43,28 @@ class SemestreController extends Controller
     {
         $this->authorize('crear_periodos');
 
-        try {
-            $mallas = Malla::with([
-                'carrera',
-                'tipoMalla'
-            ])
-            ->where('mallas.estado', 'AC')
-            ->join('carreras', 'carreras.id', '=', 'mallas.carrera_id')
-            ->orderBy('carreras.programa_id', 'asc')
-            ->select('mallas.*')
-            ->get();
-            $coordinadores = Docente::where('estado', 'AC')->get();
-            return view('semestres/create')->with(compact('mallas', 'coordinadores'));
-        } catch (\Exception $e) {
-            return redirect()->route('semestres.index')->with('error-message', $e->getMessage());
-        }
+        return view('semestres/create');
     }
 
     public function store(Request $request)
     {
         $this->authorize('crear_periodos');
 
-        $array = $request->input('detalles'); //obtener datos del request
-        $lastIndex = is_array($array) ? count($array) - 1 : null; //longitud del array
-
-        $hoy = Carbon::today()->toDateString();
-        $unMesDesdeHoy = Carbon::today()->addMonth()->toDateString();
-
-        $rules = [
+        $request->validate([
             'nombre_semestre' => ['required', Rule::unique('semestres', 'nombre')],
-            // 'fecha_inicio' => ['required', 'date', 'after_or_equal:' . $hoy],
-            // 'fecha_fin' => ['required', 'date', 'after_or_equal:' . $unMesDesdeHoy],
-            'detalles.*.malla' => ['required', 'numeric'],
-            'detalles.*.coordinador' => 'required',
-            // 'detalles.*.fecha_inicio_matriculacion' => ['required', 'date', 'before_or_equal:detalles.*.fecha_fin_matriculacion'],
-            // 'detalles.*.fecha_fin_matriculacion' => ['required', 'date', 'before_or_equal:fecha_fin', 'after_or_equal:detalles.*.fecha_inicio_matriculacion'],
-        ];
-
-        //si el ultimo valor es nulo, lo elimina
-        if ($array[$lastIndex]['fecha_inicio_matriculacion'] == null && $array[$lastIndex]['fecha_fin_matriculacion'] == null && $lastIndex != 0) {
-            //indicar que la ultima fila puede ser nula
-            if ($lastIndex !== null) {
-                $rules["detalles.$lastIndex.malla"] = 'nullable';
-                $rules["detalles.$lastIndex.coordinador"] = 'nullable';
-                $rules["detalles.$lastIndex.fecha_inicio_matriculacion"] = 'nullable';
-                $rules["detalles.$lastIndex.fecha_fin_matriculacion"] = 'nullable';
-            }
-            unset($array[$lastIndex]);
-        }
-
-        $request->validate($rules); //validar
+            'fecha_inicio' => ['required', 'date'],
+            'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
+        ]);
 
         DB::beginTransaction();
 
         try {
             $semestre = new Semestre();
-            $semestre->nombre = removeAccents(Str::upper($request->nombre_semestre));
+            $semestre->nombre = removeAccents(Str::upper(trim($request->nombre_semestre)));
             $semestre->fecha_inicio = $request->fecha_inicio;
             $semestre->fecha_fin = $request->fecha_fin;
             $semestre->cargado_por_id = Auth::id();
             $semestre->save();
-
-            foreach ($array as $detalle) { //utilizar el array obtenido arriba
-                $semestre_malla = new SemestreMalla();
-                $semestre_malla->semestre_id = $semestre->id;
-                $semestre_malla->malla_id = $detalle['malla'];
-                $semestre_malla->coordinador_id = $detalle['coordinador'];
-                $semestre_malla->fecha_inicio_matriculacion = $detalle['fecha_inicio_matriculacion'];
-                $semestre_malla->fecha_fin_matriculacion = $detalle['fecha_fin_matriculacion'];
-                $semestre_malla->save();
-
-                $mallas_detalles = MallaDetalle::where('malla_id', $semestre_malla->malla_id)->get();
-                foreach ($mallas_detalles as $malla_detalle) {
-                    $semestre_malla_materia = new SemestreMallaMateria();
-                    $semestre_malla_materia->semestre_malla_id = $semestre_malla->id;
-                    $semestre_malla_materia->materia_id = $malla_detalle->materia_id;
-                    $semestre_malla_materia->cargado_por_id = Auth::id();
-                    $semestre_malla_materia->save();
-
-                    $semestre_malla_materia_horario = new SemestreMallaMateriaHorario();
-                    $semestre_malla_materia_horario->semestre_malla_materia_id = $semestre_malla_materia->id;
-                    $semestre_malla_materia_horario->save();
-                }
-            }
 
             DB::commit();
 
@@ -176,7 +89,7 @@ class SemestreController extends Controller
 
             DB::commit();
 
-            return redirect()->route('semestres.index')->with('error-message','El semestre ' . $semestre->nombre . ' fue inactivado exitosamente.');
+            return redirect()->route('semestres.index')->with('error-message', 'El semestre ' . $semestre->nombre . ' fue inactivado exitosamente.');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->route('semestres.index')->with('error-message', $e->getMessage());
@@ -200,7 +113,7 @@ class SemestreController extends Controller
 
             DB::commit();
 
-            return redirect()->route('semestres.index')->with('success-message','El semestre ' . $semestre->nombre . ' fue activado exitosamente.');
+            return redirect()->route('semestres.index')->with('success-message', 'El semestre ' . $semestre->nombre . ' fue activado exitosamente.');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->route('semestres.index')->with('error-message', $e->getMessage());
@@ -215,41 +128,19 @@ class SemestreController extends Controller
 
         try {
             $semestre = Semestre::findOrFail($id);
-
-            // Obtener las mallas del semestre
-            $semestre_mallas = SemestreMalla::where('semestre_id', $id)->get();
-
-            foreach ($semestre_mallas as $semestre_malla) {
-                // Obtener las materias del semestre malla
-                $semestre_malla_materias = SemestreMallaMateria::where('semestre_malla_id', $semestre_malla->id)->get();
-
-                foreach ($semestre_malla_materias as $semestre_malla_materia) {
-                    // Eliminar los horarios de las materias del semestre malla
-                    SemestreMallaMateriaHorario::where('semestre_malla_materia_id', $semestre_malla_materia->id)->delete();
-                }
-
-                // Eliminar las materias del semestre malla
-                SemestreMallaMateria::where('semestre_malla_id', $semestre_malla->id)->delete();
-            }
-
-            // Eliminar las mallas del semestre
-            SemestreMalla::where('semestre_id', $id)->delete();
-
-            // Eliminar el semestre
             $semestre->delete();
 
             DB::commit();
 
-            return redirect()->route('semestres.index')->with('success-message','El semestre ' . $semestre->nombre . ' fue eliminado exitosamente.');
+            return redirect()->route('semestres.index')->with('success-message', 'El semestre ' . $semestre->nombre . ' fue eliminado exitosamente.');
         } catch (\Exception $e) {
             DB::rollback();
 
-            //Verifica si el error es por Foreign key violation / Integrity constraint violation
-            if (stripos($e->getMessage(), 'Foreign key violation')) {
-                return redirect()->route('semestres.index')->with('error-message', 'El semestre ' . $semestre->nombre . ' no se puede eliminar. Está siendo utilizado por otro registro dentro del sistema.');
-            } else {
-                return redirect()->route('semestres.index')->with('error-message', $e->getMessage());
+            // Foreign key: el período ya lo usan actividades u otros registros
+            if (stripos($e->getMessage(), 'foreign key') !== false || stripos($e->getMessage(), 'Integrity constraint') !== false) {
+                return redirect()->route('semestres.index')->with('error-message', 'El semestre no se puede eliminar. Está siendo utilizado por otro registro dentro del sistema.');
             }
+            return redirect()->route('semestres.index')->with('error-message', $e->getMessage());
         }
     }
 }

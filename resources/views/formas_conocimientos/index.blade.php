@@ -1,5 +1,5 @@
 @can('ver_formas_conocimientos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Formas de Conocer la Universidad @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">

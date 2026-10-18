@@ -16,9 +16,6 @@
                                         @can('editar_materias')
                                             <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editModal" id="edit-btn" data-id="${value.id}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Editar"><i class="ri-edit-fill align-bottom"></i></button>
                                         @endcan
-                                        @can('ver_correlatividades_materias')
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#showCorrelatividadesModal" id="show-correlatividades-btn" data-id="${value.id}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="VerCorrelatividades"><i class="ri-asterisk align-bottom"></i></button>
-                                        @endcan
                                         @can('inactivar_materias')
                                             <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#unactivateModal" id="unactivate-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Inactivar" data-id="${value.id}"><i class="ri-close-fill align-bottom"></i></button>
                                         @endcan
@@ -30,9 +27,6 @@
                         var botones = `<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#showModal" id="show-btn" data-id="${value.id}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Ver"><i class="ri-eye-fill align-bottom"></i></button>
                                         @can('editar_materias')
                                             <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editModal" id="edit-btn" data-id="${value.id}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Editar"><i class="ri-edit-fill align-bottom"></i></button>
-                                        @endcan
-                                        @can('ver_correlatividades_materias')
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#showCorrelatividadesModal" id="show-correlatividades-btn" data-id="${value.id}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="VerCorrelatividades"><i class="ri-asterisk align-bottom"></i></button>
                                         @endcan
                                         @can('activar_materias')
                                             <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#activateModal" id="activate-btn" data-id="${value.id}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Activar"><i class="ri-close-fill align-bottom"></i></button>
@@ -53,7 +47,6 @@
                             <td class="nombre_fantasia">${value.nombre_fantasia}</td>
                             <td class="nombre_real">${value.nombre_real}</td>
                             <td class="carga_horaria">${value.carga_horaria}</td>
-                            <td>${value.correlativas.length}</td>
                             <td class="estado">${estado}</td>
                             <td>${botones}</td>`
                     )
@@ -207,71 +200,6 @@
         })
     });
 
-    $(document).on('click', '#show-correlatividades-btn', function () {
-        var id = $(this).data('id');
-        var url = "{{route('correlatividades.show', ":id")}}"
-        url = url.replace(':id', id);
-        $.ajax({
-            type: 'GET',
-            url: url,
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-        }).then(function(response) {
-            $('#body').html('');
-            var editar;
-            var correlativas = response.materia.correlativas;
-            var id = response.materia.id;
-            if (correlativas.length > 0) {
-                editar = 1;
-            } else {
-                editar = 0;
-            }
-
-            $('#title-materia').html(response.materia.nombre_fantasia + ' - <span class="text-muted">' + response.materia.nombre_real + '</span>');
-            var body = `<div class="col-lg-12 mt-3">
-                            <div class="row">
-                                <div class="col-lg-12 text-center mb-3">
-
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12 mb-3">
-                                    <ul class="list-group">
-                                        <li class="list-group-item list-group-item-info active">
-                                            <div class="d-flex flex-wrap justify-content-between align-items-center">
-                                                @can('editar_correlatividades_materias')
-                                                    ${editar === 1 ? '<a type="button" class="btn btn-danger me-2" id="delete-all-correlatividades-btn" data-id="' + id + '" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Todas las Correlatividades"><i class="ri-delete-bin-fill align-bottom"></i></a>' : ''}
-                                                @endcan
-                                                <span>Materias Correlativas</span>
-                                                @can('editar_correlatividades_materias')
-                                                    <a type="button" class="btn btn-warning me-2" id="edit-correlatividad-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="${editar === 1 ? 'Editar Correlatividades' : 'Agregar Correlatividades'}" data-id="${id}">${editar === 1 ? '<i class="ri-edit-fill align-bottom"></i>' : '<i class="ri-add-line align-bottom"></i>'}</a>
-                                                @endcan
-                                            </div>
-                                        </li>`;
-
-            if (correlativas.length > 0) {
-                correlativas.forEach(function (correlativa) {
-                    var nombre_fantasia = correlativa.nombre_fantasia;
-                    var nombre_real = correlativa.nombre_real;
-                    body += `<li class="list-group-item text-center">${nombre_fantasia} - ${nombre_real}</li>`
-                })
-            } else {
-                body +=`<li class="list-group-item text-center">Esta materia no posee ninguna correlatividad activa.</li>`
-            }
-
-                            body += `</ul>
-                                </div>
-                            </div>
-                        </div>`
-
-            $('#body').append(body);
-        }).fail(function(response) {
-
-        })
-
-    })
-
     $(document).on('click', '#edit-btn', function() {
         $('#update-form').find('.is-invalid').removeClass('is-invalid');
         $('#update-form').find('.invalid-feedback').remove();
@@ -348,38 +276,6 @@
 
         })
     });
-
-    $(document).on('click', '#edit-correlatividad-btn', function () {
-        var id = $(this).data('id');
-        var url = "{{route('correlatividades.edit', ":id")}}"
-        url = url.replace(':id', id);
-        window.location.href = url;
-    })
-
-    $(document).on('click', '#delete-all-correlatividades-btn', function () {
-        var nombre = $('#title-materia').text();
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-danger me-2',
-                cancelButton: 'btn btn-light',
-            },
-            buttonsStyling: false
-        });
-        swalWithBootstrapButtons.fire({
-            title: '¿Está seguro de eliminar todas las correlatividades de la materia ' + nombre + '?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar!',
-            cancelButtonText: 'Volver',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var id = $(this).data('id');
-                var url = "{{route('correlatividades.destroy', ":id")}}"
-                url = url.replace(':id', id);
-                window.location.href = url;
-            }
-        })
-    })
 
     $('.update-btn').click(function () {
         var nombre = $('#nombre_fantasia-edit').val();

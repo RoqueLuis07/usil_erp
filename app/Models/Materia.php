@@ -18,28 +18,4 @@ class Materia extends Model implements Auditable
         return $this->belongsTo(User::class);
     }
 
-    public function Correlativas(){
-        return $this->belongsToMany(Materia::class, 'correlatividades', 'materia_id', 'correlativa_id')->withTimestamps();
-    }
-
-    public function EsCorrelativa(){
-        return $this->belongsToMany(Materia::class, 'correlatividades', 'correlativa_id', 'materia_id')->withTimestamps();
-    }
-
-    public function Inscripciones(){
-        return $this->belongsToMany(Alumno::class, 'inscripciones')
-        ->withPivot('estado')
-        ->withTimestamps();
-    }
-
-    public function EstaAprobadaConvalidadaSuficiencia($alumno){
-        return $this->inscripciones()
-                     ->where('alumno_id', $alumno)
-                     ->where(function ($query) {
-                         $query->where('inscripciones.estado', 'AP')
-                               ->orWhere('inscripciones.estado', 'CO')
-                               ->orWhere('inscripciones.estado', 'SU');
-                     })
-                     ->exists();
-    }
 }

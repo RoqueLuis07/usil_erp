@@ -441,74 +441,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @can('cargar_clientes_alumnos')
-                                        <div class="tab-content">
-                                            <div class="tab-pane" id="tablistFacturacion" role="tabpanel">
-                                                <div class="mb-2 fila" id="fila-0">
-                                                    <div class="row d-flex flex-wrap justify-content-center">
-                                                        <div class="col-lg-2 mb-2 text-center" id="div-cliente-0">
-                                                            <label class="form-label label-cliente">Cliente</label>
-                                                            <select class="selectpicker form-control cliente-0 cliente @error('clientes.0.cliente') is-invalid @enderror" id="cliente-0" name="clientes[0][cliente]" data-live-search="true" data-id="0">
-                                                                <option value="" selected disabled>Seleccionar...</option>
-                                                                @foreach ($clientes as $cliente)
-                                                                    <option value="{{$cliente->id}}" @if (old('clientes.0.cliente') == strval($cliente->id)) selected @endif data-subtext="{{$cliente->numero_documento}}">{{$cliente->nombre}}</option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('clientes.0.cliente')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{$message}}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="col-lg-2 mb-2 me-3 text-center" id="div-razon_social-0">
-                                                            <label class="form-label label-razon_social">Razón Social</label>
-                                                            <input type="text" class="form-control text-center razon_social-0 razon_social @error('clientes.0.razon_social') is-invalid @enderror" id="clientes[0][razon_social]" name="clientes[0][razon_social]" value="{{old('clientes.0.razon_social')}}" data-id="0" readonly>
-                                                            @error('clientes.0.razon_social')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{$message}}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="col-lg-2 mb-2 me-3 text-center" id="div-numero_documento-0">
-                                                            <label class="form-label label-numero_documento">N° de Documento</label>
-                                                            <input type="text" class="form-control text-center numero_documento-0 numero_documento @error('clientes.0.numero_documento') is-invalid @enderror" id="clientes[0][numero_documento]" name="clientes[0][numero_documento]" value="{{old('clientes.0.numero_documento')}}" data-id="0" readonly>
-                                                            @error('clientes.0.numero_documento')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{$message}}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="col-lg-1 mb-2 me-3 text-center" id="div-es_principal-0">
-                                                            <div class="div-label-es_principal-0">
-                                                                <label class="form-label label-es_principal">Es Principal ?</label>
-                                                            </div>
-                                                            <div class="btn-group @error('clientes.0.es_principal') is-invalid @enderror" role="group">
-                                                                <input type="radio" class="btn-check es_principal1 es_princpial1-0" id="clientes[0][es_princpial1]" name="clientes[0][es_principal]" value="false" @if (old('clientes.0.es_principal') == 'false') checked @endif data-id="0">
-                                                                <label class="btn btn-outline-danger" for="clientes[0][es_princpial1]">No</label>
-                                                                <input type="radio" class="btn-check es_principal2 es_princpial2-0" id="clientes[0][es_princpial2]" name="clientes[0][es_principal]" value="true" @if (old('clientes.0.es_principal') == 'true') checked @endif data-id="0">
-                                                                <label class="btn btn-outline-success" for="clientes[0][es_princpial2]">Sí</label>
-                                                            </div>
-                                                            <input type="hidden" class="es_principal-0" value="{{old('clientes.0.es_principal')}}">
-                                                            @error('clientes.0.es_principal')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{$message}}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="col-lg-1 col-sm-2 text-center">
-                                                            <label class="form-label label-acciones">Acciones</label>
-                                                            <div class="align-middle" id="acciones-0">
-                                                                <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-0" data-id="0"><i class="ri-add-fill"></i></button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="cliente-fila">
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endcan
                                     {{-- /Tab panes --}}
                                 </div>
                             </div>
@@ -532,6 +464,5 @@
         <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
         @include('alumnos.scripts.create-scripts')
         @include('alumnos.scripts.carrera-ingreso-scripts')
-        @include('alumnos.scripts.create-clientes-scripts')
     @endsection
 @endcan

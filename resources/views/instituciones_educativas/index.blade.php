@@ -1,5 +1,5 @@
 @can('ver_instituciones_educativas')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Instituciones Educativas @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">

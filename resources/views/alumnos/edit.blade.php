@@ -492,87 +492,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @can('editar_clientes_alumnos')
-                                        <div class="tab-content">
-                                            <div class="tab-pane" id="tablistFacturacion" role="tabpanel">
-                                                @foreach ($alumno->alumnoClientes as $key => $cliente)
-                                                    <div class="mb-2 fila" id="fila-{{$key}}">
-                                                        <div class="row d-flex flex-wrap justify-content-center">
-                                                            <div class="col-lg-2 mb-2 text-center" id="div-cliente-{{$key}}">
-                                                                @if ($key == 0) <label class="form-label label-cliente">Cliente</label> @endif
-                                                                <select class="selectpicker form-control cliente-{{$key}} cliente @error('clientes.'. $key . '.cliente') is-invalid @enderror" id="cliente-{{$key}}" name="clientes[{{$key}}][cliente]" data-live-search="true" data-id="{{$key}}">
-                                                                    <option value="" selected disabled>Seleccionar...</option>
-                                                                    @foreach ($clientes as $cl)
-                                                                        <option value="{{$cl->id}}" @if (old('clientes.{{$key}}.cliente') == strval($cl->id) || $cliente->cliente_id == strval($cl->id)) selected @endif data-subtext="{{$cl->numero_documento}}">{{$cl->nombre}}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                                @error('clientes.'. $key . '.cliente')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{$message}}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                            <div class="col-lg-2 mb-2 me-3 text-center" id="div-razon_social-{{$key}}">
-                                                                @if ($key == 0) <label class="form-label label-razon_social">Razón Social</label> @endif
-                                                                <input type="text" class="form-control text-center razon_social-{{$key}} razon_social @error('clientes.'. $key . '.razon_social') is-invalid @enderror" id="clientes[{{$key}}][razon_social]" name="clientes[{{$key}}][razon_social]" value="{{old('clientes.' . $key . '.razon_social', $cliente->cliente->razon_social)}}" data-id="{{$key}}" readonly>
-                                                                @error('clientes.'. $key . '.razon_social')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{$message}}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                            <div class="col-lg-2 mb-2 me-3 text-center" id="div-numero_documento-{{$key}}">
-                                                                @if ($key == 0) <label class="form-label label-numero_documento">N° de Documento</label> @endif
-                                                                <input type="text" class="form-control text-center numero_documento-{{$key}} numero_documento @error('clientes.'. $key . '.numero_documento') is-invalid @enderror" id="clientes[{{$key}}][numero_documento]" name="clientes[{{$key}}][numero_documento]" value="{{old('clientes.' . $key . '.numero_documento', $cliente->cliente->numero_documento)}}" data-id="{{$key}}" readonly>
-                                                                @error('clientes.'. $key . '.numero_documento')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{$message}}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                            <div class="col-lg-1 mb-2 me-3 text-center" id="div-es_principal-{{$key}}">
-                                                                @if ($key == 0)
-                                                                    <div class="div-label-es_principal-{{$key}}">
-                                                                        <label class="form-label label-es_principal">Es Principal ?</label>
-                                                                    </div>
-                                                                @endif
-                                                                <div class="btn-group @error('clientes.'. $key . '.es_principal') is-invalid @enderror" role="group">
-                                                                    <input type="radio" class="btn-check es_principal1 es_principal1-{{$key}}" id="clientes[{{$key}}][es_principal1]" name="clientes[{{$key}}][es_principal]" value="false" @if (old('clientes.' . $key . '.es_principal') == 'false' || $cliente->es_principal == false) checked @endif data-id="{{$key}}">
-                                                                    <label class="btn btn-outline-danger" for="clientes[{{$key}}][es_principal1]">No</label>
-                                                                    <input type="radio" class="btn-check es_principal2 es_principal2-{{$key}}" id="clientes[{{$key}}][es_principal2]" name="clientes[{{$key}}][es_principal]" value="true" @if (old('clientes.' . $key . '.es_principal') == 'true' || $cliente->es_principal == true) checked @endif data-id="{{$key}}">
-                                                                    <label class="btn btn-outline-success" for="clientes[{{$key}}][es_principal2]">Sí</label>
-                                                                </div>
-                                                                <input type="hidden" class="es_principal-{{$key}}" @if ($errors->any()) value="{{old('clientes.' . $key . '.es_principal')}}" @elseif ($cliente->es_principal == false) value="false" @elseif ($cliente->es_principal == true) value="true" @endif>
-                                                                @error('clientes.'. $key . '.es_principal')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{$message}}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                            <div class="col-lg-1 col-sm-2 text-center">
-                                                                @if ($key == 0) <label class="form-label label-acciones">Acciones</label> @endif
-                                                                <div class="align-middle" id="acciones-{{$key}}">
-                                                                    @if ($key == 0 && !$loop->last)
-                                                                        <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button> {{-- primero y no ultimo --}}
-                                                                    @elseif ($key > 0 && !$loop->last)
-                                                                        <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button>  {{-- no primero y no ultimo --}}
-                                                                    @elseif ($key > 0 && $loop->last)
-                                                                        <button type="button" class="btn btn-icon btn-danger btn-erase" id="btn-erase-{{$key}}" data-id="{{$key}}"><i class="ri-subtract-fill"></i></button> {{-- no primero y ultimo --}}
-                                                                        <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-{{$key}}" data-id="{{$key}}"><i class="ri-add-fill"></i></button>
-                                                                    @elseif ($key == 0 && $loop->last)
-                                                                        <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-{{$key}}" data-id="{{$key}}"><i class="ri-add-fill"></i></button> {{-- primero y ultimo --}}
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                                <div id="cliente-fila">
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endcan
                                     {{-- /Tab panes --}}
                                 </div>
                             </div>
@@ -596,6 +515,5 @@
         <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
         @include('alumnos.scripts.edit-scripts')
         @include('alumnos.scripts.carrera-ingreso-scripts')
-        @include('alumnos.scripts.edit-clientes-scripts')
     @endsection
 @endcan

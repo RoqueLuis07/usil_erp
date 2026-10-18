@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master-academic')
 @section('title') Mi Perfil @endsection
 @section('content')
     @section('css')

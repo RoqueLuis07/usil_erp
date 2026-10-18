@@ -271,26 +271,3 @@
     @endcan
 <!-- /destroyModal -->
 
-<!-- showCorrelatividadesModal -->
-    @can('ver_correlatividades_materias')
-        <div class="modal fade flip" id="showCorrelatividadesModal" tabindex="-1" aria-labelledby="showCorrelatividadesModal" role="dialog">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="modal-header bg-light p-3">
-                            <h5 class="modal-title" id="title-materia"></h5>
-                        </div>
-                        <div class="row" id="body">
-
-                        </div>
-                        <div class="row">
-                            <div class="hstack gap-2 justify-content-center">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endcan
-<!-- /showCorrelatividadesModal -->

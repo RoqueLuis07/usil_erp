@@ -155,7 +155,7 @@
                                                     @can('eliminar_docentes')
                                                         <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#destroyModal-{{$docente->id}}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar"><i class="ri-delete-bin-fill"></i></button>
                                                     @endcan
-                                                    @if (Auth::user()->can('ver_legajos_docentes') || Auth::user()->can('ver_reportes_horas_docentes'))
+                                                    @if (Auth::user()->can('ver_legajos_docentes'))
                                                         <div class="btn-group dropdown" role="group">
                                                             <button id="dropdown-mas" type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <i class="ri-add-line align-bottom mb-0"></i> Más
@@ -164,9 +164,6 @@
                                                                 @can('ver_legajos_docentes')
                                                                     <li><a class="dropdown-item dropdown-item-mas" href="{{route('docentes.ver_legajo', $docente->id)}}">Legajo</a></li>
                                                                 @endcan
-                                                                {{-- @can('ver_reportes_horas_docentes') --}}
-                                                                    <li><button class="dropdown-item dropdown-item-mas" data-bs-toggle="modal" data-bs-target="#reporteHorasModal-{{$docente->id}}">Reporte Horas GA</button></li>
-                                                                {{-- @endcan --}}
                                                             </ul>
                                                         </div>
                                                     @endif

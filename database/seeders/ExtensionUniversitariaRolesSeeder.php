@@ -55,11 +55,9 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
             ['state' => 'AC']
         );
         $alumnoRole->syncPermissions([
-            'ver_dashboard_alumnos_pantalla',
             'ver_extensiones_alumnos_pantalla',
             'ver_catalogo_extensiones_alumnos_pantalla',
             'postular_extensiones_alumnos_pantalla',
-            'ver_noticias_avisos_alumnos_pantalla',
         ]);
 
         // Encargado Docente: el docente que diseña y es responsable de un
@@ -71,7 +69,6 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
             ['state' => 'AC']
         );
         $docenteRole->syncPermissions([
-            'ver_dashboard_docentes_pantalla',
             'ver_extensiones_docentes_pantalla',
             'crear_extensiones_docentes_pantalla',
             'crear_extensiones_universitarias',
@@ -79,7 +76,6 @@ class ExtensionUniversitariaRolesSeeder extends Seeder
             'cargar_informes_extensiones_docentes_pantalla',
             'cambiar_informes_extensiones_docentes_pantalla',
             'cambiar_proyectos_extensiones_docentes_pantalla',
-            'ver_noticias_avisos_docentes_pantalla',
         ]);
 
         // Administrador de Extensión: coordinación central — gestiona el

@@ -1,5 +1,5 @@
 @can('ver_barrios')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Barrios @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">

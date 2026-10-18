@@ -116,36 +116,8 @@ class Alumno extends Model implements Auditable
         return $this->belongsTo(User::class);
     }
 
-    public function Matriculaciones(){
-        return $this->hasMany(Matriculacion::class, 'alumno_id');
-    }
-
-    public function AlumnoPuntajes(){
-        return $this->hasMany(AlumnoPuntaje::class, 'alumno_id');
-    }
-
-    public function AlumnoAsistencias(){
-        return $this->hasMany(AlumnoAsistencia::class, 'alumno_id');
-    }
-
-    public function AlumnoNotas(){
-        return $this->hasMany(AlumnoNota::class, 'alumno_id');
-    }
-
-    public function AlumnoClientes(){
-        return $this->hasMany(AlumnoCliente::class, 'alumno_id');
-    }
-
-    public function ActaEvaluacionAlumno(){
-        return $this->hasMany(ActaEvaluacionAlumno::class, 'alumno_id');
-    }
-
     public function extensionesDetalles(){
         return $this->hasMany(ExtensionUniversitariaDetalle::class, 'alumno_id');
-    }
-
-    public function Solicitudes(){
-        return $this->hasMany(Solicitud::class);
     }
 
 }

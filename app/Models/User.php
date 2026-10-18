@@ -66,7 +66,4 @@ class User extends Authenticatable implements Auditable
         return $this->belongsTo(Role::class, 'role_id');
     }
 
-    public function UsuariosCajas(){
-        return $this->hasMany(UsuarioCaja::class, 'usuario_id');
-    }
 }

@@ -17,6 +17,6 @@ class AlumnoExtension extends Model implements Auditable
     }
 
     public function TipoExtension(){
-        return $this->belongsTo(TipoExtension::class);
+        return $this->belongsTo(TipoExtensionUniversitaria::class, 'tipo_extension_id');
     }
 }

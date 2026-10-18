@@ -2,40 +2,31 @@
 
 namespace App\Traits;
 
-use App\Models\Matriculacion;
+use App\Models\Alumno;
+use App\Models\Semestre;
 
 trait ResuelveCarreraSemestreAlumno
 {
     /**
-     * Resuelve la carrera/semestre del alumno para el snapshot en
-     * extensiones_universitarias_detalles, usando la matriculación vigente
-     * a la fecha de referencia (fecha_inicio de la actividad) y, si no
-     * existe ninguna que coincida, la matriculación más reciente del alumno.
-     * Un alumno puede tener varias matriculaciones en el tiempo, y ni la
-     * actividad de extensión ni el alumno guardan carrera/semestre directo.
+     * Resuelve la carrera y el semestre (período) del alumno para el snapshot guardado en
+     * extensiones_universitarias_detalles: la carrera es la que tiene cargada el alumno y el
+     * período es el semestre cuyas fechas contienen la fecha de referencia (fecha de inicio
+     * de la actividad), o el más reciente que ya empezó si ninguno la contiene.
      */
     private function resolverCarreraSemestreAlumno($alumnoId, $fechaReferencia)
     {
-        $matriculacion = Matriculacion::where('alumno_id', $alumnoId)
-            ->whereHas('Semestre', function ($query) use ($fechaReferencia) {
-                $query->where('fecha_inicio', '<=', $fechaReferencia)
-                    ->where('fecha_fin', '>=', $fechaReferencia);
-            })
+        $semestre = Semestre::where('fecha_inicio', '<=', $fechaReferencia)
+            ->where('fecha_fin', '>=', $fechaReferencia)
+            ->orderByDesc('id')
             ->first();
 
-        if (!$matriculacion) {
-            $matriculacion = Matriculacion::where('alumno_id', $alumnoId)
-                ->orderByDesc('fecha')
-                ->first();
+        if (!$semestre) {
+            $semestre = Semestre::where('fecha_inicio', '<=', $fechaReferencia)->orderByDesc('fecha_inicio')->first();
         }
 
-        // Sin matriculaciones (alumno cargado masivamente, por ejemplo) se usa
-        // la carrera guardada en el propio alumno.
-        $carreraPropia = $matriculacion ? null : optional(\App\Models\Alumno::find($alumnoId))->carrera_id;
-
         return [
-            'carrera_id' => $matriculacion->carrera_id ?? $carreraPropia,
-            'semestre_id' => $matriculacion->semestre_id ?? null,
+            'carrera_id' => optional(Alumno::find($alumnoId))->carrera_id,
+            'semestre_id' => optional($semestre)->id,
         ];
     }
 }

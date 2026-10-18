@@ -32,28 +32,11 @@ use App\Models\AlumnoFamiliar;
 use App\Models\AlumnoDatoLaboral;
 use App\Models\TipoLegajo;
 use App\Models\AlumnoLegajo;
-use App\Models\AlumnoAsistencia;
-use App\Models\ClaseMateria;
-use App\Models\Malla;
-use App\Models\MallaDetalle;
-use App\Models\Semestre;
 use App\Models\Carrera;
-use App\Models\SemestreMalla;
-use App\Models\ActaEvaluacion;
-use App\Models\ActaEvaluacionAlumno;
-use App\Models\Materia;
-use App\Models\Programa;
-use App\Models\Matriculacion;
-use App\Models\Inscripcion;
-use App\Models\AlumnoNota;
-use App\Models\Cliente;
-use App\Models\AlumnoCliente;
 use App\Models\ExtensionUniversitariaDetalle;
 use App\Models\RequerimientoExtensionUniversitaria;
 use App\Models\TipoExtensionUniversitaria;
-use App\Models\Empresa;
 use App\Support\ResumenExtensionAlumno;
-
 
 class AlumnoController extends Controller
 {
@@ -82,21 +65,13 @@ class AlumnoController extends Controller
 			$buscar = Str::upper($request->buscar);
             $filtro_ingreso = $request->filtro_ingreso;
             $filtro_edad = $request->filtro_edad;
-            $filtro_programa = $request->filtro_programa;
-            $filtro_periodo = $request->filtro_periodo;
+            $filtro_programa = $request->filtro_programa; // id de la carrera
             $filtro_correo = $request->filtro_correo;
 
-            $query = Alumno::with('matriculaciones');
+            $query = Alumno::with('Carrera');
 
             if (!(blank($filtro_ingreso))) {
-                $query->whereHas('matriculaciones', function($query) use ($filtro_ingreso) {
-                    $query->where('semestre_id', $filtro_ingreso)
-                        ->whereIn('id', function($query) {
-                            $query->selectRaw('min(id)')
-                                    ->from('matriculaciones')
-                                    ->groupBy('alumno_id');
-                        });
-                });
+                $query->where('anho_ingreso', $filtro_ingreso);
             }
 
             if (!(blank($filtro_edad))) {
@@ -134,18 +109,9 @@ class AlumnoController extends Controller
             }
 
             if (!(blank($filtro_programa))) {
-                $query->whereHas('matriculaciones', function($query) use ($filtro_programa) {
-                    $query->where('programa_id', $filtro_programa)
-                            ->where('estado', 'AC');
-                });
+                $query->where('carrera_id', $filtro_programa);
             }
 
-            if (!(blank($filtro_periodo))) {
-                $query->whereHas('matriculaciones', function($query) use ($filtro_periodo) {
-                    $query->where('semestre_id', $filtro_periodo)
-                        ->where('estado', 'AC');
-                });
-            }
 
             if (!(blank($filtro_correo))) {
                 if ($filtro_correo == 'SI') {
@@ -168,31 +134,21 @@ class AlumnoController extends Controller
             $alumnos = $query->orderBy('id', 'desc')->paginate(50);
 
             foreach ($alumnos as $alumno) {
-                $primera_matriculacion = Matriculacion::where('alumno_id', $alumno->id)->orderBy('id', 'asc')->first();
-                if ($primera_matriculacion) {
-					$alumno->ingreso = $primera_matriculacion->semestre->nombre;
-                } else {
-                    $alumno->ingreso = $alumno->ingreso_texto;
-                }
-
-                $ultima_matriculacion = Matriculacion::where('alumno_id', $alumno->id)->where('estado', 'AC')->orderBy('id', 'desc')->first();
-                if ($ultima_matriculacion) {
-                    $alumno->periodo = $ultima_matriculacion->semestre->nombre;
-                    $alumno->programa = $ultima_matriculacion->programa->nombre;
-                } else {
-                    // Sin matriculación: se muestran los datos académicos cargados en el propio alumno.
-                    $alumno->periodo = $alumno->semestre_actual ? $alumno->semestre_actual . ".º semestre" : null;
-                    $alumno->programa = optional($alumno->Carrera)->nombre_fantasia;
-                }
+                $alumno->ingreso = $alumno->ingreso_texto;
+                $alumno->periodo = $alumno->semestre_actual ? $alumno->semestre_actual . ".º semestre" : null;
+                $alumno->programa = optional($alumno->Carrera)->nombre_fantasia;
             }
 
             // Horas de extensión acumuladas y cumplimiento del requisito, solo de la página actual.
             $resumenes_extension = ResumenExtensionAlumno::para($alumnos->getCollection());
 
-            $semestres = Semestre::orderBy('id', 'desc')->get();
-            $programas = Programa::whereIn('id', [1, 2, 3, 8])->where('estado', 'AC')->get();
+            // Filtros: años de ingreso cargados y carreras activas (se pasan como {id, nombre}).
+            $semestres = Alumno::whereNotNull('anho_ingreso')->distinct()->orderByDesc('anho_ingreso')->pluck('anho_ingreso')
+                ->map(fn ($anho) => (object) ['id' => $anho, 'nombre' => $anho]);
+            $programas = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia')->get()
+                ->map(fn ($carrera) => (object) ['id' => $carrera->id, 'nombre' => $carrera->nombre_fantasia]);
 
-            return view('alumnos/index')->with(compact('alumnos', 'resumenes_extension', 'semestres', 'programas', 'buscar', 'filtro_ingreso', 'filtro_edad', 'filtro_programa', 'filtro_periodo', 'filtro_correo'));
+            return view('alumnos/index')->with(compact('alumnos', 'resumenes_extension', 'semestres', 'programas', 'buscar', 'filtro_ingreso', 'filtro_edad', 'filtro_programa', 'filtro_correo'));
         } catch (\Exception $e) {
             return redirect()->route('alumnos.index')->with('error-message', $e->getMessage());
         }
@@ -203,9 +159,7 @@ class AlumnoController extends Controller
         $this->authorize('ver_alumnos');
 
         try {
-            $alumno = Alumno::with(['alumnoClientes' => function ($query) {
-                $query->orderBy('es_principal', 'desc');
-            }])->findOrFail($id);
+            $alumno = Alumno::findOrFail($id);
             $alumno->load('nacionalidades');
             $nombre_alumno = $alumno->primer_nombre;
             if ($alumno->segundo_nombre) {
@@ -280,9 +234,8 @@ class AlumnoController extends Controller
             $barrios = Barrio::orderBy('nombre', 'asc')->get();
             $relaciones_familiares = RelacionFamiliar::where('estado', 'AC')->get();
             $usuarios = User::where('state', 'AC')->get();
-            $clientes = Cliente::where('estado', 'AC')->get();
             $carreras = Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
-            return view('alumnos/create')->with(compact('carreras', 'sexos', 'nacionalidades', 'alumnos_formaciones', 'instituciones_educativas', 'departamentos_paraguay', 'ciudades', 'barrios', 'relaciones_familiares', 'usuarios', 'clientes'));
+            return view('alumnos/create')->with(compact('carreras', 'sexos', 'nacionalidades', 'alumnos_formaciones', 'instituciones_educativas', 'departamentos_paraguay', 'ciudades', 'barrios', 'relaciones_familiares', 'usuarios'));
         } catch (\Exception $e) {
             return redirect()->route('alumnos.index')->with('error-message', $e->getMessage());
         }
@@ -331,11 +284,7 @@ class AlumnoController extends Controller
             'cargo' => ['nullable', 'required_with:empresa'],
             'email_laboral' => ['nullable', 'email', 'required_with:empresa'],
             'telefono_laboral' => ['nullable', 'required_with:empresa'],
-            'celular_laboral' => 'nullable',
-
-            'clientes' => ['nullable', 'array'],
-            'clientes.*.cliente' => ['nullable', 'numeric'],
-            'clientes.*.es_principal' => 'nullable'
+            'celular_laboral' => 'nullable'
         ]);
 
         DB::beginTransaction();
@@ -455,58 +404,6 @@ class AlumnoController extends Controller
                 $nombre_alumno = $nombre_alumno . ' ' . $alumno->segundo_apellido;
             }
 
-            if (!Cliente::where('numero_documento', $alumno->numero_documento)->exists()) {
-                $cliente = new Cliente();
-                $cliente->nombre = $nombre_alumno;
-                $cliente->razon_social = $nombre_alumno;
-                $cliente->numero_documento = $alumno->numero_documento;
-                $cliente->sexo_id = $alumno->sexo_id;
-                $cliente->fecha_nacimiento = $alumno->fecha_nacimiento;
-                $cliente->email = $alumno->email_personal;
-                $cliente->observaciones = 'CARGADO AUTOMATICAMENTE DESDE ALUMNOS';
-                $cliente->cargado_por_id = Auth::id();
-                $cliente->departamento_id = $alumno->departamento_id;
-                $cliente->ciudad_id = $alumno->ciudad_id;
-                $cliente->barrio_id = $alumno->barrio_id;
-                $cliente->celular = $alumno->celular;
-                $cliente->telefono = $alumno->telefono;
-                $cliente->save();
-            } else {
-                $cliente = Cliente::where('numero_documento', $alumno->numero_documento)->first();
-            }
-
-            $nulo = true;
-            $clientes_request = $request->clientes ?? [];
-
-            foreach ($clientes_request as $array) {
-                if (!is_null($array)) {
-                    $nulo = false;
-                    break;
-                }
-            }
-
-            if (!$nulo) {
-                $alumno_cliente = new AlumnoCliente ();
-                $alumno_cliente->alumno_id = $alumno->id;
-                $alumno_cliente->cliente_id = $cliente->id;
-                $alumno_cliente->es_principal = true;
-                $alumno_cliente->save();
-            } else {
-                $alumno_cliente = new AlumnoCliente ();
-                $alumno_cliente->alumno_id = $alumno->id;
-                $alumno_cliente->cliente_id = $cliente->id;
-                $alumno_cliente->es_principal = false;
-                $alumno_cliente->save();
-
-                foreach ($clientes_request as $array) {
-                    $alumno_cliente = new AlumnoCliente();
-                    $alumno_cliente->alumno_id = $alumno->id;
-                    $alumno_cliente->cliente_id = $array['cliente'];
-                    $alumno_cliente->es_principal = $array['es_principal'];
-                    $alumno_cliente->save();
-                }
-            }
-
             //crear directorio para guardar su legajo
             $directorio = 'public/legajos/alumnos/';
             $nombre_directorio_alumno = $alumno->id . '_' . Str::lower($alumno->primer_nombre) . '_' . Str::lower($alumno->primer_apellido);
@@ -528,9 +425,7 @@ class AlumnoController extends Controller
         $this->authorize('editar_alumnos');
 
         try {
-            $alumno = Alumno::with(['alumnoClientes' => function ($query) {
-                $query->orderBy('es_principal', 'desc');
-            }])->findOrFail($id);
+            $alumno = Alumno::findOrFail($id);
             $alumno->load('nacionalidades');
             $sexos = Sexo::where('estado', 'AC')->get();
             $nacionalidades = Nacionalidad::orderBy('nombre', 'asc')->get();
@@ -541,9 +436,8 @@ class AlumnoController extends Controller
             $barrios = Barrio::orderBy('nombre', 'asc')->get();
             $relaciones_familiares = RelacionFamiliar::where('estado', 'AC')->get();
             $usuarios = User::where('state', 'AC')->get();
-            $clientes = Cliente::where('estado', 'AC')->get();
             $carreras = Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
-            return view('alumnos/edit')->with(compact('carreras', 'alumno', 'sexos', 'nacionalidades', 'alumnos_formaciones', 'instituciones_educativas', 'departamentos_paraguay', 'ciudades', 'barrios', 'relaciones_familiares', 'usuarios', 'clientes'));
+            return view('alumnos/edit')->with(compact('carreras', 'alumno', 'sexos', 'nacionalidades', 'alumnos_formaciones', 'instituciones_educativas', 'departamentos_paraguay', 'ciudades', 'barrios', 'relaciones_familiares', 'usuarios'));
         } catch (\Exception $e) {
             return redirect()->route('alumnos.index')->with('error-message', $e->getMessage());
         }
@@ -600,8 +494,6 @@ class AlumnoController extends Controller
 
         try {
             $alumno = Alumno::findOrFail($id);
-
-			$cliente = Cliente::where('numero_documento', $alumno->numero_documento)->first();
 
             $alumno->primer_nombre = removeAccents(Str::upper(trim($request->nombres_alumno)));
             $alumno->segundo_nombre = null;
@@ -689,49 +581,6 @@ class AlumnoController extends Controller
             $alumno->actualizado_por_id = Auth::id();
             $alumno->save();
 
-			if ($cliente && $cliente->numero_documento != $alumno->numero_documento) {
-				$cliente->numero_documento = $alumno->numero_documento;
-				$cliente->save();
-			}
-
-
-            $encontrado = false;
-            if ($request->clientes) {
-                $ultimo_item = array_key_last($request->clientes);
-                AlumnoCliente::where('alumno_id', $alumno->id)->delete();
-                foreach ($request->clientes as $key => $array) {
-                    $alumno_cliente = new AlumnoCliente();
-                    $alumno_cliente->alumno_id = $alumno->id;
-                    $alumno_cliente->cliente_id = $array['cliente'];
-                    $alumno_cliente->es_principal = $array['es_principal'];
-                    $alumno_cliente->save();
-
-					if ($cliente) {
-						if ($array['cliente'] == $cliente->id) {
-							$encontrado = true;
-						}
-
-						if (!$encontrado && $key == $ultimo_item) {
-							$alumno_cliente = new AlumnoCliente ();
-							$alumno_cliente->alumno_id = $alumno->id;
-							$alumno_cliente->cliente_id = $cliente->id;
-							$clientes = AlumnoCliente::where('alumno_id', $alumno->id)->get();
-							$principal = false;
-							foreach ($clientes as $cl) {
-								if ($cl->es_principal == true) {
-									$principal = true;
-								}
-							}
-							if ($principal) {
-								$alumno_cliente->es_principal = false;
-							} else {
-								$alumno_cliente->es_principal = true;
-							}
-							$alumno_cliente->save();
-						}
-					}
-                }
-            }
 
             DB::commit();
 
@@ -795,7 +644,6 @@ class AlumnoController extends Controller
         try {
             $alumno = Alumno::findOrFail($id);
 
-            // $alumno_clientes = AlumnoCliente::where('alumno_id', $alumno->id)->delete();
             $alumno_dato_laboral = AlumnoDatoLaboral::where('id', $alumno->dato_laboral_id)->delete();
             $alumno_familiar1 = AlumnoDatoLaboral::where('id', $alumno->familiar_uno)->delete();
             $alumno_familiar2 = AlumnoDatoLaboral::where('id', $alumno->familiar_dos)->delete();
@@ -916,68 +764,6 @@ class AlumnoController extends Controller
         }
     }
 
-    public function show_notas($id)
-    {
-        $this->authorize('ver_notas_alumnos');
-
-        try {
-            $alumno = Alumno::with('alumnoNotas')->findOrFail($id);
-            foreach ($alumno->alumnoNotas as $nota) {
-                $detalle = Malla::with(['mallaDetalles' => function ($query) use ($nota) {
-                    $query->where('materia_id', $nota->materia_id);
-                }])->where('carrera_id', $nota->carrera_id)
-                    ->first();
-
-                    $malla_detalle = $detalle->mallaDetalles->first();
-
-                    if ($malla_detalle) {
-                        $nota->semestre_materia = $detalle->mallaDetalles->first()->semestre;
-                    } else {
-                        $nota->semestre_materia = null;
-                    }
-            }
-            $alumno->alumnoNotas = $alumno->alumnoNotas->sortBy('semestre_materia');
-
-            return view('alumnos/show_notas')->with(compact('alumno'));
-        } catch (\Exception $e) {
-            return redirect()->route('alumnos.index')->with('error-message', $e->getMessage());
-        }
-    }
-
-    public function show_asistencias($id)
-    {
-        $this->authorize('ver_asistencias_alumnos');
-
-        try {
-            $alumno = Alumno::findOrFail($id);
-            $asistencias = AlumnoAsistencia::where('alumno_id', $alumno->id)->distinct('materia_id', 'semestre_id')->orderBy('semestre_id', 'desc')->get();
-            foreach ($asistencias as $asistencia) {
-                $asistencia->horas_desarrollo = ClaseMateria::where('materia_id', $asistencia->materia_id)->where('semestre_id', $asistencia->semestre_id)->sum('horas_desarrollo');
-                $asistencia->total_clases = ClaseMateria::where('materia_id', $asistencia->materia_id)->where('semestre_id', $asistencia->semestre_id)->count();
-                $asistencias_all = AlumnoAsistencia::where('alumno_id', $alumno->id)->get();
-                foreach ($asistencias_all as $a) {
-                    if ($asistencia->materia_id == $a->materia_id && $asistencia->semestre_id == $a->semestre_id && ($a->estado == 'PR' || $a->estado == 'AJ')) {
-                        $asistencia->horas_asistidas = $asistencia->horas_asistidas + $a->horas_desarrollo;
-                        $asistencia->total_asistido = $asistencia->total_asistido + 1;
-                        $asistencia->porcentaje = number_format(($asistencia->horas_asistidas / $asistencia->horas_desarrollo) * 100, 0, ',', '.');
-                    }
-                }
-            }
-
-            $materias = AlumnoAsistencia::select('materias.nombre_fantasia')
-                            ->join('materias', 'alumnos_asistencias.materia_id', '=', 'materias.id')
-                            ->where('alumno_id', $alumno->id)
-                            ->distinct('materia_id')
-                            ->get();
-
-            $semestres = Semestre::orderBy('id', 'desc')->get();
-
-            return view('alumnos/show_asistencias')->with(compact('alumno', 'asistencias', 'materias', 'semestres'));
-        } catch (\Exception $e) {
-            return redirect()->route('alumnos.index')->with('error-message', $e->getMessage());
-        }
-    }
-
     public function show_extensiones($id)
     {
         $this->authorize('ver_extensiones_alumnos');
@@ -1021,7 +807,6 @@ class AlumnoController extends Controller
             $actividades_requeridas = RequerimientoExtensionUniversitaria::first()->actividades_requeridas;
             $tipos_actividades = TipoExtensionUniversitaria::where('estado', 'AC')->get();
 
-            $empresa = Empresa::first(); //obtenemos los datos de la empresa para el header
             $fecha_hoy = Carbon::now(); //obtenemos la fecha de hoy para el footer
 
             foreach ($extensiones as $extension) {
@@ -1034,7 +819,7 @@ class AlumnoController extends Controller
             $horas_acreditadas = $resumen['horas_acreditadas'];
             $actividades_realizadas = $resumen['actividades_realizadas'];
 
-            $pdf = Pdf::loadView('alumnos/pdf_extensiones', compact('empresa', 'fecha_hoy', 'alumno', 'extensiones', 'horas_requeridas', 'horas_acreditadas', 'actividades_requeridas', 'tipos_actividades', 'resumen', 'actividades_realizadas'));
+            $pdf = Pdf::loadView('alumnos/pdf_extensiones', compact('fecha_hoy', 'alumno', 'extensiones', 'horas_requeridas', 'horas_acreditadas', 'actividades_requeridas', 'tipos_actividades', 'resumen', 'actividades_realizadas'));
             $pdf->setPaper('A4', 'landscape');
 
             return $pdf->stream('rpt_extensiones_universitaria_' . $alumno->numero_documento . '_' . Carbon::now()->format('dmY_His') . '.pdf');

@@ -1,5 +1,5 @@
 @can('crear_periodos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Agregar Semestre @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -57,88 +57,6 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-6 mb-3 text-center d-flex flex-wrap justify-content-end">
-                                    <div class="col-lg-3 me-3">
-                                        <label class="form-label" for="cantidad_mallas">Cant. de Carreras</label>
-                                        <input class="form-control text-center" type="text" id="cantidad_mallas" value="0" readonly>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12 mb-3">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title mb-0">Carreras del Semestre</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2 fila" id="fila-0">
-                                        <div class="row">
-                                            <div class="col-lg-3 col-sm-12 mb-2 text-center" id="div-malla-0">
-                                                <label class="form-label label-malla">Carrera <span class="text-danger">(*)</span></label>
-                                                <select class="selectpicker form-control malla-0 malla @error('detalles.0.malla') is-invalid @enderror" id="malla-0" name="detalles[0][malla]" data-live-search="true" data-live-search-normalize="true" data-id="0">
-                                                    <option value="" selected disabled>Seleccionar...</option>
-                                                    @foreach ($mallas as $malla)
-                                                        <option value="{{$malla->id}}" @if (old('detalles.0.malla') == strval($malla->id)) selected @endif data-subtext="{{$malla->carrera->programa->nombre}}">{{$malla->carrera->nombre_fantasia}}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error('detalles.0.malla')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{$message}}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                            <div class="col-lg-2 col-sm-12 mb-2 me-3 text-center" id="div-coordinador-0">
-                                                <label class="form-label label-coordinador">Coordinador <span class="text-danger">(*)</span></label>
-                                                <select class="selectpicker form-control coordinador-0 coordinador @error('detalles.0.coordinador') is-invalid @enderror" id="coordinador-0" name="detalles[0][coordinador]" data-live-search="true" data-live-search-normalize="true" data-id="0">
-                                                    <option value="" selected disabled>Seleccionar...</option>
-                                                    @foreach ($coordinadores as $coordinador)
-                                                        <option value="{{$coordinador->id}}" @if (old('detalles.0.coordinador') == strval($coordinador->id)) selected @endif>{{$coordinador->primer_nombre}} {{$coordinador->primer_apellido}}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error('detalles.0.coordinador')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{$message}}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                            <div class="col-lg-2 col-sm-12 mb-2 me-3 text-center" id="div-fecha_inicio_matriculacion-0">
-                                                <label class="form-label label-fecha_inicio_matriculacion">Inicio Matriculación <span class="text-danger">(*)</span></label>
-                                                <div class="form-icon right">
-                                                    <input type="text" class="flatpickr form-control form-control-icon fecha_inicio_matriculacion-0 fecha_inicio_matriculacion @error('detalles.0.fecha_inicio_matriculacion') is-invalid @enderror" id="detalles[0][fecha_inicio_matriculacion]" name="detalles[0][fecha_inicio_matriculacion]" value="{{old('detalles.0.fecha_inicio_matriculacion')}}" placeholder="Seleccionar...">
-                                                    <i class="ri-calendar-2-line" id="calendar-icon"></i>
-                                                    @error('detalles.0.fecha_inicio_matriculacion')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-2 col-sm-12 mb-2 me-3 text-center" id="div-fecha_fin_matriculacion-0">
-                                                <label class="form-label label-fecha_fin_matriculacion">Fin Matriculación <span class="text-danger">(*)</span></label>
-                                                <div class="form-icon right">
-                                                    <input type="text" class="flatpickr form-control form-control-icon fecha_fin_matriculacion-0 fecha_fin_matriculacion @error('detalles.0.fecha_fin_matriculacion') is-invalid @enderror" id="detalles[0][fecha_fin_matriculacion]" name="detalles[0][fecha_fin_matriculacion]" value="{{old('detalles.0.fecha_fin_matriculacion')}}" placeholder="Seleccionar...">
-                                                    <i class="ri-calendar-2-line" id="calendar-icon"></i>
-                                                    @error('detalles.0.fecha_fin_matriculacion')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-1 col-sm-2 text-center">
-                                                <label class="form-label label-acciones">Acciones</label>
-                                                <div class="align-middle" id="acciones-0">
-                                                    <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-0" data-id="0"><i class="ri-add-fill"></i></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="malla-fila">
-
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -159,6 +77,5 @@
         <script src="{{ URL::asset('js/flatpickr.min.js') }}"></script>
         <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
         @include('semestres.scripts.create-scripts')
-        @include('semestres.scripts.create-detalles-scripts')
     @endsection
 @endcan

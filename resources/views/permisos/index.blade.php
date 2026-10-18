@@ -1,5 +1,5 @@
 {{-- @can('ver permisos') --}}
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Permisos @endsection
     @section('css')
     @endsection
