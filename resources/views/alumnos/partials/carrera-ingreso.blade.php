@@ -44,5 +44,11 @@
         <label class="form-label" for="semestre_calculado">Semestre actual</label>
         <input type="text" class="form-control text-center fw-bold" id="semestre_calculado" value="{{ optional($alumno)->semestre_actual ? optional($alumno)->semestre_actual . '.º semestre' : '' }}" placeholder="Se calcula solo" readonly>
     </div>
+    <div class="col-lg-12 mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="anho_ingreso_estimado" name="anho_ingreso_estimado" value="1" @if (old('anho_ingreso_estimado', optional($alumno)->anho_ingreso_estimado)) checked @endif>
+            <label class="form-check-label" for="anho_ingreso_estimado">El año de ingreso es estimado (calculado por el semestre que cursaba): marcar hasta confirmarlo con coordinación</label>
+        </div>
+    </div>
 </div>
 <hr class="mt-0">

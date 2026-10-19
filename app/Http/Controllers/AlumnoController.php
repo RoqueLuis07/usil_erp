@@ -134,7 +134,7 @@ class AlumnoController extends Controller
             $alumnos = $query->orderBy('id', 'desc')->paginate(50);
 
             foreach ($alumnos as $alumno) {
-                $alumno->ingreso = $alumno->ingreso_texto;
+                $alumno->ingreso = $alumno->ingreso_texto ? $alumno->ingreso_texto . ($alumno->anho_ingreso_estimado ? ' (est.)' : '') : null;
                 $alumno->periodo = $alumno->semestre_actual ? $alumno->semestre_actual . ".º semestre" : null;
                 $alumno->programa = optional($alumno->Carrera)->nombre_fantasia;
             }
@@ -311,6 +311,7 @@ class AlumnoController extends Controller
             $alumno->carrera_id = $request->carrera ?: null;
             $alumno->anho_ingreso = $request->anho_ingreso ?: null;
             $alumno->semestre_ingreso = $request->semestre_ingreso ?: null;
+            $alumno->anho_ingreso_estimado = $request->boolean('anho_ingreso_estimado') && $alumno->anho_ingreso;
 
             $alumno->formacion_id = $request->formacion ?: null;
             $alumno->institucion_educativa_id = $request->institucion_educativa ?: null;
@@ -519,6 +520,7 @@ class AlumnoController extends Controller
             $alumno->carrera_id = $request->carrera ?: null;
             $alumno->anho_ingreso = $request->anho_ingreso ?: null;
             $alumno->semestre_ingreso = $request->semestre_ingreso ?: null;
+            $alumno->anho_ingreso_estimado = $request->boolean('anho_ingreso_estimado') && $alumno->anho_ingreso;
 
             $alumno->formacion_id = $request->formacion ?: null;
             $alumno->institucion_educativa_id = $request->institucion_educativa ?: null;

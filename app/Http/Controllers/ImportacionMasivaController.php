@@ -44,7 +44,7 @@ class ImportacionMasivaController extends Controller
     private const COLUMNAS_ALUMNO = [
         'documento', 'nombres', 'apellidos',
         'sexo', 'fecha_nacimiento', 'nacionalidad', 'telefono', 'celular', 'correo', 'direccion',
-        'departamento', 'ciudad', 'barrio', 'facultad', 'carrera', 'anho_ingreso', 'semestre_ingreso',
+        'departamento', 'ciudad', 'barrio', 'facultad', 'carrera', 'anho_ingreso', 'semestre_ingreso', 'ingreso_estimado',
         'crear_usuario',
     ];
 
@@ -355,6 +355,7 @@ class ImportacionMasivaController extends Controller
             $alumno->carrera_id = $carrera->id;
             $alumno->anho_ingreso = $anho;
             $alumno->semestre_ingreso = $semestreIngreso;
+            $alumno->anho_ingreso_estimado = $this->esSi($d['ingreso_estimado'] ?? '');
             $alumno->actualizado_por_id = Auth::id();
             $alumno->save();
             return 'actualizado';
@@ -365,6 +366,7 @@ class ImportacionMasivaController extends Controller
         $alumno->carrera_id = $carrera->id;
         $alumno->anho_ingreso = $anho;
         $alumno->semestre_ingreso = $semestreIngreso;
+        $alumno->anho_ingreso_estimado = $this->esSi($d['ingreso_estimado'] ?? '');
         $alumno->cargado_por_id = Auth::id();
         // crear_usuario = NO: el alumno queda cargado (puede participar y figurar en reportes) pero sin cuenta de acceso.
         if (($d['crear_usuario'] ?? '') === '' || $this->esSi($d['crear_usuario'])) {
