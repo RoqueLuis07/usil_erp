@@ -36,7 +36,7 @@ class RoleController extends Controller
         try {
             $rol = Role::findOrFail($id);
             $permisos = $rol->permissions->all();
-            $cant_usuarios = $rol->user->count();
+            $cant_usuarios = $rol->users->count();
             $cant_permisos = $rol->permissions->count();
 
             $p_alumnos = Permission::where('name', 'like', '%' . 'alumnos')->orderBy('id')->get();
@@ -177,7 +177,7 @@ class RoleController extends Controller
         try {
             $rol = Role::findOrFail($id);
             $permisos = $rol->permissions->all();
-            $cant_usuarios = $rol->user->count();
+            $cant_usuarios = $rol->users->count();
             $cant_permisos = $rol->permissions->count();
 
             $p_alumnos = Permission::where('name', 'like', '%' . 'alumnos')->orderBy('id')->get();

@@ -54,7 +54,7 @@
                                             <tr>
                                                 <td class="id">{{$rol->id}}</td>
                                                 <td class="name">{{$rol->name}}</td>
-                                                <td>{{$rol->user->count()}}</td>
+                                                <td>{{$rol->users->count()}}</td>
                                                 <td>{{$rol->permissions->count()}}</td>
                                                 <td class="state">
                                                     <span

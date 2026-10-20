@@ -185,7 +185,18 @@ class ParametrosExtensionController extends Controller
 
         $carrera = Carrera::findOrFail($id);
 
-        return $this->eliminar($carrera, 'La carrera ' . $carrera->nombre_fantasia . ' fue eliminada.', 'La carrera ' . $carrera->nombre_fantasia . ' tiene alumnos, actividades u otros datos: inactivala en vez de eliminarla.', 'carreras');
+        $uso = array_filter([
+            'alumnos' => DB::table('alumnos')->where('carrera_id', $id)->count(),
+            'participaciones en actividades' => DB::table('extensiones_universitarias_detalles')->where('carrera_id', $id)->count(),
+            'actividades que la habilitan' => DB::table('extension_universitaria_carreras')->where('carrera_id', $id)->count(),
+            'docentes' => DB::table('docentes_carreras')->where('carrera_id', $id)->count(),
+            'requisitos de extensión' => DB::table('requerimientos_extensiones_universitarias')->where('carrera_id', $id)->count(),
+        ]);
+        if ($uso) {
+            return redirect()->route('parametros_extension.index', ['pestana' => 'carreras'])->with('error-message', 'No se puede eliminar la carrera ' . $carrera->nombre_fantasia . ': se usa en ' . $this->describirUso($uso) . '. Inactivala en vez de eliminarla.');
+        }
+
+        return $this->eliminar($carrera, 'La carrera ' . $carrera->nombre_fantasia . ' fue eliminada.', 'La carrera ' . $carrera->nombre_fantasia . ' se usa en otros datos: inactivala en vez de eliminarla.', 'carreras');
     }
 
     // ------------------------------------------------------------------ materias
@@ -195,7 +206,7 @@ class ParametrosExtensionController extends Controller
         $this->authorize('gestionar_parametros_extensiones_universitarias');
 
         $datos = $this->validarMateria($request);
-        if (Materia::where('nombre_fantasia', $datos['nombre'])->exists()) {
+        if (Materia::whereRaw('LOWER(nombre_fantasia) = ?', [mb_strtolower($datos['nombre'])])->exists()) {
             return back()->withInput()->withErrors(['nombre' => 'Ya existe una materia con ese nombre.']);
         }
 
@@ -223,7 +234,7 @@ class ParametrosExtensionController extends Controller
         $this->authorize('gestionar_parametros_extensiones_universitarias');
 
         $datos = $this->validarMateria($request);
-        if (Materia::where('nombre_fantasia', $datos['nombre'])->where('id', '!=', $id)->exists()) {
+        if (Materia::whereRaw('LOWER(nombre_fantasia) = ?', [mb_strtolower($datos['nombre'])])->where('id', '!=', $id)->exists()) {
             return back()->withInput()->withErrors(['nombre' => 'Ya existe otra materia con ese nombre.']);
         }
 
@@ -264,7 +275,18 @@ class ParametrosExtensionController extends Controller
 
         $materia = Materia::findOrFail($id);
 
+        $actividades = DB::table('extensiones_universitarias')->where('materia_id', $id)->count();
+        if ($actividades) {
+            return redirect()->route('parametros_extension.index', ['pestana' => 'materias'])->with('error-message', 'No se puede eliminar la materia ' . $materia->nombre_fantasia . ': está usada en ' . $actividades . ' actividad(es). Inactivala en vez de eliminarla.');
+        }
+
         return $this->eliminar($materia, 'La materia ' . $materia->nombre_fantasia . ' fue eliminada.', 'La materia ' . $materia->nombre_fantasia . ' está usada en actividades: inactivala en vez de eliminarla.', 'materias');
+    }
+
+    /** "12 alumnos, 3 docentes" a partir de ['alumnos' => 12, 'docentes' => 3]. */
+    private function describirUso(array $uso): string
+    {
+        return implode(', ', array_map(fn ($etiqueta, $cantidad) => $cantidad . ' ' . $etiqueta, array_keys($uso), $uso));
     }
 
     private function validarMateria(Request $request): array

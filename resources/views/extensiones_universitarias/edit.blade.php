@@ -25,8 +25,8 @@
                             <div class="row">
                                 <div class="col-lg-9 mb-3">
                                     <label class="form-label" for="nombre_proyecto">Nombre del Proyecto <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('nombre_proyecto') is-invalid @enderror" id="nombre_proyecto" name="nombre_proyecto" list="nombres-proyectos" autocomplete="off" value="{{old('nombre_proyecto', $extension->
-                                    <datalist id="nombres-proyectos">@foreach ($nombres_proyectos as $nombre_proyecto_existente)<option value="{{ $nombre_proyecto_existente }}">@endforeach</datalist>nombre)}}">
+                                    <input type="text" class="form-control @error('nombre_proyecto') is-invalid @enderror" id="nombre_proyecto" name="nombre_proyecto" list="nombres-proyectos" autocomplete="off" value="{{old('nombre_proyecto', $extension->nombre)}}">
+                                    <datalist id="nombres-proyectos">@foreach ($nombres_proyectos as $nombre_proyecto_existente)<option value="{{ $nombre_proyecto_existente }}">@endforeach</datalist>
                                     @error('nombre_proyecto')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
