@@ -94,8 +94,8 @@ class ExtensionUniversitariaController extends Controller
             $tipos_extensiones = TipoExtensionUniversitaria::where('estado', 'AC')->orderBy('nombre', 'asc')->get();
             $docentes = Docente::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
             $alumnos = Alumno::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
-            $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
-            $materias = Materia::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            $carreras = Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            $materias = Materia::with('carreras:id')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
             $problematicas = ExtensionUniversitaria::PROBLEMATICAS;
             $nombres_proyectos = ExtensionUniversitaria::select('nombre')->distinct()->orderBy('nombre')->limit(500)->pluck('nombre');
             return view('extensiones_universitarias/create')->with(compact('tipos_extensiones', 'docentes', 'alumnos', 'carreras', 'materias', 'problematicas', 'nombres_proyectos'));
@@ -243,8 +243,8 @@ class ExtensionUniversitariaController extends Controller
             $extension = ExtensionUniversitaria::with(['extensionUniversitariaDetalles', 'carreras'])->findOrFail($id);
             $tipos_extensiones = TipoExtensionUniversitaria::where('estado', 'AC')->get();
             $docentes = Docente::where('estado', 'AC')->orderBy('primer_nombre', 'asc')->get();
-            $carreras = Carrera::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
-            $materias = Materia::where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            $carreras = Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            $materias = Materia::with('carreras:id')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
             $problematicas = ExtensionUniversitaria::PROBLEMATICAS;
             $nombres_proyectos = ExtensionUniversitaria::select('nombre')->distinct()->orderBy('nombre')->limit(500)->pluck('nombre');
             return view('extensiones_universitarias/edit')->with(compact('extension', 'tipos_extensiones', 'docentes', 'carreras', 'materias', 'problematicas', 'nombres_proyectos'));

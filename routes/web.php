@@ -183,7 +183,7 @@ Auth::routes(['register' => false, 'verify' => false]);
             Route::post('requerimientos_extensiones_universitarias/actualizar/{id}', 'RequerimientoExtensionUniversitariaController@update')->name('requerimientos_extensiones_universitarias.update');
             Route::delete('requerimientos_extensiones_universitarias/eliminar/{id}', 'RequerimientoExtensionUniversitariaController@destroy')->name('requerimientos_extensiones_universitarias.destroy');
 
-            //Parámetros de Extensión (facultades y carreras simplificadas)
+            //Parámetros de Extensión (facultades, carreras y materias simplificadas)
             Route::get('parametros_extension', 'ParametrosExtensionController@index')->name('parametros_extension.index');
             Route::post('parametros_extension/facultades', 'ParametrosExtensionController@storeFacultad')->name('parametros_extension.facultades.store');
             Route::post('parametros_extension/facultades/{id}', 'ParametrosExtensionController@updateFacultad')->name('parametros_extension.facultades.update');
@@ -191,6 +191,12 @@ Auth::routes(['register' => false, 'verify' => false]);
             Route::post('parametros_extension/carreras', 'ParametrosExtensionController@storeCarrera')->name('parametros_extension.carreras.store');
             Route::post('parametros_extension/carreras/{id}', 'ParametrosExtensionController@updateCarrera')->name('parametros_extension.carreras.update');
             Route::post('parametros_extension/carreras/{id}/estado', 'ParametrosExtensionController@toggleCarrera')->name('parametros_extension.carreras.toggle');
+            Route::delete('parametros_extension/facultades/{id}', 'ParametrosExtensionController@destroyFacultad')->name('parametros_extension.facultades.destroy');
+            Route::delete('parametros_extension/carreras/{id}', 'ParametrosExtensionController@destroyCarrera')->name('parametros_extension.carreras.destroy');
+            Route::post('parametros_extension/materias', 'ParametrosExtensionController@storeMateria')->name('parametros_extension.materias.store');
+            Route::post('parametros_extension/materias/{id}', 'ParametrosExtensionController@updateMateria')->name('parametros_extension.materias.update');
+            Route::post('parametros_extension/materias/{id}/estado', 'ParametrosExtensionController@toggleMateria')->name('parametros_extension.materias.toggle');
+            Route::delete('parametros_extension/materias/{id}', 'ParametrosExtensionController@destroyMateria')->name('parametros_extension.materias.destroy');
 
             //Carga masiva de alumnos y docentes (CSV)
             Route::get('importaciones', 'ImportacionMasivaController@index')->name('importaciones.index');

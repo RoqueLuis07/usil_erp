@@ -10,6 +10,10 @@ class Materia extends Model implements Auditable
 {
     use HasFactory, \OwenIt\Auditing\Auditable;
 
+    public function carreras(){
+        return $this->belongsToMany(Carrera::class, 'carreras_materias');
+    }
+
     public function CargadoPor(){
         return $this->belongsTo(User::class);
     }

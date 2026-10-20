@@ -239,7 +239,7 @@
                         @can('gestionar_parametros_extensiones_universitarias')
                             <a href="{{route('parametros_extension.index')}}" class="ac-nav-item {{ request()->routeIs('parametros_extension.*') ? 'active' : '' }}">
                                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 17V8l6-4 6 4v9" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M3 17h14M8 17v-4h4v4" stroke="currentColor" stroke-width="1.2"/></svg>
-                                <span class="ac-nav-label">Facultades y Carreras</span>
+                                <span class="ac-nav-label">Facultades, Carreras y Materias</span>
                             </a>
                         @endcan
                     </div>

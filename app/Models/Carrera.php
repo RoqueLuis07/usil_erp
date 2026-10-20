@@ -26,6 +26,10 @@ class Carrera extends Model implements Auditable
         return $this->belongsTo(Modalidad::class);
     }
 
+    public function materias(){
+        return $this->belongsToMany(Materia::class, 'carreras_materias');
+    }
+
     public function CargadoPor(){
         return $this->belongsTo(User::class);
     }

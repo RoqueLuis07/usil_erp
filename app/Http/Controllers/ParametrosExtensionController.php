@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 
 use App\Models\Carrera;
 use App\Models\Facultad;
+use App\Models\Materia;
 use App\Models\Modalidad;
 use App\Models\Programa;
 use App\Models\TipoCarrera;
@@ -20,7 +21,8 @@ use App\Models\TipoCarrera;
  * ERP exige programa, tipo, modalidad y números de ley/acta/resolución; acá
  * esos datos legales quedan vacíos y los catálogos obligatorios se completan
  * con un valor por defecto (se pueden refinar después desde Parámetros
- * Académicos).
+ * Académicos). También administra las materias y a qué carreras pertenece
+ * cada una (las listas de las actividades se filtran con esa relación).
  */
 class ParametrosExtensionController extends Controller
 {
@@ -34,9 +36,10 @@ class ParametrosExtensionController extends Controller
         $this->authorize('gestionar_parametros_extensiones_universitarias');
 
         $facultades = Facultad::withCount('carreras')->orderBy('nombre')->get();
-        $carreras = Carrera::with('Facultad')->orderBy('nombre_fantasia')->get();
+        $carreras = Carrera::with('Facultad')->withCount('materias')->orderBy('nombre_fantasia')->get();
+        $materias = Materia::with('carreras:id,nombre_fantasia')->orderBy('nombre_fantasia')->get();
 
-        return view('extensiones_universitarias.parametros.index', compact('facultades', 'carreras'));
+        return view('extensiones_universitarias.parametros.index', compact('facultades', 'carreras', 'materias'));
     }
 
     public function storeFacultad(Request $request)
@@ -160,6 +163,139 @@ class ParametrosExtensionController extends Controller
         $carrera->save();
 
         return redirect()->route('parametros_extension.index')->with('success-message', 'La carrera ' . $carrera->nombre_fantasia . ($carrera->estado === 'AC' ? ' fue activada.' : ' fue inactivada.'));
+    }
+
+    // ------------------------------------------------------------------ eliminar
+
+    public function destroyFacultad($id)
+    {
+        $this->authorize('gestionar_parametros_extensiones_universitarias');
+
+        $facultad = Facultad::withCount('carreras')->findOrFail($id);
+        if ($facultad->carreras_count > 0) {
+            return redirect()->route('parametros_extension.index')->with('error-message', 'No se puede eliminar la facultad ' . $facultad->nombre . ': tiene ' . $facultad->carreras_count . ' carrera(s). Mové o eliminá las carreras primero, o inactivá la facultad.');
+        }
+
+        return $this->eliminar($facultad, 'La facultad ' . $facultad->nombre . ' fue eliminada.', 'La facultad ' . $facultad->nombre . ' se usa en otros datos: inactivala en vez de eliminarla.');
+    }
+
+    public function destroyCarrera($id)
+    {
+        $this->authorize('gestionar_parametros_extensiones_universitarias');
+
+        $carrera = Carrera::findOrFail($id);
+
+        return $this->eliminar($carrera, 'La carrera ' . $carrera->nombre_fantasia . ' fue eliminada.', 'La carrera ' . $carrera->nombre_fantasia . ' tiene alumnos, actividades u otros datos: inactivala en vez de eliminarla.', 'carreras');
+    }
+
+    // ------------------------------------------------------------------ materias
+
+    public function storeMateria(Request $request)
+    {
+        $this->authorize('gestionar_parametros_extensiones_universitarias');
+
+        $datos = $this->validarMateria($request);
+        if (Materia::where('nombre_fantasia', $datos['nombre'])->exists()) {
+            return back()->withInput()->withErrors(['nombre' => 'Ya existe una materia con ese nombre.']);
+        }
+
+        DB::beginTransaction();
+        try {
+            $materia = new Materia();
+            $materia->nombre_fantasia = $datos['nombre'];
+            $materia->nombre_real = $datos['nombre'];
+            $materia->codigo = $datos['codigo'] ?? null;
+            $materia->carga_horaria = $datos['carga_horaria'] ?? 0;
+            $materia->cargado_por_id = Auth::id();
+            $materia->save();
+            $materia->carreras()->sync($datos['carreras'] ?? []);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withInput()->with('error-message', $e->getMessage());
+        }
+
+        return redirect()->route('parametros_extension.index', ['pestana' => 'materias'])->with('success-message', 'La materia ' . $materia->nombre_fantasia . ' fue creada.');
+    }
+
+    public function updateMateria(Request $request, $id)
+    {
+        $this->authorize('gestionar_parametros_extensiones_universitarias');
+
+        $datos = $this->validarMateria($request);
+        if (Materia::where('nombre_fantasia', $datos['nombre'])->where('id', '!=', $id)->exists()) {
+            return back()->withInput()->withErrors(['nombre' => 'Ya existe otra materia con ese nombre.']);
+        }
+
+        DB::beginTransaction();
+        try {
+            $materia = Materia::findOrFail($id);
+            $materia->nombre_fantasia = $datos['nombre'];
+            $materia->nombre_real = $datos['nombre'];
+            $materia->codigo = $datos['codigo'] ?? null;
+            $materia->carga_horaria = $datos['carga_horaria'] ?? 0;
+            $materia->actualizado_por_id = Auth::id();
+            $materia->save();
+            $materia->carreras()->sync($datos['carreras'] ?? []);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withInput()->with('error-message', $e->getMessage());
+        }
+
+        return redirect()->route('parametros_extension.index', ['pestana' => 'materias'])->with('success-message', 'La materia fue actualizada.');
+    }
+
+    public function toggleMateria($id)
+    {
+        $this->authorize('gestionar_parametros_extensiones_universitarias');
+
+        $materia = Materia::findOrFail($id);
+        $materia->estado = $materia->estado === 'AC' ? 'IN' : 'AC';
+        $materia->actualizado_por_id = Auth::id();
+        $materia->save();
+
+        return redirect()->route('parametros_extension.index', ['pestana' => 'materias'])->with('success-message', 'La materia ' . $materia->nombre_fantasia . ($materia->estado === 'AC' ? ' fue activada.' : ' fue inactivada.'));
+    }
+
+    public function destroyMateria($id)
+    {
+        $this->authorize('gestionar_parametros_extensiones_universitarias');
+
+        $materia = Materia::findOrFail($id);
+
+        return $this->eliminar($materia, 'La materia ' . $materia->nombre_fantasia . ' fue eliminada.', 'La materia ' . $materia->nombre_fantasia . ' está usada en actividades: inactivala en vez de eliminarla.', 'materias');
+    }
+
+    private function validarMateria(Request $request): array
+    {
+        $datos = $request->validate([
+            'nombre' => ['required', 'string', 'max:255'],
+            'codigo' => ['nullable', 'string', 'max:50'],
+            'carga_horaria' => ['nullable', 'integer', 'min:0', 'max:5000'],
+            'carreras' => ['nullable', 'array'],
+            'carreras.*' => ['integer', 'exists:carreras,id'],
+        ]);
+        $datos['nombre'] = trim(preg_replace('/\s+/', ' ', $datos['nombre']));
+
+        return $datos;
+    }
+
+    /** Elimina un registro; si otros datos lo usan (clave foránea) lo informa en vez de fallar. */
+    private function eliminar($registro, string $exito, string $enUso, ?string $pestana = null)
+    {
+        $ruta = $pestana ? ['pestana' => $pestana] : [];
+
+        DB::beginTransaction();
+        try {
+            $registro->delete();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('parametros_extension.index', $ruta)->with('error-message', $enUso);
+        }
+
+        return redirect()->route('parametros_extension.index', $ruta)->with('success-message', $exito);
     }
 
     private function programaPorDefecto(): Programa

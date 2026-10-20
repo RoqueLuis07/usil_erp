@@ -169,7 +169,7 @@
                                     <select class="selectpicker form-control @error('materia_id') is-invalid @enderror" id="materia_id" name="materia_id" data-live-search="true">
                                         <option value="">Sin materia asociada</option>
                                         @foreach ($materias as $materia)
-                                            <option value="{{$materia->id}}" @if (strval(old('materia_id')) == strval($materia->id)) selected @endif @if ($materia->codigo) data-subtext="{{$materia->codigo}}" @endif>{{$materia->nombre_fantasia}}</option>
+                                            <option value="{{$materia->id}}" data-carreras="{{ $materia->carreras->pluck('id')->implode(',') }}" @if (strval(old('materia_id')) == strval($materia->id)) selected @endif @if ($materia->codigo) data-subtext="{{$materia->codigo}}" @endif>{{$materia->nombre_fantasia}}</option>
                                         @endforeach
                                     </select>
                                     @error('materia_id')
@@ -238,11 +238,16 @@
                                 <div class="col-lg-6 mb-3">
                                     <label class="form-label" for="carreras_habilitadas">Carreras Habilitadas para Postularse</label>
                                     <select class="selectpicker form-control" id="carreras_habilitadas" name="carreras_habilitadas[]" multiple data-live-search="true" title="Todas las carreras">
-                                        @foreach ($carreras as $carrera)
-                                            <option value="{{$carrera->id}}" @if (collect(old('carreras_habilitadas'))->contains($carrera->id)) selected @endif>{{$carrera->nombre_fantasia}}</option>
+                                        @foreach ($carreras->groupBy(fn ($c) => optional($c->Facultad)->nombre ?: 'Sin facultad') as $nombreFacultad => $grupo)
+                                            <optgroup label="{{$nombreFacultad}}">
+                                                @foreach ($grupo as $carrera)
+                                                    <option value="{{$carrera->id}}" @if (collect(old('carreras_habilitadas'))->contains($carrera->id)) selected @endif>{{$carrera->nombre_fantasia}}</option>
+                                                @endforeach
+                                            </optgroup>
                                         @endforeach
                                     </select>
-                                    <p class="text-muted" style="font-size: 12px">Sin seleccionar ninguna, el proyecto queda abierto a postulación de alumnos de cualquier carrera.</p>
+                                    <p class="text-muted mb-1" style="font-size: 12px">Sin seleccionar ninguna, el proyecto queda abierto a postulación de alumnos de cualquier carrera. Las materias de la lista se acotan a las carreras elegidas.</p>
+                                    <p class="mb-0" style="font-size: 12px">Facultad: <strong id="facultades-elegidas">todas</strong></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -320,5 +325,6 @@
         @include('extensiones_universitarias.scripts.create-scripts')
         @include('extensiones_universitarias.scripts.create-detalles-scripts')
         @include('extensiones_universitarias.scripts.campos-extra-scripts')
+        @include('extensiones_universitarias.scripts.carrera-materia-scripts')
     @endsection
 @endcan
