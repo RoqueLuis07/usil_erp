@@ -50,7 +50,6 @@
                                                 <input type="hidden" id="filtro_ingreso_input" name="filtro_ingreso" value="{{$filtro_ingreso}}">
                                                 <input type="hidden" id="filtro_edad_input" name="filtro_edad" value="{{$filtro_edad}}">
                                                 <input type="hidden" id="filtro_programa_input" name="filtro_programa" value="{{$filtro_programa}}">
-                                                <input type="hidden" id="filtro_periodo_input" name="filtro_periodo" value="{{$filtro_periodo}}">
                                                 <input type="hidden" id="filtro_correo_input" name="filtro_correo" value="{{$filtro_correo}}">
 												<i class="ri-search-line search-icon"></i>
 												<button class="btn btn-primary py-0 d-none" type="submit">
@@ -93,17 +92,6 @@
                                             @endforeach
                                         </select>
                                         <button class="btn btn-sm btn-outline-danger" id="delete-programa-filter-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Filtro por Programa"><i class="ri-close-line"></i></button>
-                                    </div>
-                                </div>
-                                <div class="col-lg-2">
-                                    <div class="input-group">
-                                        <select class="selectpicker form-control" id="filtro_periodo" data-live-search="true">
-                                            <option value="" selected disabled>Filtrar por Período...</option>
-                                            @foreach ($semestres as $semestre)
-                                                <option value="{{$semestre->id}}" @if ($filtro_periodo == $semestre->id) selected @endif>{{$semestre->nombre}}</option>
-                                            @endforeach
-                                        </select>
-                                        <button class="btn btn-sm btn-outline-danger" id="delete-periodo-filter-btn" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar Filtro por Período"><i class="ri-close-line"></i></button>
                                     </div>
                                 </div>
                                 <div class="col-lg-2">
