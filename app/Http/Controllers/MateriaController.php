@@ -11,7 +11,6 @@ use Carbon\Carbon;
 
 use App\Models\Materia;
 use App\Models\User;
-use App\Models\Correlatividad;
 
 
 class MateriaController extends Controller
@@ -44,7 +43,7 @@ class MateriaController extends Controller
         $this->authorize('ver_materias');
 
         try {
-            $materias = Materia::with('correlativas')->orderBy('nombre_fantasia', 'asc')->get();
+            $materias = Materia::orderBy('nombre_fantasia', 'asc')->get();
             return response()->json([
                 'materias' => $materias,
             ]);
@@ -106,9 +105,6 @@ class MateriaController extends Controller
                 $materia->cargado_por_id = Auth::id();
                 $materia->save();
 
-                $correlatividad = New Correlatividad();
-                $correlatividad->materia_id = $materia->id;
-                $correlatividad->save();
 
                 DB::commit();
 
@@ -281,7 +277,6 @@ class MateriaController extends Controller
         try {
             $materia = Materia::findOrFail($id);
 
-            $correlatividad = Correlatividad::where('materia_id', $materia->id)->delete();
 
             $materia->delete();
 

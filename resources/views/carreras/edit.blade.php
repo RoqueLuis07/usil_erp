@@ -1,5 +1,5 @@
 @can('crear_carreras')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Editar Carreras @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">

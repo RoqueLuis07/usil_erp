@@ -27,4 +27,8 @@ class ExtensionUniversitariaDetalle extends Model implements Auditable
     public function Semestre(){
         return $this->belongsTo(Semestre::class);
     }
+
+    public function RevisadoPor(){
+        return $this->belongsTo(User::class);
+    }
 }

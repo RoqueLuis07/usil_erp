@@ -1,5 +1,5 @@
 @can('crear_alumnos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Agregar Alumno @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -25,47 +25,22 @@
                         <!-- end card header -->
                         <div class="card-body">
                             <p class="text-muted">Por favor, complete los <code>campos marcados</code> para poder agregar un registro con éxito</p>
+
+                            <h6 class="text-muted text-uppercase mb-3" style="font-size: 12px; letter-spacing: .04em;">Identidad</h6>
                             <div class="row">
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="primer_nombre_alumno">Primer Nombre <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('primer_nombre_alumno') is-invalid @enderror" id="primer_nombre_alumno" name="primer_nombre_alumno" value="{{old('primer_nombre_alumno')}}" placeholder="Escriba el nombre">
-                                    @error('primer_nombre_alumno')
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="nombres_alumno">Nombres <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('nombres_alumno') is-invalid @enderror" id="nombres_alumno" name="nombres_alumno" value="{{old('nombres_alumno')}}" placeholder="Todos los nombres, ej.: Juan Carlos">
+                                    @error('nombres_alumno')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="segundo_nombre_alumno">Segundo Nombre</label>
-                                    <input type="text" class="form-control @error('segundo_nombre_alumno') is-invalid @enderror" id="segundo_nombre_alumno" name="segundo_nombre_alumno" value="{{old('segundo_nombre_alumno')}}" placeholder="Escriba el nombre">
-                                    @error('segundo_nombre_alumno')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="tercer_nombre_alumno">Tercer Nombre</label>
-                                    <input type="text" class="form-control @error('tercer_nombre_alumno') is-invalid @enderror" id="tercer_nombre_alumno" name="tercer_nombre_alumno" value="{{old('tercer_nombre_alumno')}}" placeholder="Escriba el nombre">
-                                    @error('tercer_nombre_alumno')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="primer_apellido_alumno">Primer Apellido <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control @error('primer_apellido_alumno') is-invalid @enderror" id="primer_apellido_alumno" name="primer_apellido_alumno" value="{{old('primer_apellido_alumno')}}" placeholder="Escriba el apellido">
-                                    @error('primer_apellido_alumno')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{$message}}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="segundo_apellido_alumno">Segundo Apellido</label>
-                                    <input type="text" class="form-control @error('segundo_apellido_alumno') is-invalid @enderror" id="segundo_apellido_alumno" name="segundo_apellido_alumno" value="{{old('segundo_apellido_alumno')}}" placeholder="Escriba el apellido">
-                                    @error('segundo_apellido_alumno')
+                                <div class="col-lg-3 mb-3">
+                                    <label class="form-label" for="apellidos_alumno">Apellidos <span class="text-danger">(*)</span></label>
+                                    <input type="text" class="form-control @error('apellidos_alumno') is-invalid @enderror" id="apellidos_alumno" name="apellidos_alumno" value="{{old('apellidos_alumno')}}" placeholder="Todos los apellidos, ej.: Gonzalez Benitez">
+                                    @error('apellidos_alumno')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
                                         </span>
@@ -80,8 +55,6 @@
                                         </span>
                                     @enderror
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="sexo">Sexo <span class="text-danger">(*)</span></label>
                                     <select class="selectpicker form-control @error('sexo') is-invalid @enderror" id="sexo" name="sexo">
@@ -108,6 +81,11 @@
                                         @enderror
                                     </div>
                                 </div>
+                            </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Contacto</h6>
+                            <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="telefono">N° de Teléfono</label>
                                     <input type="text" class="form-control @error('telefono') is-invalid @enderror" id="telefono" name="telefono" value="{{old('telefono')}}" placeholder="Escriba el N° de línea baja">
@@ -126,18 +104,7 @@
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
-                                    <select class="selectpicker form-control nacionalidad @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" multiple title="Seleccionar...">
-                                        @foreach ($nacionalidades as $nacionalidad)
-                                            <option value="{{$nacionalidad->id}}" @if (old('nacionalidad') == strval($nacionalidad->id)) selected @endif>{{$nacionalidad->nombre}}</option>
-                                        @endforeach
-                                    </select>
-                                    <span id="error-nacionalidad">
-
-                                    </span>
-                                </div>
-                                <div class="col-lg-2 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <label class="form-label" for="email_personal">Correo Personal <span class="text-danger">(*)</span></label>
                                     <input type="text" class="form-control @error('email_personal') is-invalid @enderror" id="email_personal" name="email_personal" value="{{old('email_personal')}}" placeholder="Escriba el correo electrónico">
                                     @error('email_personal')
@@ -146,7 +113,21 @@
                                         </span>
                                     @enderror
                                 </div>
+                                <div class="col-lg-4 mb-3">
+                                    <label class="form-label" for="nacionalidad">Nacionalidad <span class="text-danger">(*)</span></label>
+                                    <select class="selectpicker form-control nacionalidad @error('nacionalidad') is-invalid @enderror" id="nacionalidad" name="nacionalidad[]" data-live-search="true" data-size="5" multiple title="Seleccionar...">
+                                        @foreach ($nacionalidades as $nacionalidad)
+                                            <option value="{{$nacionalidad->id}}" @if (old('nacionalidad') == strval($nacionalidad->id)) selected @endif>{{$nacionalidad->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                    <span id="error-nacionalidad">
+
+                                    </span>
+                                </div>
                             </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Ubicación</h6>
                             <div class="row">
                                 <div class="col-lg-6 mb-3">
                                     <label class="form-label" for="direccion">Dirección <span class="text-danger">(*)</span></label>
@@ -183,7 +164,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-lg-2 mb-3">
-                                    <label class="form-label" for="barrio">Barrio <span class="text-danger">(*)</span></label>
+                                    <label class="form-label" for="barrio">Barrio</label>
                                     <select class="selectpicker form-control @error('barrio') is-invalid @enderror" id="barrio" name="barrio" data-live-search="true" disabled>
                                         <option value="" selected disabled>Seleccionar...</option>
                                     </select>
@@ -194,8 +175,11 @@
                                     @enderror
                                 </div>
                             </div>
+                            <hr class="my-1">
+
+                            <h6 class="text-muted text-uppercase mb-3 mt-3" style="font-size: 12px; letter-spacing: .04em;">Cuenta</h6>
                             <div class="row">
-                                <div class="col-lg-2 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <label class="form-label" for="usuario">Usuario Asignado</label>
                                     <select class="selectpicker form-control @error('usuario') is-invalid @enderror" id="usuario" name="usuario">
                                         <option value="" selected disabled>Seleccionar...</option>
@@ -203,6 +187,7 @@
                                             <option value="{{$usuario->id}}" @if (old('usuario') == strval($usuario->id)) selected @endif data-subtext="{{$usuario->rol->name}}">{{$usuario->name}}</option>
                                         @endforeach
                                     </select>
+                                    <p class="text-muted mt-1 mb-0" style="font-size: 12px">Si se deja vacío, se crea un usuario nuevo con el rol Alumno.</p>
                                     @error('usuario')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{$message}}</strong>
@@ -216,17 +201,16 @@
                         <div class="col-lg-12 mb-3">
                             <div class="card">
                                 <div class="card-body">
+                                    @include('alumnos.partials.carrera-ingreso')
                                     <ul class="nav nav-pills arrow-navtabs nav-info nav-justified bg-light gap-2 mb-4" role="tablist">
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link active align-middle" data-bs-toggle="tab" href="#tablistFormacion" role="tab" aria-selected="true">
                                                 Formación Educativa
-                                                <span class="badge bg-danger">Req.</span>
                                             </a>
                                         </li>
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link align-middle" data-bs-toggle="tab" href="#tablistFamiliar1" role="tab" aria-selected="true">
                                                 Familiar 1
-                                                <span class="badge bg-danger">Req.</span>
                                             </a>
                                         </li>
                                         <li class="nav-item" role="presentation">
@@ -244,7 +228,7 @@
                                         <div class="tab-pane active show" id="tablistFormacion" role="tabpanel">
                                             <div class="row">
                                                 <div class="col-lg-4 mb-3">
-                                                    <label class="form-label" for="formacion">Formación <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="formacion">Formación</label>
                                                     <select class="selectpicker form-control @error('formacion') is-invalid @enderror" id="formacion" name="formacion" data-live-search="true">
                                                         <option value="" selected disabled>Seleccionar...</option>
                                                         @foreach ($alumnos_formaciones as $formacion)
@@ -258,7 +242,7 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-4 mb-3">
-                                                    <label class="form-label" for="institucion_educativa">Institución Educativa <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="institucion_educativa">Institución Educativa</label>
                                                     <div class="d-flex flex-row bd-highlight">
                                                         <select class="selectpicker form-control institucion_educativa @error('institucion_educativa') is-invalid @enderror" id="institucion_educativa" name="institucion_educativa" data-live-search="true">
                                                             <option value="" selected disabled>Seleccionar...</option>
@@ -293,53 +277,26 @@
                                     <div class="tab-content">
                                         <div class="tab-pane" id="tablistFamiliar1" role="tabpanel">
                                             <div class="row">
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_nombre_familiar1">Primer Nombre <span class="text-danger">(*)</span></label>
-                                                    <input type="text" class="form-control @error('primer_nombre_familiar1') is-invalid @enderror" id="primer_nombre_familiar1" name="primer_nombre_familiar1" value="{{old('primer_nombre_familiar1')}}" placeholder="Escriba el nombre">
-                                                    @error('primer_nombre_familiar1')
+                                                <div class="col-lg-3 mb-3">
+                                                    <label class="form-label" for="nombres_familiar1">Nombres</label>
+                                                    <input type="text" class="form-control @error('nombres_familiar1') is-invalid @enderror" id="nombres_familiar1" name="nombres_familiar1" value="{{old('nombres_familiar1')}}" placeholder="Todos los nombres">
+                                                    @error('nombres_familiar1')
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong>{{$message}}</strong>
+                                                        </span>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-lg-3 mb-3">
+                                                    <label class="form-label" for="apellidos_familiar1">Apellidos</label>
+                                                    <input type="text" class="form-control @error('apellidos_familiar1') is-invalid @enderror" id="apellidos_familiar1" name="apellidos_familiar1" value="{{old('apellidos_familiar1')}}" placeholder="Todos los apellidos">
+                                                    @error('apellidos_familiar1')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{$message}}</strong>
                                                         </span>
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="segundo_nombre_familiar1">Segundo Nombre</label>
-                                                    <input type="text" class="form-control @error('segundo_nombre_familiar1') is-invalid @enderror" id="segundo_nombre_familiar1" name="segundo_nombre_familiar1" value="{{old('segundo_nombre_familiar1')}}" placeholder="Escriba el nombre">
-                                                    @error('segundo_nombre_familiar1')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="tercer_nombre_familiar1">Tercer Nombre</label>
-                                                    <input type="text" class="form-control @error('tercer_nombre_familiar1') is-invalid @enderror" id="tercer_nombre_familiar1" name="tercer_nombre_familiar1" value="{{old('tercer_nombre_familiar1')}}" placeholder="Escriba el nombre">
-                                                    @error('tercer_nombre_familiar1')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_apellido_familiar1">Primer Apellido <span class="text-danger">(*)</span></label>
-                                                    <input type="text" class="form-control @error('primer_apellido_familiar1') is-invalid @enderror" id="primer_apellido_familiar1" name="primer_apellido_familiar1" value="{{old('primer_apellido_familiar1')}}" placeholder="Escriba el apellido">
-                                                    @error('primer_apellido_familiar1')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="segundo_apellido_familiar1">Segundo Apellido</label>
-                                                    <input type="text" class="form-control @error('segundo_apellido_familiar1') is-invalid @enderror" id="segundo_apellido_familiar1" name="segundo_apellido_familiar1" value="{{old('segundo_apellido_familiar1')}}" placeholder="Escriba el apellido">
-                                                    @error('segundo_apellido_familiar1')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="relacion_familiar1">Relación Familiar <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="relacion_familiar1">Relación Familiar</label>
                                                     <select class="selectpicker form-control @error('relacion_familiar1') is-invalid @enderror" id="relacion_familiar1" name="relacion_familiar1">
                                                         <option value="" selected disabled>Seleccionar...</option>
                                                         @foreach ($relaciones_familiares as $relacion_familiar)
@@ -355,7 +312,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="celular_familiar1">N° de Celular <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="celular_familiar1">N° de Celular</label>
                                                     <input type="text" class="form-control @error('celular_familiar1') is-invalid @enderror" id="celular_familiar1" name="celular_familiar1" value="{{old('celular_familiar1')}}" placeholder="Escriba el N° de celular">
                                                     @error('celular_familiar1')
                                                         <span class="invalid-feedback" role="alert">
@@ -364,7 +321,7 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-4 mb-3">
-                                                    <label class="form-label" for="email_familiar1">Correo <span class="text-danger">(*)</span></label>
+                                                    <label class="form-label" for="email_familiar1">Correo</label>
                                                     <input type="text" class="form-control @error('email_familiar1') is-invalid @enderror" id="email_familiar1" name="email_familiar1" value="{{old('email_familiar1')}}" placeholder="Escriba el correo electrónico">
                                                     @error('email_familiar1')
                                                         <span class="invalid-feedback" role="alert">
@@ -378,46 +335,19 @@
                                     <div class="tab-content">
                                         <div class="tab-pane" id="tablistFamiliar2" role="tabpanel">
                                             <div class="row">
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_nombre_familiar2">Primer Nombre</label>
-                                                    <input type="text" class="form-control @error('primer_nombre_familiar2') is-invalid @enderror" id="primer_nombre_familiar2" name="primer_nombre_familiar2" value="{{old('primer_nombre_familiar2')}}" placeholder="Escriba el nombre">
-                                                    @error('primer_nombre_familiar2')
+                                                <div class="col-lg-3 mb-3">
+                                                    <label class="form-label" for="nombres_familiar2">Nombres</label>
+                                                    <input type="text" class="form-control @error('nombres_familiar2') is-invalid @enderror" id="nombres_familiar2" name="nombres_familiar2" value="{{old('nombres_familiar2')}}" placeholder="Todos los nombres">
+                                                    @error('nombres_familiar2')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{$message}}</strong>
                                                         </span>
                                                     @enderror
                                                 </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="segundo_nombre_familiar2">Segundo Nombre</label>
-                                                    <input type="text" class="form-control @error('segundo_nombre_familiar2') is-invalid @enderror" id="segundo_nombre_familiar2" name="segundo_nombre_familiar2" value="{{old('segundo_nombre_familiar2')}}" placeholder="Escriba el nombre">
-                                                    @error('segundo_nombre_familiar2')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="tercer_nombre_familiar2">Tercer Nombre</label>
-                                                    <input type="text" class="form-control @error('tercer_nombre_familiar2') is-invalid @enderror" id="tercer_nombre_familiar2" name="tercer_nombre_familiar2" value="{{old('tercer_nombre_familiar2')}}" placeholder="Escriba el nombre">
-                                                    @error('tercer_nombre_familiar2')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="primer_apellido_familiar2">Primer Apellido</label>
-                                                    <input type="text" class="form-control @error('primer_apellido_familiar2') is-invalid @enderror" id="primer_apellido_familiar2" name="primer_apellido_familiar2" value="{{old('primer_apellido_familiar2')}}" placeholder="Escriba el apellido">
-                                                    @error('primer_apellido_familiar2')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{$message}}</strong>
-                                                        </span>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-2 mb-3">
-                                                    <label class="form-label" for="segundo_apellido_familiar2">Segundo Apellido</label>
-                                                    <input type="text" class="form-control @error('segundo_apellido_familiar2') is-invalid @enderror" id="segundo_apellido_familiar2" name="segundo_apellido_familiar2" value="{{old('segundo_apellido_familiar2')}}" placeholder="Escriba el apellido">
-                                                    @error('segundo_apellido_familiar2')
+                                                <div class="col-lg-3 mb-3">
+                                                    <label class="form-label" for="apellidos_familiar2">Apellidos</label>
+                                                    <input type="text" class="form-control @error('apellidos_familiar2') is-invalid @enderror" id="apellidos_familiar2" name="apellidos_familiar2" value="{{old('apellidos_familiar2')}}" placeholder="Todos los apellidos">
+                                                    @error('apellidos_familiar2')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{$message}}</strong>
                                                         </span>
@@ -511,74 +441,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @can('cargar_clientes_alumnos')
-                                        <div class="tab-content">
-                                            <div class="tab-pane" id="tablistFacturacion" role="tabpanel">
-                                                <div class="mb-2 fila" id="fila-0">
-                                                    <div class="row d-flex flex-wrap justify-content-center">
-                                                        <div class="col-lg-2 mb-2 text-center" id="div-cliente-0">
-                                                            <label class="form-label label-cliente">Cliente</label>
-                                                            <select class="selectpicker form-control cliente-0 cliente @error('clientes.0.cliente') is-invalid @enderror" id="cliente-0" name="clientes[0][cliente]" data-live-search="true" data-id="0">
-                                                                <option value="" selected disabled>Seleccionar...</option>
-                                                                @foreach ($clientes as $cliente)
-                                                                    <option value="{{$cliente->id}}" @if (old('clientes.0.cliente') == strval($cliente->id)) selected @endif data-subtext="{{$cliente->numero_documento}}">{{$cliente->nombre}}</option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('clientes.0.cliente')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{$message}}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="col-lg-2 mb-2 me-3 text-center" id="div-razon_social-0">
-                                                            <label class="form-label label-razon_social">Razón Social</label>
-                                                            <input type="text" class="form-control text-center razon_social-0 razon_social @error('clientes.0.razon_social') is-invalid @enderror" id="clientes[0][razon_social]" name="clientes[0][razon_social]" value="{{old('clientes.0.razon_social')}}" data-id="0" readonly>
-                                                            @error('clientes.0.razon_social')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{$message}}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="col-lg-2 mb-2 me-3 text-center" id="div-numero_documento-0">
-                                                            <label class="form-label label-numero_documento">N° de Documento</label>
-                                                            <input type="text" class="form-control text-center numero_documento-0 numero_documento @error('clientes.0.numero_documento') is-invalid @enderror" id="clientes[0][numero_documento]" name="clientes[0][numero_documento]" value="{{old('clientes.0.numero_documento')}}" data-id="0" readonly>
-                                                            @error('clientes.0.numero_documento')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{$message}}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="col-lg-1 mb-2 me-3 text-center" id="div-es_principal-0">
-                                                            <div class="div-label-es_principal-0">
-                                                                <label class="form-label label-es_principal">Es Principal ?</label>
-                                                            </div>
-                                                            <div class="btn-group @error('clientes.0.es_principal') is-invalid @enderror" role="group">
-                                                                <input type="radio" class="btn-check es_principal1 es_princpial1-0" id="clientes[0][es_princpial1]" name="clientes[0][es_principal]" value="false" @if (old('clientes.0.es_principal') == 'false') checked @endif data-id="0">
-                                                                <label class="btn btn-outline-danger" for="clientes[0][es_princpial1]">No</label>
-                                                                <input type="radio" class="btn-check es_principal2 es_princpial2-0" id="clientes[0][es_princpial2]" name="clientes[0][es_principal]" value="true" @if (old('clientes.0.es_principal') == 'true') checked @endif data-id="0">
-                                                                <label class="btn btn-outline-success" for="clientes[0][es_princpial2]">Sí</label>
-                                                            </div>
-                                                            <input type="hidden" class="es_principal-0" value="{{old('clientes.0.es_principal')}}">
-                                                            @error('clientes.0.es_principal')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{$message}}</strong>
-                                                                </span>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="col-lg-1 col-sm-2 text-center">
-                                                            <label class="form-label label-acciones">Acciones</label>
-                                                            <div class="align-middle" id="acciones-0">
-                                                                <button type="button" class="btn btn-icon btn-success btn-add" id="btn-add-0" data-id="0"><i class="ri-add-fill"></i></button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="cliente-fila">
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endcan
                                     {{-- /Tab panes --}}
                                 </div>
                             </div>
@@ -601,6 +463,6 @@
         <script src="{{ URL::asset('js/flatpickr.min.js') }}"></script>
         <script src="{{ URL::asset('js/bootstrap-select.min.js') }}"></script>
         @include('alumnos.scripts.create-scripts')
-        @include('alumnos.scripts.create-clientes-scripts')
+        @include('alumnos.scripts.carrera-ingreso-scripts')
     @endsection
 @endcan

@@ -32,11 +32,6 @@ use App\Models\DocenteNivelAcademico;
 use App\Models\TipoLegajo;
 use App\Models\DocenteLegajo;
 use App\Models\AreaConocimiento;
-use App\Models\Empresa;
-use App\Models\Semestre;
-use App\Models\SemestreMallaMateria;
-use App\Models\ClaseMateria;
-use App\Models\DocenteSalario;
 
 class DocenteController extends Controller
 {
@@ -153,7 +148,15 @@ class DocenteController extends Controller
                 $nombre_docente = $nombre_docente . ' ' . $docente->segundo_apellido;
             }
 
-            return view('docentes/show')->with(compact('docente', 'nombre_docente'));
+            $docente->load('Carreras.Facultad');
+
+            // Actividades de extensión que tiene a su cargo.
+            $actividades = \App\Models\ExtensionUniversitaria::with('tipoExtension')
+                ->where('docente_id', $docente->id)
+                ->orderByDesc('fecha_inicio')
+                ->get();
+
+            return view('docentes/show')->with(compact('docente', 'nombre_docente', 'actividades'));
         } catch (\Exception $e) {
             return redirect()->route('docentes.index')->with('error-message', $e->getMessage());
         }
@@ -171,8 +174,9 @@ class DocenteController extends Controller
             $barrios = Barrio::get();
             $niveles_academicos = DocenteNivelAcademico::where('estado', 'AC')->get();
             $usuarios = User::where('state', 'AC')->get();
+            $carreras = \App\Models\Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
             $areas_conocimientos = AreaConocimiento::get();
-            return view('docentes/create')->with(compact('sexos', 'nacionalidades', 'departamentos_paraguay', 'ciudades', 'barrios', 'niveles_academicos', 'usuarios', 'areas_conocimientos'));
+            return view('docentes/create')->with(compact('carreras', 'sexos', 'nacionalidades', 'departamentos_paraguay', 'ciudades', 'barrios', 'niveles_academicos', 'usuarios', 'areas_conocimientos'));
         } catch (\Exception $e) {
             return redirect()->route('docentes.index')->with('error-message', $e->getMessage());
         }
@@ -183,11 +187,8 @@ class DocenteController extends Controller
         $this->authorize('crear_docentes');
 
         $request->validate([
-            'primer_nombre_docente' => 'required',
-            'segundo_nombre_docente' => 'nullable',
-            'tercer_nombre_docente' => 'nullable',
-            'primer_apellido_docente' => 'required',
-            'segundo_apellido_docente' => 'nullable',
+            'nombres_docente' => 'required',
+            'apellidos_docente' => 'required',
             'numero_documento' => ['required', Rule::unique('docentes')],
             'sexo' => ['required', 'numeric'],
             'fecha_nacimiento' => ['required', 'date'],
@@ -198,23 +199,25 @@ class DocenteController extends Controller
             'direccion' => 'required',
             'departamento' => ['required', 'numeric'],
             'ciudad' => ['required', 'numeric'],
-            'barrio' => ['required', 'numeric'],
+            'barrio' => ['nullable', 'numeric'],
             'usuario' => ['nullable', 'numeric'],
             'tutor_tesis' => 'required',
             'nivel_academico' => ['required', 'numeric'],
             'capacitacion_didactica' => 'required',
             'area_conocimiento' => ['required', 'numeric'],
+            'carreras' => ['nullable', 'array'],
+            'carreras.*' => ['numeric'],
         ]);
 
         DB::beginTransaction();
 
         try {
             $docente = new Docente();
-            $docente->primer_nombre = removeAccents(Str::upper($request->primer_nombre_docente));
-            $docente->segundo_nombre = removeAccents(Str::upper($request->segundo_nombre_docente));
-            $docente->tercer_nombre = removeAccents(Str::upper($request->tercer_nombre_docente));
-            $docente->primer_apellido = removeAccents(Str::upper($request->primer_apellido_docente));
-            $docente->segundo_apellido = removeAccents(Str::upper($request->segundo_apellido_docente));
+            $docente->primer_nombre = removeAccents(Str::upper(trim($request->nombres_docente)));
+            $docente->segundo_nombre = null;
+            $docente->tercer_nombre = null;
+            $docente->primer_apellido = removeAccents(Str::upper(trim($request->apellidos_docente)));
+            $docente->segundo_apellido = null;
             $docente->numero_documento = removeAccents(Str::upper($request->numero_documento));
             $docente->sexo_id = $request->sexo;
             $docente->fecha_nacimiento = $request->fecha_nacimiento;
@@ -224,9 +227,9 @@ class DocenteController extends Controller
             $docente->direccion = removeAccents(Str::upper($request->direccion));
             $docente->departamento_id = $request->departamento;
             $docente->ciudad_id = $request->ciudad;
-            $docente->barrio_id = $request->barrio;
+            $docente->barrio_id = $request->barrio ?: null;
             $docente->nivel_academico_id = $request->nivel_academico;
-            $docente->capacitacion_didactica = $request->capacitacion_didactica;
+            $docente->capacitacion_didactica = filter_var($request->capacitacion_didactica, FILTER_VALIDATE_BOOLEAN);
             $docente->area_conocimiento_id = $request->area_conocimiento;
 
             if ($request->usuario != null) {
@@ -234,11 +237,11 @@ class DocenteController extends Controller
                 $docente->email_institucional = User::findOrFail($request->usuario)->email;
             } else {
                 $usuario = new User();
-                $usuario->name = removeAccents(Str::upper($request->primer_nombre_docente)) . ' ' . removeAccents(Str::upper($request->primer_apellido_docente));
+                $usuario->name = removeAccents(Str::upper(trim($request->nombres_docente))) . ' ' . removeAccents(Str::upper(trim($request->apellidos_docente)));
                 $usuario->email = removeAccents(Str::lower($request->email_personal));
                 $usuario->role_id = 3; //asignar el id de rol docente
                 $usuario->assignRole(3); //asignar el id de rol docente
-                $password = $request->numero_documento . '-' . Str::substr(removeAccents(Str::upper($request->primer_nombre_docente)), 0, 1) . Str::substr(removeAccents(Str::lower($request->primer_apellido_docente)), 0, 1);
+                $password = $request->numero_documento . '-' . Str::substr(removeAccents(Str::upper(trim($request->nombres_docente))), 0, 1) . Str::substr(removeAccents(Str::lower(trim($request->apellidos_docente))), 0, 1);
                 $usuario->password = Hash::make($password);
                 $usuario->avatar = 'no_image.jpg';
                 $usuario->portada = 'no_portada.jpg';
@@ -263,12 +266,12 @@ class DocenteController extends Controller
                 $docente->usuario_id = $usuario->id;
             }
 
-            $docente->tutor_tesis = $request->tutor_tesis;
+            $docente->tutor_tesis = filter_var($request->tutor_tesis, FILTER_VALIDATE_BOOLEAN);
             $docente->cargado_por_id = Auth::id();
             $docente->save();
 
             $docente->nacionalidades()->sync($request->nacionalidad);
-
+            $docente->Carreras()->sync($request->carreras ?? []);
 
             //crear directorio para guardar su legajo
             $directorio = 'public/legajos/docentes/';
@@ -290,7 +293,7 @@ class DocenteController extends Controller
 
         try {
             $docente = Docente::findOrFail($id);
-            $docente->load('nacionalidades');
+            $docente->load(['nacionalidades', 'Carreras']);
             $sexos = Sexo::where('estado', 'AC')->get();
             $nacionalidades = Nacionalidad::get();
             $departamentos_paraguay = DepartamentoParaguay::get();
@@ -299,7 +302,8 @@ class DocenteController extends Controller
             $niveles_academicos = DocenteNivelAcademico::where('estado', 'AC')->get();
             $usuarios = User::where('state', 'AC')->get();
             $areas_conocimientos = AreaConocimiento::get();
-            return view('docentes/edit')->with(compact('docente', 'sexos', 'nacionalidades', 'departamentos_paraguay', 'ciudades', 'barrios', 'niveles_academicos', 'usuarios', 'areas_conocimientos'));
+            $carreras = \App\Models\Carrera::with('Facultad')->where('estado', 'AC')->orderBy('nombre_fantasia', 'asc')->get();
+            return view('docentes/edit')->with(compact('carreras', 'docente', 'sexos', 'nacionalidades', 'departamentos_paraguay', 'ciudades', 'barrios', 'niveles_academicos', 'usuarios', 'areas_conocimientos'));
         } catch (\Exception $e) {
             return redirect()->route('docentes.index')->with('error-message', $e->getMessage());
         }
@@ -310,11 +314,8 @@ class DocenteController extends Controller
         $this->authorize('editar_docentes');
 
         $request->validate([
-            'primer_nombre_docente' => 'required',
-            'segundo_nombre_docente' => 'nullable',
-            'tercer_nombre_docente' => 'nullable',
-            'primer_apellido_docente' => 'required',
-            'segundo_apellido_docente' => 'nullable',
+            'nombres_docente' => 'required',
+            'apellidos_docente' => 'required',
             'numero_documento' => ['required', Rule::unique('docentes')->ignore($id)],
             'sexo' => ['required', 'numeric'],
             'fecha_nacimiento' => ['required', 'date'],
@@ -326,12 +327,13 @@ class DocenteController extends Controller
             'direccion' => 'required',
             'departamento' => ['required', 'numeric'],
             'ciudad' => ['required', 'numeric'],
-            'barrio' => ['required', 'numeric'],
+            'barrio' => ['nullable', 'numeric'],
             'usuario' => ['required', 'numeric'],
             'nivel_academico' => ['required', 'numeric'],
             'capacitacion_didactica' => 'required',
             'area_conocimiento' => ['required', 'numeric'],
-            'ubs' => 'required',
+            'carreras' => ['nullable', 'array'],
+            'carreras.*' => ['numeric'],
             'tutor_tesis' => 'required'
         ]);
 
@@ -339,30 +341,30 @@ class DocenteController extends Controller
 
         try {
             $docente = Docente::findOrFail($id);
-            $docente->primer_nombre = removeAccents(Str::upper($request->primer_nombre_docente));
-            $docente->segundo_nombre = removeAccents(Str::upper($request->segundo_nombre_docente));
-            $docente->tercer_nombre = removeAccents(Str::upper($request->tercer_nombre_docente));
-            $docente->primer_apellido = removeAccents(Str::upper($request->primer_apellido_docente));
-            $docente->segundo_apellido = removeAccents(Str::upper($request->segundo_apellido_docente));
+            $docente->primer_nombre = removeAccents(Str::upper(trim($request->nombres_docente)));
+            $docente->segundo_nombre = null;
+            $docente->tercer_nombre = null;
+            $docente->primer_apellido = removeAccents(Str::upper(trim($request->apellidos_docente)));
+            $docente->segundo_apellido = null;
             $docente->numero_documento = removeAccents(Str::upper($request->numero_documento));
             $docente->sexo_id = $request->sexo;
             $docente->fecha_nacimiento = $request->fecha_nacimiento;
             $docente->telefono = $request->telefono;
             $docente->celular = $request->celular;
             $docente->nacionalidades()->sync($request->nacionalidad);
+            $docente->Carreras()->sync($request->carreras ?? []);
             $docente->email_personal = removeAccents(Str::lower($request->email_personal));
             $docente->email_institucional = removeAccents(Str::lower($request->email_institucional));
             $docente->direccion = removeAccents(Str::upper($request->direccion));
             $docente->departamento_id = $request->departamento;
             $docente->ciudad_id = $request->ciudad;
-            $docente->barrio_id = $request->barrio;
+            $docente->barrio_id = $request->barrio ?: null;
             $docente->nivel_academico_id = $request->nivel_academico;
-            $docente->capacitacion_didactica = $request->capacitacion_didactica;
+            $docente->capacitacion_didactica = filter_var($request->capacitacion_didactica, FILTER_VALIDATE_BOOLEAN);
             $docente->area_conocimiento_id = $request->area_conocimiento;
             $docente->usuario_id = $request->usuario;
             $docente->actualizado_por_id = Auth::id();
-            $docente->ubs = $request->ubs;
-            $docente->tutor_tesis = $request->tutor_tesis;
+            $docente->tutor_tesis = filter_var($request->tutor_tesis, FILTER_VALIDATE_BOOLEAN);
             $docente->save();
 
             $usuario = User::findOrFail($docente->usuario_id);
@@ -557,209 +559,4 @@ class DocenteController extends Controller
         }
     }
 
-    public function show_horas(Request $request, $id)
-    {
-        $this->authorize('ver_reportes_horas_docentes');
-
-        try {
-            $request->validate([
-                'fecha_inicio' => ['required', 'date'],
-                'fecha_fin' => ['required', 'date', 'after_or_equal:fecha_inicio'],
-                'monto_virtual' => ['nullable', 'numeric', 'min:1'],
-                'monto_teams' => ['nullable', 'numeric', 'min:1'],
-                'monto_presencial' => ['nullable', 'numeric', 'min:1'],
-            ]);
-
-            $docente = Docente::findOrFail($id);
-            $fecha_inicio = Carbon::parse($request->fecha_inicio);
-            $fecha_fin = Carbon::parse($request->fecha_fin);
-            $monto_virtual = $request->monto_virtual ? str_replace('.', '', $request->monto_virtual) : 0;
-            $monto_teams = $request->monto_teams ? str_replace('.', '', $request->monto_teams) : 0;
-            $monto_presencial = $request->monto_presencial ? str_replace('.', '', $request->monto_presencial) : 0;
-
-            $fecha_inicio_string = $fecha_inicio->setTime(0, 0, 0)->toDateTimeString();
-            $fecha_fin_string = $fecha_fin->setTime(23, 59, 59)->toDateTimeString();
-
-            $semestre = Semestre::where('estado', 'AC')->orderBy('id', 'desc')->first();
-            $periodo_activo = $semestre ? $semestre->id : null;
-
-            if (!$periodo_activo) {
-                return back()->with('error-message', 'No existe un periodo activo para generar el reporte solicitado.');
-            }
-
-            $semestre_malla_materias = SemestreMallaMateria::whereHas('semestreMalla', function ($query) use ($periodo_activo) {
-                $query->where('semestre_id', $periodo_activo)
-                      ->whereHas('malla', function ($q) {
-                        $q->whereHas('carrera', function ($k) {
-                            $k->where('programa_id', 1); //solo para GA
-                        });
-                      });
-            })
-            ->where('docente_id', $docente->id)
-            ->where('estado', 'AC')
-            ->get();
-
-            if ($semestre_malla_materias->count() == 0) {
-                return back()->with('error-message', 'El docente no cuenta con materias en el periodo actual.');
-            }
-
-            $carreras = collect();
-            $materias_virtuales = collect();
-            $materias_teams = collect();
-            $materias_presenciales = collect();
-
-            foreach ($semestre_malla_materias as $smm) {
-                $carreras->push(['carrera' => $smm->semestreMalla->malla->carrera->nombre_fantasia,
-                                'abreviatura' => $smm->semestreMalla->malla->carrera->abreviatura]);
-
-                $clases_virtuales = ClaseMateria::where('docente_id', $docente->id)
-                                        ->where('materia_id', $smm->materia_id)
-                                        ->where('semestre_id', $periodo_activo)
-                                        ->whereBetween('fecha_hora', [$fecha_inicio_string, $fecha_fin_string])
-                                        ->where('modalidad_id', 4)
-                                        ->get();
-
-                $clases_teams = ClaseMateria::where('docente_id', $docente->id)
-                                        ->where('materia_id', $smm->materia_id)
-                                        ->where('semestre_id', $periodo_activo)
-                                        ->whereBetween('fecha_hora', [$fecha_inicio_string, $fecha_fin_string])
-                                        ->where('modalidad_id', 2)
-                                        ->get();
-
-                $clases_presenciales = ClaseMateria::where('docente_id', $docente->id)
-                                        ->where('materia_id', $smm->materia_id)
-                                        ->where('semestre_id', $periodo_activo)
-                                        ->whereBetween('fecha_hora', [$fecha_inicio_string, $fecha_fin_string])
-                                        ->where('modalidad_id', 1)
-                                        ->get();
-
-                // if ($clases_virtuales->count() == 0 && $clases_teams->count() == 0 && $clases_presenciales->count() == 0) {
-                //     return back()->with('error-message', 'El docente no cuenta con clases generadas en el mes actual.');
-                // }
-
-                if ($clases_virtuales->count() > 0) {
-                    $datos_virtuales = ['materia' => $smm->materia->nombre_real,
-                                        'horas' => $clases_virtuales->sum('horas_desarrollo'),
-                                        'monto' => $monto_virtual];
-                    $materias_virtuales->push($datos_virtuales);
-                }
-
-                if ($clases_teams->count() > 0) {
-                    $datos_teams = ['materia' => $smm->materia->nombre_real,
-                                    'horas' => $clases_teams->sum('horas_desarrollo'),
-                                    'monto' => $monto_teams];
-                    $materias_teams->push($datos_teams);
-                }
-
-                if ($clases_presenciales->count() > 0) {
-                    $datos_presenciales = ['materia' => $smm->materia->nombre_real,
-                                        'horas' => $clases_presenciales->sum('horas_desarrollo'),
-                                        'monto' => $monto_presencial];
-                    $materias_presenciales->push($datos_presenciales);
-                }
-            }
-
-            $materias_virtuales = $materias_virtuales->groupBy('materia')->map(function ($grupo) {
-                return $grupo->sortByDesc('horas')->first();
-            });
-
-            $materias_teams = $materias_teams->groupBy('materia')->map(function ($grupo) {
-                return $grupo->sortByDesc('horas')->first();
-            });
-
-            $materias_presenciales = $materias_presenciales->groupBy('materia')->map(function ($grupo) {
-                return $grupo->sortByDesc('horas')->first();
-            });
-
-            $carreras = $carreras->groupBy('abreviatura')->map(function ($grupo) {
-                return $grupo->sortByDesc('nombre_fantasia')->first();
-            });
-
-
-            return view('docentes.show_horas')->with(compact('docente', 'semestre', 'fecha_inicio', 'fecha_fin', 'monto_virtual', 'monto_teams', 'monto_presencial', 'materias_virtuales', 'materias_teams', 'materias_presenciales', 'carreras'));
-        } catch (\Exception $e) {
-            return redirect()->route('docentes.index')->with('error-message', $e->getMessage());
-        }
-    }
-
-    public function reporte_horas(Request $request, $id)
-    {
-        $this->authorize('ver_reportes_horas_docentes');
-
-        try {
-            $request->validate([
-                'fecha_inicio' => 'required',
-                'fecha_fin' => 'required',
-                'monto_virtual' => 'nullable',
-                'monto_teams' => 'nullable',
-                'monto_presencial' => 'nullable',
-                'mes' => 'required',
-                'carrera' => 'required',
-                'programa' => 'required',
-
-                'detalles' => ['required', 'array'],
-                'detalles.*.materia' => 'required',
-                'detalles.*.horas_virtuales' => ['required', 'numeric'],
-                'detalles.*.horas_teams' => ['required', 'numeric'],
-                'detalles.*.horas_presenciales' => ['required', 'numeric'],
-                'detalles.*.observaciones' => 'nullable',
-
-                'total_horas_virtuales' => 'required',
-                'total_horas_teams' => 'required',
-                'total_horas_presenciales' => 'required',
-                'monto_total' => 'required'
-            ]);
-
-            $docente = Docente::findOrFail($id);
-            $fecha_inicio = Carbon::parse($request->fecha_inicio);
-            $fecha_fin = Carbon::parse($request->fecha_fin);
-            $monto_virtual = $request->monto_virtual ? $request->monto_virtual : 0;
-            $monto_teams = $request->monto_teams ? $request->monto_teams : 0;
-            $monto_presencial = $request->monto_presencial ? $request->monto_presencial : 0;
-            $mes = $request->mes ? $request->mes : 0;
-            $carrera = $request->carrera ? $request->carrera : 0;
-            $programa = $request->programa ? $request->programa : 0;
-
-            $empresa = Empresa::first(); //obtenemos los datos de la empresa para el header
-            $fecha_hoy = Carbon::now(); //obtenemos la fecha de hoy para el footer
-            $fecha_inicio_string = $fecha_inicio->setTime(0, 0, 0)->toDateTimeString();
-            $fecha_fin_string = $fecha_fin->setTime(23, 59, 59)->toDateTimeString();
-
-            $materias = collect();
-
-            foreach ($request->detalles as $detalle) {
-                $datos = ['materia' => $detalle['materia'],
-                          'horas_virtuales' => $detalle['horas_virtuales'],
-                          'horas_teams' => $detalle['horas_teams'],
-                          'horas_presenciales' => $detalle['horas_presenciales'],
-                          'observaciones' => Str::upper($detalle['observaciones'])];
-
-                $materias->push($datos);
-            }
-
-            $total_horas_virtuales = $request->total_horas_virtuales ? $request->total_horas_virtuales : 0;
-            $total_horas_teams = $request->total_horas_teams ? $request->total_horas_teams : 0;
-            $total_horas_presenciales = $request->total_horas_presenciales ? $request->total_horas_presenciales : 0;
-            $monto_total = $request->monto_total ? $request->monto_total : 0;
-
-            $pdf = Pdf::loadView('docentes/pdf_horas', compact('empresa', 'fecha_hoy', 'docente', 'fecha_inicio', 'fecha_fin', 'monto_virtual', 'monto_teams', 'monto_presencial', 'mes', 'carrera', 'programa', 'materias', 'total_horas_virtuales', 'total_horas_teams', 'total_horas_presenciales', 'monto_total'));
-
-            $nombre_archivo = 'salario_docente_id_' . $docente->id . '_' . Carbon::now()->format('dmY_His') . '.pdf';
-            $contenido_pdf = $pdf->output();
-            $ubicacion_archivo = 'public/salarios/docentes/' . $nombre_archivo;
-            Storage::put($ubicacion_archivo, $contenido_pdf);
-
-            $salario = new DocenteSalario();
-            $salario->docente_id = $docente->id;
-            $salario->fecha_inicio = $fecha_inicio;
-            $salario->fecha_fin = $fecha_fin;
-            $salario->url_ubicacion = str_replace('public', 'storage', $ubicacion_archivo);
-            $salario->cargado_por_id = Auth::id();
-            $salario->save();
-
-            return $pdf->stream('rpt_horas_docente_' . $docente->numero_documento . '_' . Carbon::now()->format('dmY_His') . '.pdf');
-        } catch (\Exception $e) {
-            return redirect()->route('docentes.index')->with('error-message', $e->getMessage());
-        }
-    }
 }

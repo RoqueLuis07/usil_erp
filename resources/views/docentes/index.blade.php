@@ -1,5 +1,5 @@
 @can('ver_docentes')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Docentes @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('css/bootstrap-select.min.css') }}">
@@ -116,7 +116,7 @@
                                                 <td>{{$docente->primer_nombre}} {{$docente->segundo_nombre}} {{$docente->tercer_nombre}} {{$docente->primer_apellido}} {{$docente->segundo_apellido}}</td>
                                                 <td>{{$docente->numero_documento}}</td>
                                                 <td>{{$docente->celular}} @if ($docente->telefono) - {{$docente->telefono}} @endif</td>
-                                                <td>{{\Carbon\Carbon::createFromDate($docente->fecha_nacimiento)->age}} años</td>
+                                                <td>{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->age . ' años' : 'Sin dato'}}</td>
                                                 <td class="text-center">@if ($docente->area_conocimiento_id) {{$docente->areaConocimiento->abreviatura}} @endif</td>
                                                 <td class="text-center">
                                                     <span
@@ -155,7 +155,7 @@
                                                     @can('eliminar_docentes')
                                                         <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#destroyModal-{{$docente->id}}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Eliminar"><i class="ri-delete-bin-fill"></i></button>
                                                     @endcan
-                                                    @if (Auth::user()->can('ver_legajos_docentes') || Auth::user()->can('ver_reportes_horas_docentes'))
+                                                    @if (Auth::user()->can('ver_legajos_docentes'))
                                                         <div class="btn-group dropdown" role="group">
                                                             <button id="dropdown-mas" type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <i class="ri-add-line align-bottom mb-0"></i> Más
@@ -164,9 +164,6 @@
                                                                 @can('ver_legajos_docentes')
                                                                     <li><a class="dropdown-item dropdown-item-mas" href="{{route('docentes.ver_legajo', $docente->id)}}">Legajo</a></li>
                                                                 @endcan
-                                                                {{-- @can('ver_reportes_horas_docentes') --}}
-                                                                    <li><button class="dropdown-item dropdown-item-mas" data-bs-toggle="modal" data-bs-target="#reporteHorasModal-{{$docente->id}}">Reporte Horas GA</button></li>
-                                                                {{-- @endcan --}}
                                                             </ul>
                                                         </div>
                                                     @endif
@@ -179,6 +176,7 @@
                                                     <h5 class="mt-2">Sin resultados.</h5>
                                                     <p class="text-muted mb-0">No pudimos encontrar ningún docente según tus parámetros de búsqueda.</p>
                                                 </td>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>

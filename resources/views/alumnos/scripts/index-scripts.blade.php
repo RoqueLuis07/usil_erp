@@ -90,16 +90,6 @@
         $('#buscar_form').submit();
     });
 
-    $('#delete-periodo-filter-btn').on('click', function () {
-        $('#filtro_periodo').selectpicker('val', '');
-        $('#filtro_periodo').trigger('change');
-    })
-
-    $('#filtro_periodo').change(function () {
-        $('#filtro_periodo_input').val($(this).val());
-        $('#buscar_form').submit();
-    });
-
     $('#delete-correo-filter-btn').on('click', function () {
         $('#filtro_correo').selectpicker('val', '');
         $('#filtro_correo').trigger('change');
@@ -110,13 +100,5 @@
         $('#buscar_form').submit();
     });
 
-    $('#delete-ubs-filter-btn').on('click', function () {
-        $('#filtro_ubs').selectpicker('val', '');
-        $('#filtro_ubs').trigger('change');
-    })
 
-    $('#filtro_ubs').change(function () {
-        $('#filtro_ubs_input').val($(this).val());
-        $('#buscar_form').submit();
-    });
 </script>

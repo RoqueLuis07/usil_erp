@@ -15,7 +15,7 @@ Error 403
                                 <div class="card mb-0 border-0 shadow-none mb-0">
                                     <div class="card-body p-sm-5 m-lg-4">
                                         <div class="error-img text-center px-5">
-                                            <img src="build/images/auth/503.png" class="img-fluid" alt="">
+                                            <img src="{{ asset('images/logo-nihon-gakko-sello.png') }}" class="img-fluid" alt="{{ config('institucion.nombre') }}" style="max-width:160px;border-radius:50%;">
                                         </div>
                                         <div class="mt-4 text-center pt-3">
                                             <div class="position-relative">
@@ -34,7 +34,7 @@ Error 403
                                 <div class="card auth-card bg-secondary h-100 border-0 shadow-none d-none d-sm-block mb-0">
                                     <div class="card-body py-5 d-flex justify-content-between flex-column h-100">
                                         <div class="text-center">
-                                            <h5 class="text-white">USIL</h5>
+                                            <h5 class="text-white">{{ config('institucion.nombre') }}</h5>
                                             <p class="text-white opacity-75">Gracias por trabajar con nosotros.</p>
                                         </div>
 
@@ -50,7 +50,7 @@ Error 403
                                                 <script>
                                                     document.write(new Date().getFullYear())
 
-                                                </script>. Creado con <i class="ti ti-heart-filled text-danger"></i> by BSoft
+                                                </script>. {{ config('institucion.nombre') }}
                                             </p>
                                         </div>
                                     </div>

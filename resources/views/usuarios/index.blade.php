@@ -1,5 +1,5 @@
 @can('ver_usuarios')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Usuarios @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -42,7 +42,7 @@
 									</div>
 								</div>
                             </div>
-                            <div class="table-responsive table-card mt-3 mb-1">
+                            <div class="table-responsive ac-tabla-fija table-card mt-3 mb-1">
                                 <table class="table align-middle table-nowrap">
                                     <thead class="table-light">
                                         <tr>

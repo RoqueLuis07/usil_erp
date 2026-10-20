@@ -1,5 +1,5 @@
 @can('ver_periodos')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Semestres @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -66,7 +66,6 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <a type="button" class="btn btn-sm btn-primary" href="{{route('semestres.show', $semestre->id)}}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Ver"><i class="ri-eye-fill"></i></a>
                                                     @if ($semestre->estado == 'AC')
                                                         @can('inactivar_periodos')
                                                             <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#unactivateModal-{{$semestre->id}}" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Inactivar"><i class="ri-close-fill"></i></button>

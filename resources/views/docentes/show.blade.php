@@ -1,5 +1,5 @@
 @can('ver_docentes')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Ver Docente @endsection
     @section('content')
         @component('components.breadcrumb')
@@ -32,15 +32,15 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="sexo">Sexo</label>
-                                    <input type="text" class="form-control" id="sexo" value="{{$docente->sexo->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="sexo" value="{{optional($docente->sexo)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
-                                    <input type="text" class="form-control" id="fecha_nacimiento" value="{{\Carbon\Carbon::parse($docente->fecha_nacimiento)->format('d/m/Y')}}" readonly>
+                                    <input type="text" class="form-control" id="fecha_nacimiento" value="{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->format('d/m/Y') : 'Sin dato'}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="edad">Edad</label>
-                                    <input type="text" class="form-control" id="edad" value="{{\Carbon\Carbon::createFromDate($docente->fecha_nacimiento)->age}} años" readonly>
+                                    <input type="text" class="form-control" id="edad" value="{{$docente->fecha_nacimiento ? \Carbon\Carbon::parse($docente->fecha_nacimiento)->age . ' años' : 'Sin dato'}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -72,32 +72,21 @@
                                 </div>
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="departamento">Departamento</label>
-                                    <input type="text" class="form-control" id="departamento" value="{{$docente->departamento->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="departamento" value="{{optional($docente->departamento)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="ciudad">Ciudad</label>
-                                    <input type="text" class="form-control" id="ciudad" value="{{$docente->ciudad->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="ciudad" value="{{optional($docente->ciudad)->nombre}}" readonly>
                                 </div>
                                 <div class="col-lg-3 mb-3">
                                     <label class="form-label" for="barrio">Barrio</label>
-                                    <input type="text" class="form-control" id="barrio" value="{{$docente->barrio->nombre}}" readonly>
+                                    <input type="text" class="form-control" id="barrio" value="{{optional($docente->barrio)->nombre}}" readonly>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-2 mb-3">
                                     <label class="form-label" for="usuario">Usuario Asignado</label>
-                                    <input class="form-control" type="text" id="usuario" value="{{$docente->usuario->name}} - {{$docente->usuario->rol->name}}" readonly>
-                                </div>
-                                <div class="col-lg-2 mb-3 text-center">
-                                    <div>
-                                        <label class="form-label" for="ubs">Docente UBS</label>
-                                    </div>
-                                    <div class="btn-group" role="group">
-                                        <input type="radio" class="btn-check ubs1" id="ubs1" name="ubs" value="false" @if (old('ubs') == 'false' || $docente->ubs == false) checked @endif disabled>
-                                        <label class="btn btn-outline-danger" for="ubs1">No</label>
-                                        <input type="radio" class="btn-check ubs2" id="ubs2" name="ubs" value="true" @if (old('ubs') == 'true' || $docente->ubs == true) checked @endif disabled>
-                                        <label class="btn btn-outline-success" for="ubs2">Si</label>
-                                    </div>
+                                    <input class="form-control" type="text" id="usuario" value="{{optional($docente->usuario)->name}} - {{optional(optional($docente->usuario)->rol)->name}}" readonly>
                                 </div>
                                 <div class="col-lg-2 mb-3 text-center">
                                     <div>
@@ -108,6 +97,59 @@
                                         <label class="btn btn-outline-danger" for="tutor_tesis1">No</label>
                                         <input type="radio" class="btn-check tutor_tesis2" id="tutor_tesis2" name="tutor_tesis" value="true" @if (old('tutor_tesis') == 'true' || $docente->tutor_tesis == true) checked @endif disabled>
                                         <label class="btn btn-outline-success" for="tutor_tesis2">Si</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Carreras, facultad y actividades</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-lg-6">
+                                            <label class="form-label">Carreras en las que enseña</label>
+                                            <div>
+                                                @forelse ($docente->Carreras as $carrera_docente)
+                                                    <span class="badge bg-info-subtle text-info me-1 mb-1">{{$carrera_docente->nombre_fantasia}}</span>
+                                                @empty
+                                                    <span class="text-muted">Sin carreras cargadas.</span>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label class="form-label">Facultad</label>
+                                            <div>
+                                                @forelse ($docente->facultades() as $facultad_docente)
+                                                    <span class="badge bg-secondary-subtle text-secondary me-1 mb-1">{{$facultad_docente->nombre}}</span>
+                                                @empty
+                                                    <span class="text-muted">-</span>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label class="form-label">Actividades de extensión a su cargo</label>
+                                    <div class="table-responsive">
+                                        <table class="table align-middle table-nowrap mb-0">
+                                            <thead class="table-light">
+                                                <tr><th>Período</th><th>Actividad</th><th>Tipo</th><th>Estado</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($actividades as $actividad)
+                                                    <tr>
+                                                        <td>{{ $actividad->periodo ?? '—' }}</td>
+                                                        <td><a href="{{ route('extensiones_universitarias.show', $actividad->id) }}">{{ $actividad->nombre }}</a></td>
+                                                        <td>{{ optional($actividad->tipoExtension)->nombre }}</td>
+                                                        <td>{{ ['PE' => 'Pendiente', 'AP' => 'Aprobado', 'IN' => 'Informado', 'RE' => 'Rechazado', 'CO' => 'Completo', 'FI' => 'Finalizado'][$actividad->estado] ?? $actividad->estado }}</td>
+                                                    </tr>
+                                                @empty
+                                                    <tr><td colspan="4" class="text-center text-muted">No tiene actividades de extensión a su cargo.</td></tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -128,7 +170,7 @@
                                             <div class="row">
                                                 <div class="col-lg-4 mb-3">
                                                     <label class="form-label" for="nivel_academico">Nivel Académico</label>
-                                                    <input type="text" class="form-control" id="nivel_academico" value="{{$docente->nivelAcademico->nombre}}" readonly>
+                                                    <input type="text" class="form-control" id="nivel_academico" value="{{optional($docente->nivelAcademico)->nombre}}" readonly>
                                                 </div>
                                                 <div class="col-lg-4 mb-3">
                                                     <label class="form-label" for="area_conocimiento">Área de Conocimiento</label>
@@ -152,13 +194,13 @@
                         <div class="col-lg-6 mb-3">
                             <label class="form-label" for="cargado_por">Cargado por:</label>
                             <br>
-                            {{$docente->cargadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($docente->created_at)->format('d/m/Y H:i:s')}}
+                            {{optional($docente->cargadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($docente->created_at)->format('d/m/Y H:i:s')}}
                         </div>
                         @if ($docente->actualizado_por_id)
                             <div class="col-lg-6 mb-3">
                                 <label class="form-label" for="cargado_por">Última actualización hecha por:</label>
                                 <br>
-                                {{$docente->actualizadoPor->name}}, en fecha: {{\Carbon\Carbon::parse($docente->updated_at)->format('d/m/Y H:i:s')}}
+                                {{optional($docente->actualizadoPor)->name}}, en fecha: {{\Carbon\Carbon::parse($docente->updated_at)->format('d/m/Y H:i:s')}}
                             </div>
                         @endif
                     </div>

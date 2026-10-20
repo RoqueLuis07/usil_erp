@@ -18,8 +18,5 @@ class Semestre extends Model implements Auditable
         return $this->belongsTo(User::class);
     }
 
-    public function SemestreMallas(){
-        return $this->hasMany(SemestreMalla::class);
-    }
 
 }

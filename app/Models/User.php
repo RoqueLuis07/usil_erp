@@ -44,6 +44,16 @@ class User extends Authenticatable implements Auditable
     ];
 
     /**
+     * Nunca grabar estos campos en el historial de auditoría (owen-it/laravel-auditing):
+     * a diferencia de $hidden, que solo oculta en la serialización JSON, esto evita
+     * que el hash de la contraseña quede guardado en texto en la tabla `audits`.
+     */
+    protected $auditExclude = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
@@ -56,7 +66,4 @@ class User extends Authenticatable implements Auditable
         return $this->belongsTo(Role::class, 'role_id');
     }
 
-    public function UsuariosCajas(){
-        return $this->hasMany(UsuarioCaja::class, 'usuario_id');
-    }
 }

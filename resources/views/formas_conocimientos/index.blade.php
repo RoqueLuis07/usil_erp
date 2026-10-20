@@ -1,13 +1,13 @@
 @can('ver_formas_conocimientos')
-    @extends('layouts.master')
-    @section('title') Formas de Conocer USIL @endsection
+    @extends('layouts.master-academic')
+    @section('title') Formas de Conocer la Universidad @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
     @endsection
     @section('content')
         @component('components.breadcrumb')
             @slot('li_1') Inicio @endslot
-            @slot('title') Formas de Conocer USIL @endslot
+            @slot('title') Formas de Conocer la Universidad @endslot
         @endcomponent
 
         @include('formas_conocimientos.scripts.messages-scripts')
@@ -17,7 +17,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title mb-0">Lista de Formas de Conocer USIL</h4>
+                        <h4 class="card-title mb-0">Lista de Formas de Conocer la Universidad</h4>
                     </div>
                     <!-- end card header -->
                     <div class="card-body">
@@ -54,7 +54,7 @@
                                     <div class="text-center">
                                         <lord-icon src="https://cdn.lordicon.com/jtkfemwz.json" trigger="in" state="morph-cross" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
                                         <h5 class="mt-2">Sin resultados.</h5>
-                                        <p class="text-muted mb-0">No pudimos encontrar ninguna forma de conocer USIL según tus parámetros de búsqueda.</p>
+                                        <p class="text-muted mb-0">No pudimos encontrar ninguna forma de conocer la Universidad según tus parámetros de búsqueda.</p>
                                     </div>
                                 </div>
                             </div>

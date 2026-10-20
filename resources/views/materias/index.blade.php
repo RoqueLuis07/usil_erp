@@ -1,5 +1,5 @@
 @can('ver_materias')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Materias @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -46,7 +46,6 @@
                                             <th class="sort" data-sort="nombre_fantasia">Nombre Fantasía</th>
                                             <th class="sort" data-sort="nombre_real">Nombre Real</th>
                                             <th>Carga Horaria</th>
-                                            <th>Cant. Correlatividades</th>
                                             <th class="sort" data-sort="estado">Estado</th>
                                             <th>Acciones</th>
                                         </tr>

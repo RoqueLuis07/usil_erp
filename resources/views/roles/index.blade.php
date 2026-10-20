@@ -1,5 +1,5 @@
 @can('ver_roles')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Roles @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
@@ -37,7 +37,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive table-card mt-3 mb-1">
+                            <div class="table-responsive ac-tabla-fija table-card mt-3 mb-1">
                                 <table class="table align-middle table-nowrap" id="roles-list">
                                     <thead class="table-light">
                                         <tr>
@@ -54,7 +54,7 @@
                                             <tr>
                                                 <td class="id">{{$rol->id}}</td>
                                                 <td class="name">{{$rol->name}}</td>
-                                                <td>{{$rol->user->count()}}</td>
+                                                <td>{{$rol->users->count()}}</td>
                                                 <td>{{$rol->permissions->count()}}</td>
                                                 <td class="state">
                                                     <span

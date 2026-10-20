@@ -1,5 +1,5 @@
 @can('ver_modalidades')
-    @extends('layouts.master')
+    @extends('layouts.master-academic')
     @section('title') Modalidades @endsection
     @section('css')
         <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.css') }}">
